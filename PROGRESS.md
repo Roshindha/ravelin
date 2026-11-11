@@ -10,6 +10,15 @@ Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file 
     .venv/bin/python scripts_smoke.py             # 100 random masked steps
 
 ## DONE
+- STEP 3: `rl/train.py` (MaskablePPO + `MultiInputPolicy` on `SiegeEnv`'s Dict obs, saves to `models/`)
+  and `rl/eval.py` (loads a model, runs N episodes on held-out seeds, reports mean/std/min/max
+  destruction). Verified end-to-end with a short smoke run (4096 timesteps): `ep_rew_mean` rose from
+  0.33 to 0.51 within 2 iterations, and the resulting policy converged on buying 10 rangers and hit
+  destruction=1.0 on 20/20 held-out seeds -- confirms the whole buy/deploy/battle/reward pipeline is
+  learnable, though see note below on whether this makes the task too easy.
+  `tests/test_rl.py` guards the MaskablePPO<->SiegeEnv wiring (Dict obs, `action_masks()`) with a tiny
+  (64-timestep) training+predict smoke test, not a convergence test.
+
 - STEP 1: scaffold (siege/ rl/ app/ results/ models/ tests/ docs/), requirements.txt, pytest.ini,
   .gitignore, README, git init.
 - `siege/env.py`: `SiegeEnv`. Discrete(246) layout = 4 buy | 4x60 deploy | END_BUY(244) | WAIT(245).
@@ -55,14 +64,20 @@ Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file 
 - Python 3.11 venv from /opt/homebrew/bin/python3.11 (system python is 3.14).
 
 ## Known issues / placeholders
-- Troop costs/stats in `siege/troops.py` are a first pass, not yet balance-tested by actual training.
+- Troop costs/stats in `siege/troops.py` are a first pass; the 10-minute smoke run above suggests
+  spamming max-affordable rangers may trivially solve every layout (1.0 destruction, zero variance over
+  20 seeds) -- worth revisiting balance (turret/building HP, wall HP, ranger range/cost) once a longer
+  real training run confirms this isn't just an artifact of too little training.
 - Grid channels 4-7 are still zero/reserved (e.g. per-troop-type channels, turret range, distance-to-target).
-- torch / sb3 / sb3-contrib / streamlit / pandas not yet installed in the venv (matplotlib is).
-- `app/` and `rl/` are still empty packages (no training script or UI yet).
+- `app/` is still an empty package (no UI yet).
 - Movement in `combat.py` is exactly one grid cell per tick regardless of a troop's `speed` stat — speed
   is stored and passed through but not yet used to scale step count or action frequency.
+- `rl/train.py` uses a single env (no vectorization/parallelism) and default MaskablePPO hyperparameters;
+  fine for correctness, likely slow for a real training run.
 
 ## NEXT
-STEP 3: `rl/` training — pick an algorithm (sb3-contrib MaskablePPO fits the action-mask design),
-install torch/sb3-contrib, write a training script against `SiegeEnv`, and a short eval script that
-reports average destruction over N random/held-out base layouts.
+STEP 4: run a real training job (`.venv/bin/python -m rl.train --timesteps 200000`), then
+`.venv/bin/python -m rl.eval --model models/maskable_ppo_siege --episodes 100` over held-out seeds.
+If destruction saturates at 1.0 immediately, revisit troop/base balance in `siege/troops.py` /
+`siege/bases.py` before trusting the result. Then: `app/` (streamlit UI to visualize a trained
+agent's buy/deploy choices and the resulting battle, using `siege/render.py`).
