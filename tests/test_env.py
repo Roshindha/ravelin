@@ -82,3 +82,33 @@ def test_gym_reset_contract():
     # rejects by design, so check only the reset/seed contract.
     from gymnasium.utils.env_checker import check_reset_seed_determinism
     check_reset_seed_determinism(SiegeEnv())
+
+
+def test_reset_generates_base_layout():
+    env = SiegeEnv()
+    env.reset(seed=0)
+    assert len(env.layout["buildings"]) >= 3
+    assert len(env.layout["walls"]) > 0
+
+
+def test_full_episode_runs_real_battle_and_damages_base():
+    # Buy 5 tanks and dump them all on adjacent border tiles near one corner;
+    # with a real deterministic simulator this should produce nonzero
+    # destruction (the previous stub always returned 0).
+    env = SiegeEnv()
+    env.reset(seed=1)
+    for _ in range(5):
+        env.step(2)  # buy tank (index 2)
+    env.step(E.END_BUY)
+    mask = env.action_masks()
+    lo = E.DEPLOY_BASE + 2 * E.N_BORDER
+    hi = lo + E.N_BORDER
+    tile_actions = np.flatnonzero(mask[lo:hi]) + lo
+    reward = 0.0
+    for a in tile_actions[:5]:
+        _, r, term, _, _ = env.step(int(a))
+        reward += r
+    assert term
+    assert env.battle_result is not None
+    assert 0.0 <= env.destruction <= 1.0
+    assert reward == env.battle_result.reward

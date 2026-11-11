@@ -1,8 +1,4 @@
-"""Minimal SiegeEnv skeleton (STEP 1).
-
-Only the interface is real here: spaces, phases, action layout, masks and
-seeding. Combat is a placeholder (see `_run_battle_stub`) and will be replaced
-by the deterministic simulator in a later step.
+"""SiegeEnv: buy/deploy against a randomized base, then resolve one deterministic battle.
 
 Action layout (Discrete(246)):
     0..3        buy troop type k
@@ -16,7 +12,9 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
-from siege.troops import TROOP_COST
+from siege.bases import generate_base_layout
+from siege.combat import simulate_battle
+from siege.troops import TROOP_COST, TROOP_TYPES
 
 GRID = 16
 N_TROOPS = 4
@@ -71,12 +69,15 @@ class SiegeEnv(gym.Env):
         self.owned = np.zeros(N_TROOPS, dtype=np.int32)  # bought, not yet deployed
         self.deployed = np.zeros(N_TROOPS, dtype=np.int32)
         self.occupied = np.zeros(N_BORDER, dtype=bool)
+        self.deployed_troops: list[dict] = []
+        self.battle_result = None
         self.tick = 0
         self.destruction = 0.0
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)  # seeds self.np_random
         self._reset_state()
+        self.layout = generate_base_layout(self.np_random)
         return self._obs(), {}
 
     # -- masks -----------------------------------------------------------
@@ -117,24 +118,48 @@ class SiegeEnv(gym.Env):
             self.owned[k] -= 1
             self.deployed[k] += 1
             self.occupied[tile] = True
+            r, c = BORDER[tile]
+            self.deployed_troops.append({"type": TROOP_TYPES[k].name, "x": r, "y": c})
             if self.owned.sum() == 0:
                 self.phase = PHASE_BATTLE
-        if self.phase == PHASE_BATTLE:
-            reward = self._run_battle_stub()
+        if self.phase == PHASE_BATTLE and self.battle_result is None:
+            reward = self._run_battle()
         terminated = self.phase == PHASE_BATTLE and self.tick >= MAX_BATTLE_TICKS
         return self._obs(), float(reward), terminated, False, {}
 
-    def _run_battle_stub(self) -> float:
-        """PLACEHOLDER: ends the battle immediately with 0 destruction."""
+    def _run_battle(self) -> float:
+        """Resolve the whole battle deterministically in one step."""
+        self.battle_result = simulate_battle(
+            self.deployed_troops,
+            self.layout["buildings"],
+            self.layout["walls"],
+            self.layout["turrets"],
+            max_ticks=MAX_BATTLE_TICKS,
+        )
+        self.destruction = self.battle_result.destruction
         self.tick = MAX_BATTLE_TICKS
-        return 0.0
+        return self.battle_result.reward
 
     # -- observation -----------------------------------------------------
+    def _board_state(self) -> tuple[list[dict], list[dict], list[dict]]:
+        if self.battle_result is not None:
+            last = self.battle_result.frames[-1]
+            return last["buildings"], last["turrets"], last["walls"]
+        walls = [{"x": x, "y": y, "hp": hp} for (x, y), hp in self.layout["walls"].items()]
+        return self.layout["buildings"], self.layout["turrets"], walls
+
     def _obs(self) -> dict:
         grid = np.zeros((N_CHANNELS, GRID, GRID), dtype=np.float32)
         for tile in np.flatnonzero(self.occupied):
             r, c = BORDER[tile]
-            grid[0, r, c] = 1.0  # placeholder channel: deployed-troop occupancy
+            grid[0, r, c] = 1.0  # deployed-troop occupancy (pre-battle positions)
+        buildings, turrets, walls = self._board_state()
+        for b in buildings:
+            grid[1, int(b["x"]), int(b["y"])] = min(1.0, b["hp"] / 80.0)
+        for t in turrets:
+            grid[2, int(t["x"]), int(t["y"])] = min(1.0, t["hp"] / 50.0)
+        for w in walls:
+            grid[3, int(w["x"]), int(w["y"])] = min(1.0, w["hp"] / 80.0)
         state = np.zeros(STATE_DIM, dtype=np.float32)
         state[0] = self.gold / BUDGET
         state[1:5] = np.minimum(self.owned / 10.0, 1.0)

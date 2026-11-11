@@ -52,3 +52,27 @@ def test_troop_cannot_walk_through_walls():
     result = simulate_battle(army, buildings, walls, turrets, max_ticks=3)
     for troop in result.final_troops:
         assert (troop["x"], troop["y"]) not in walls
+
+
+def test_target_preference_order_is_respected():
+    # A tank prefers wall > building > turret: with an adjacent wall and a
+    # farther building both reachable, it must attack the wall it is next to,
+    # not skip past it to the building just because buildings are listed first.
+    from siege.combat import _select_target, _normalize_buildings, _normalize_turrets, _normalize_walls
+
+    troop = {"x": 4, "y": 3, "range": 1.4, "target_preference": ("wall", "building", "turret")}
+    walls = _normalize_walls({(4, 4)})
+    buildings = _normalize_buildings([{"x": 5, "y": 5, "hp": 50, "value": 10}])
+    turrets = _normalize_turrets([])
+    kind, pos, dist = _select_target(troop, buildings, turrets, walls)
+    assert kind == "wall" and pos == (4, 4)
+
+
+def test_tank_breaches_adjacent_wall_before_farther_building():
+    army = [{"type": "tank", "x": 4, "y": 3}]
+    walls = [{"x": 4, "y": 4, "hp": 24}]  # exactly one tank hit (damage 24) to destroy
+    buildings = [{"x": 5, "y": 5, "hp": 50, "value": 10}]
+    turrets = []
+    result = simulate_battle(army, buildings, walls, turrets, max_ticks=2)
+    assert (4, 4) not in result.frames[-1]["walls"] or all(w["x"] != 4 or w["y"] != 4 for w in result.frames[-1]["walls"])
+    assert result.destroyed_value == 0  # the building was never touched

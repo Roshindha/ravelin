@@ -131,29 +131,19 @@ def _select_target(troop: dict, buildings: list[dict], turrets: list[dict], wall
     if not target_priority:
         target_priority = ["building", "turret", "wall"]
 
-    def score_target(kind: str, pos: tuple[int, int]) -> tuple[int, float, int, int]:
-        if kind == "building":
-            building = next((b for b in buildings if b["alive"] and (b["x"], b["y"]) == pos), None)
-            return (0, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0]) if building else (10, 0.0, 0, 0)
-        if kind == "turret":
-            turret = next((t for t in turrets if t["alive"] and (t["x"], t["y"]) == pos), None)
-            return (1, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0]) if turret else (10, 0.0, 0, 0)
-        wall = walls.get(pos)
-        return (2, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0]) if wall is not None else (10, 0.0, 0, 0)
-
     options: list[tuple[int, float, int, int, str, tuple[int, int]]] = []
-    for kind in target_priority:
+    for rank, kind in enumerate(target_priority):
         if kind == "building":
             for b in buildings:
                 if b["alive"]:
-                    options.append((0, _dist((troop["x"], troop["y"]), (b["x"], b["y"])), b["y"], b["x"], kind, (b["x"], b["y"])))
+                    options.append((rank, _dist((troop["x"], troop["y"]), (b["x"], b["y"])), b["y"], b["x"], kind, (b["x"], b["y"])))
         elif kind == "turret":
             for t in turrets:
                 if t["alive"]:
-                    options.append((1, _dist((troop["x"], troop["y"]), (t["x"], t["y"])), t["y"], t["x"], kind, (t["x"], t["y"])))
+                    options.append((rank, _dist((troop["x"], troop["y"]), (t["x"], t["y"])), t["y"], t["x"], kind, (t["x"], t["y"])))
         elif kind == "wall":
             for pos in sorted(walls):
-                options.append((2, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0], kind, pos))
+                options.append((rank, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0], kind, pos))
     if not options:
         return ("", (-1, -1), 1e9)
     options.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
