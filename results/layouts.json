@@ -1,0 +1,1689 @@
+[
+  {
+    "family": "ring_defence",
+    "id": 0,
+    "pool": "FINAL",
+    "seed": 0,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 1,
+    "pool": "FINAL",
+    "seed": 1,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 2,
+    "pool": "FINAL",
+    "seed": 3,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 3,
+    "pool": "FINAL",
+    "seed": 5,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 4,
+    "pool": "FINAL",
+    "seed": 6,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 5,
+    "pool": "FINAL",
+    "seed": 7,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 6,
+    "pool": "FINAL",
+    "seed": 8,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 7,
+    "pool": "FINAL",
+    "seed": 12,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 8,
+    "pool": "FINAL",
+    "seed": 17,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 9,
+    "pool": "FINAL",
+    "seed": 18,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 10,
+    "pool": "FINAL",
+    "seed": 23,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 11,
+    "pool": "FINAL",
+    "seed": 25,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 12,
+    "pool": "FINAL",
+    "seed": 26,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 13,
+    "pool": "FINAL",
+    "seed": 27,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 14,
+    "pool": "FINAL",
+    "seed": 29,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 15,
+    "pool": "FINAL",
+    "seed": 30,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 16,
+    "pool": "FINAL",
+    "seed": 31,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 17,
+    "pool": "FINAL",
+    "seed": 33,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 18,
+    "pool": "FINAL",
+    "seed": 34,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 19,
+    "pool": "FINAL",
+    "seed": 35,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 20,
+    "pool": "FINAL",
+    "seed": 36,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 21,
+    "pool": "FINAL",
+    "seed": 37,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 22,
+    "pool": "FINAL",
+    "seed": 38,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 23,
+    "pool": "FINAL",
+    "seed": 40,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 24,
+    "pool": "FINAL",
+    "seed": 42,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 25,
+    "pool": "FINAL",
+    "seed": 43,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 26,
+    "pool": "FINAL",
+    "seed": 45,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 27,
+    "pool": "FINAL",
+    "seed": 47,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 28,
+    "pool": "FINAL",
+    "seed": 49,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 29,
+    "pool": "FINAL",
+    "seed": 50,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 30,
+    "pool": "FINAL",
+    "seed": 52,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 31,
+    "pool": "FINAL",
+    "seed": 56,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 32,
+    "pool": "FINAL",
+    "seed": 57,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 33,
+    "pool": "FINAL",
+    "seed": 58,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 34,
+    "pool": "FINAL",
+    "seed": 59,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 35,
+    "pool": "FINAL",
+    "seed": 61,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 36,
+    "pool": "FINAL",
+    "seed": 63,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 37,
+    "pool": "FINAL",
+    "seed": 64,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 38,
+    "pool": "FINAL",
+    "seed": 65,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 39,
+    "pool": "FINAL",
+    "seed": 67,
+    "tag": "transfer"
+  },
+  {
+    "family": "ring_defence",
+    "id": 40,
+    "pool": "FINAL",
+    "seed": 69,
+    "tag": "transfer"
+  },
+  {
+    "family": "clustered_core",
+    "id": 41,
+    "pool": "DEV",
+    "seed": 10000057,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 42,
+    "pool": "DEV",
+    "seed": 10000050,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 43,
+    "pool": "DEV",
+    "seed": 10000006,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 44,
+    "pool": "DEV",
+    "seed": 10000115,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 45,
+    "pool": "DEV",
+    "seed": 10000110,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 46,
+    "pool": "DEV",
+    "seed": 10000084,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 47,
+    "pool": "DEV",
+    "seed": 10000097,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 48,
+    "pool": "DEV",
+    "seed": 10000111,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 49,
+    "pool": "DEV",
+    "seed": 10000092,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 50,
+    "pool": "DEV",
+    "seed": 10000085,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 51,
+    "pool": "DEV",
+    "seed": 10000065,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 52,
+    "pool": "DEV",
+    "seed": 10000136,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 53,
+    "pool": "DEV",
+    "seed": 10000077,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 54,
+    "pool": "DEV",
+    "seed": 10000104,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 55,
+    "pool": "DEV",
+    "seed": 10000014,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 56,
+    "pool": "DEV",
+    "seed": 10000140,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 57,
+    "pool": "DEV",
+    "seed": 10000144,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 58,
+    "pool": "DEV",
+    "seed": 10000016,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 59,
+    "pool": "DEV",
+    "seed": 10000033,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 60,
+    "pool": "DEV",
+    "seed": 10000003,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 61,
+    "pool": "DEV",
+    "seed": 10000026,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 62,
+    "pool": "DEV",
+    "seed": 10000130,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 63,
+    "pool": "DEV",
+    "seed": 10000141,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 64,
+    "pool": "DEV",
+    "seed": 10000135,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 65,
+    "pool": "DEV",
+    "seed": 10000021,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 66,
+    "pool": "DEV",
+    "seed": 10000034,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 67,
+    "pool": "DEV",
+    "seed": 10000114,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 68,
+    "pool": "DEV",
+    "seed": 10000010,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 69,
+    "pool": "DEV",
+    "seed": 10000113,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 70,
+    "pool": "DEV",
+    "seed": 10000067,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 71,
+    "pool": "DEV",
+    "seed": 10000132,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 72,
+    "pool": "DEV",
+    "seed": 10000022,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 73,
+    "pool": "DEV",
+    "seed": 10000082,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 74,
+    "pool": "DEV",
+    "seed": 10000102,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 75,
+    "pool": "DEV",
+    "seed": 10000094,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 76,
+    "pool": "DEV",
+    "seed": 10000126,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 77,
+    "pool": "DEV",
+    "seed": 10000068,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 78,
+    "pool": "DEV",
+    "seed": 10000100,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 79,
+    "pool": "DEV",
+    "seed": 10000127,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 80,
+    "pool": "DEV",
+    "seed": 10000056,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 81,
+    "pool": "DEV",
+    "seed": 10000031,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 82,
+    "pool": "DEV",
+    "seed": 10000001,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 83,
+    "pool": "DEV",
+    "seed": 10000142,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 84,
+    "pool": "DEV",
+    "seed": 10000137,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 85,
+    "pool": "DEV",
+    "seed": 10000119,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 86,
+    "pool": "DEV",
+    "seed": 10000117,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 87,
+    "pool": "DEV",
+    "seed": 10000083,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 88,
+    "pool": "DEV",
+    "seed": 10000098,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 89,
+    "pool": "DEV",
+    "seed": 10000000,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 90,
+    "pool": "DEV",
+    "seed": 10000086,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 91,
+    "pool": "DEV",
+    "seed": 10000122,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 92,
+    "pool": "DEV",
+    "seed": 10000088,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 93,
+    "pool": "DEV",
+    "seed": 10000039,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 94,
+    "pool": "DEV",
+    "seed": 10000073,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 95,
+    "pool": "DEV",
+    "seed": 10000053,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 96,
+    "pool": "DEV",
+    "seed": 10000138,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 97,
+    "pool": "DEV",
+    "seed": 10000040,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 98,
+    "pool": "DEV",
+    "seed": 10000072,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 99,
+    "pool": "DEV",
+    "seed": 10000020,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 100,
+    "pool": "DEV",
+    "seed": 10000143,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 101,
+    "pool": "DEV",
+    "seed": 10000128,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 102,
+    "pool": "DEV",
+    "seed": 10000101,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 103,
+    "pool": "DEV",
+    "seed": 10000015,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 104,
+    "pool": "DEV",
+    "seed": 10000066,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 105,
+    "pool": "DEV",
+    "seed": 10000124,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 106,
+    "pool": "DEV",
+    "seed": 10000125,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 107,
+    "pool": "DEV",
+    "seed": 10000048,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 108,
+    "pool": "DEV",
+    "seed": 10000105,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 109,
+    "pool": "DEV",
+    "seed": 10000027,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 110,
+    "pool": "DEV",
+    "seed": 10000074,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 111,
+    "pool": "DEV",
+    "seed": 10000081,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 112,
+    "pool": "DEV",
+    "seed": 10000008,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 113,
+    "pool": "DEV",
+    "seed": 10000133,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 114,
+    "pool": "DEV",
+    "seed": 10000011,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 115,
+    "pool": "DEV",
+    "seed": 10000012,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 116,
+    "pool": "DEV",
+    "seed": 10000070,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 117,
+    "pool": "DEV",
+    "seed": 10000043,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 118,
+    "pool": "DEV",
+    "seed": 10000095,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 119,
+    "pool": "DEV",
+    "seed": 10000058,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 120,
+    "pool": "DEV",
+    "seed": 10000109,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 121,
+    "pool": "FINAL",
+    "seed": 10000099,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 122,
+    "pool": "FINAL",
+    "seed": 10000090,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 123,
+    "pool": "FINAL",
+    "seed": 10000093,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 124,
+    "pool": "FINAL",
+    "seed": 10000108,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 125,
+    "pool": "FINAL",
+    "seed": 10000009,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 126,
+    "pool": "FINAL",
+    "seed": 10000013,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 127,
+    "pool": "FINAL",
+    "seed": 10000024,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 128,
+    "pool": "FINAL",
+    "seed": 10000037,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 129,
+    "pool": "FINAL",
+    "seed": 10000007,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 130,
+    "pool": "FINAL",
+    "seed": 10000089,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 131,
+    "pool": "FINAL",
+    "seed": 10000091,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 132,
+    "pool": "FINAL",
+    "seed": 10000004,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 133,
+    "pool": "FINAL",
+    "seed": 10000052,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 134,
+    "pool": "FINAL",
+    "seed": 10000063,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 135,
+    "pool": "FINAL",
+    "seed": 10000025,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 136,
+    "pool": "FINAL",
+    "seed": 10000059,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 137,
+    "pool": "FINAL",
+    "seed": 10000103,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 138,
+    "pool": "FINAL",
+    "seed": 10000134,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 139,
+    "pool": "FINAL",
+    "seed": 10000017,
+    "tag": "familiar"
+  },
+  {
+    "family": "clustered_core",
+    "id": 140,
+    "pool": "FINAL",
+    "seed": 10000049,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 141,
+    "pool": "DEV",
+    "seed": 20000534,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 142,
+    "pool": "DEV",
+    "seed": 20000355,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 143,
+    "pool": "DEV",
+    "seed": 20000015,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 144,
+    "pool": "DEV",
+    "seed": 20000353,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 145,
+    "pool": "DEV",
+    "seed": 20000615,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 146,
+    "pool": "DEV",
+    "seed": 20000415,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 147,
+    "pool": "DEV",
+    "seed": 20000317,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 148,
+    "pool": "DEV",
+    "seed": 20000042,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 149,
+    "pool": "DEV",
+    "seed": 20000246,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 150,
+    "pool": "DEV",
+    "seed": 20000730,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 151,
+    "pool": "DEV",
+    "seed": 20000070,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 152,
+    "pool": "DEV",
+    "seed": 20000115,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 153,
+    "pool": "DEV",
+    "seed": 20000779,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 154,
+    "pool": "DEV",
+    "seed": 20000037,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 155,
+    "pool": "DEV",
+    "seed": 20000499,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 156,
+    "pool": "DEV",
+    "seed": 20000203,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 157,
+    "pool": "DEV",
+    "seed": 20000472,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 158,
+    "pool": "DEV",
+    "seed": 20000059,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 159,
+    "pool": "DEV",
+    "seed": 20000505,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 160,
+    "pool": "DEV",
+    "seed": 20000158,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 161,
+    "pool": "DEV",
+    "seed": 20000149,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 162,
+    "pool": "DEV",
+    "seed": 20000244,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 163,
+    "pool": "DEV",
+    "seed": 20000284,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 164,
+    "pool": "DEV",
+    "seed": 20000423,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 165,
+    "pool": "DEV",
+    "seed": 20000155,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 166,
+    "pool": "DEV",
+    "seed": 20000672,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 167,
+    "pool": "DEV",
+    "seed": 20000154,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 168,
+    "pool": "DEV",
+    "seed": 20000511,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 169,
+    "pool": "DEV",
+    "seed": 20000124,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 170,
+    "pool": "DEV",
+    "seed": 20000813,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 171,
+    "pool": "DEV",
+    "seed": 20000742,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 172,
+    "pool": "DEV",
+    "seed": 20000548,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 173,
+    "pool": "DEV",
+    "seed": 20000391,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 174,
+    "pool": "DEV",
+    "seed": 20000249,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 175,
+    "pool": "DEV",
+    "seed": 20000654,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 176,
+    "pool": "DEV",
+    "seed": 20000214,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 177,
+    "pool": "DEV",
+    "seed": 20000575,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 178,
+    "pool": "DEV",
+    "seed": 20000128,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 179,
+    "pool": "DEV",
+    "seed": 20000657,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 180,
+    "pool": "DEV",
+    "seed": 20000746,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 181,
+    "pool": "DEV",
+    "seed": 20000235,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 182,
+    "pool": "DEV",
+    "seed": 20000555,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 183,
+    "pool": "DEV",
+    "seed": 20000127,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 184,
+    "pool": "DEV",
+    "seed": 20000617,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 185,
+    "pool": "DEV",
+    "seed": 20000240,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 186,
+    "pool": "DEV",
+    "seed": 20000286,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 187,
+    "pool": "DEV",
+    "seed": 20000833,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 188,
+    "pool": "DEV",
+    "seed": 20000012,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 189,
+    "pool": "DEV",
+    "seed": 20000185,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 190,
+    "pool": "DEV",
+    "seed": 20000667,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 191,
+    "pool": "DEV",
+    "seed": 20000663,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 192,
+    "pool": "DEV",
+    "seed": 20000527,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 193,
+    "pool": "DEV",
+    "seed": 20000007,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 194,
+    "pool": "DEV",
+    "seed": 20000081,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 195,
+    "pool": "DEV",
+    "seed": 20000762,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 196,
+    "pool": "DEV",
+    "seed": 20000178,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 197,
+    "pool": "DEV",
+    "seed": 20000539,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 198,
+    "pool": "DEV",
+    "seed": 20000496,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 199,
+    "pool": "DEV",
+    "seed": 20000112,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 200,
+    "pool": "DEV",
+    "seed": 20000713,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 201,
+    "pool": "DEV",
+    "seed": 20000049,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 202,
+    "pool": "DEV",
+    "seed": 20000192,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 203,
+    "pool": "DEV",
+    "seed": 20000096,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 204,
+    "pool": "DEV",
+    "seed": 20000480,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 205,
+    "pool": "DEV",
+    "seed": 20000845,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 206,
+    "pool": "DEV",
+    "seed": 20000584,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 207,
+    "pool": "DEV",
+    "seed": 20000492,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 208,
+    "pool": "DEV",
+    "seed": 20000598,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 209,
+    "pool": "DEV",
+    "seed": 20000709,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 210,
+    "pool": "DEV",
+    "seed": 20000603,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 211,
+    "pool": "DEV",
+    "seed": 20000370,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 212,
+    "pool": "DEV",
+    "seed": 20000450,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 213,
+    "pool": "DEV",
+    "seed": 20000850,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 214,
+    "pool": "DEV",
+    "seed": 20000288,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 215,
+    "pool": "DEV",
+    "seed": 20000648,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 216,
+    "pool": "DEV",
+    "seed": 20000335,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 217,
+    "pool": "DEV",
+    "seed": 20000530,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 218,
+    "pool": "DEV",
+    "seed": 20000515,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 219,
+    "pool": "DEV",
+    "seed": 20000238,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 220,
+    "pool": "DEV",
+    "seed": 20000350,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 221,
+    "pool": "FINAL",
+    "seed": 20000452,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 222,
+    "pool": "FINAL",
+    "seed": 20000213,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 223,
+    "pool": "FINAL",
+    "seed": 20000065,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 224,
+    "pool": "FINAL",
+    "seed": 20000405,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 225,
+    "pool": "FINAL",
+    "seed": 20000540,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 226,
+    "pool": "FINAL",
+    "seed": 20000754,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 227,
+    "pool": "FINAL",
+    "seed": 20000309,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 228,
+    "pool": "FINAL",
+    "seed": 20000401,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 229,
+    "pool": "FINAL",
+    "seed": 20000804,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 230,
+    "pool": "FINAL",
+    "seed": 20000458,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 231,
+    "pool": "FINAL",
+    "seed": 20000181,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 232,
+    "pool": "FINAL",
+    "seed": 20000287,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 233,
+    "pool": "FINAL",
+    "seed": 20000846,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 234,
+    "pool": "FINAL",
+    "seed": 20000224,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 235,
+    "pool": "FINAL",
+    "seed": 20000576,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 236,
+    "pool": "FINAL",
+    "seed": 20000553,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 237,
+    "pool": "FINAL",
+    "seed": 20000513,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 238,
+    "pool": "FINAL",
+    "seed": 20000640,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 239,
+    "pool": "FINAL",
+    "seed": 20000510,
+    "tag": "familiar"
+  },
+  {
+    "family": "scattered_outposts",
+    "id": 240,
+    "pool": "FINAL",
+    "seed": 20000080,
+    "tag": "familiar"
+  }
+]

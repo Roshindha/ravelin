@@ -1,14 +1,15 @@
 """Troop definitions for Base Siege.
 
-Stats table (costs are tuned so a 200-resource budget allows meaningful decisions):
+See docs/troops.md for the full balance rationale and iteration history. Summary of the
+current (v2) stats:
 
 +----------+-------+------+--------+-------+-------+---------------------+-----------------------------+
 | name     | cost  | hp   | damage | speed | range | role                | target preference           |
 +==========+=======+======+========+=======+=======+=====================+=============================+
-| swarm    | 15    | 18   | 8      | 1.5   | 1.2   | cheap skirmisher    | building > turret > wall    |
-| ranger   | 30    | 34   | 12     | 1.0   | 5.0   | ranged attacker    | turret > building > wall    |
-| tank     | 55    | 90   | 24     | 0.7   | 1.4   | frontliner          | wall > building > turret    |
-| splash   | 70    | 42   | 30     | 0.6   | 2.5   | wall-breaker / nuke | wall > building > turret    |
+| swarm    | 10    | 18   | 8      | 1.5   | 1.2   | cheap skirmisher    | building > turret > wall    |
+| ranger   | 25    | 30   | 12     | 1.0   | 4.0   | ranged attacker     | turret > building > wall    |
+| tank     | 30    | 150  | 24     | 0.7   | 1.4   | frontliner          | wall > building > turret    |
+| splash   | 40    | 55   | 34     | 0.6   | 2.5   | wall-breaker / nuke | wall > building > turret    |
 +----------+-------+------+--------+-------+-------+---------------------+-----------------------------+
 
 The 200 gold budget creates trade-offs: a player can field a dense swarm, a few ranged
@@ -41,9 +42,9 @@ class TroopSpec:
 
 TROOP_TYPES = (
     TroopSpec("swarm", 10, 18, 8, 1.5, 1.2, "cheap skirmisher", ("building", "turret", "wall")),
-    TroopSpec("ranger", 20, 34, 12, 1.0, 5.0, "ranged attacker", ("turret", "building", "wall")),
-    TroopSpec("tank", 30, 90, 24, 0.7, 1.4, "frontliner", ("wall", "building", "turret")),
-    TroopSpec("splash", 40, 42, 30, 0.6, 2.5, "wall-breaker", ("wall", "building", "turret")),
+    TroopSpec("ranger", 25, 30, 12, 1.0, 4.0, "ranged attacker", ("turret", "building", "wall")),
+    TroopSpec("tank", 30, 150, 24, 0.7, 1.4, "frontliner", ("wall", "building", "turret")),
+    TroopSpec("splash", 40, 75, 34, 0.6, 2.5, "wall-breaker", ("wall", "building", "turret")),
 )
 
 TROOP_TYPE_BY_NAME = {spec.key: spec for spec in TROOP_TYPES}

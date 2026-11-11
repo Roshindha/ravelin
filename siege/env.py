@@ -49,10 +49,20 @@ BORDER = border_tiles()
 
 
 class SiegeEnv(gym.Env):
+    """
+    `layout_pool`, when given, is a list of layout records (as saved by `siege.layouts`:
+    {"family": ..., "seed": ...}, extra keys like "id"/"pool"/"tag" ignored). Each reset samples
+    one record uniformly via `self.np_random` and deterministically regenerates that exact layout
+    from its (family, seed) rather than drawing a fresh random one. Pass a DEV-pool slice for
+    training and a FINAL-pool slice for held-out evaluation -- see `siege.layouts.load_layout_pool`.
+    Omit it (the default) to fall back to a fresh random layout every reset, as before.
+    """
+
     metadata = {"render_modes": []}
 
-    def __init__(self) -> None:
+    def __init__(self, layout_pool: list[dict] | None = None) -> None:
         super().__init__()
+        self.layout_pool = layout_pool
         self.action_space = spaces.Discrete(N_ACTIONS)
         self.observation_space = spaces.Dict(
             {
@@ -77,7 +87,13 @@ class SiegeEnv(gym.Env):
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)  # seeds self.np_random
         self._reset_state()
-        self.layout = generate_base_layout(self.np_random)
+        if self.layout_pool:
+            record = self.layout_pool[int(self.np_random.integers(len(self.layout_pool)))]
+            self.layout_record = record
+            self.layout = generate_base_layout(np.random.default_rng(record["seed"]), family=record["family"])
+        else:
+            self.layout_record = None
+            self.layout = generate_base_layout(self.np_random)
         return self._obs(), {}
 
     # -- masks -----------------------------------------------------------

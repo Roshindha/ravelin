@@ -9,3 +9,8 @@ models/*
 !models/.gitkeep
 results/*
 !results/.gitkeep
+# the frozen layout pool is a tracked artifact: training/eval integrity depends on it being
+# exactly reproducible and never silently regenerated.
+!results/layouts.json
+!results/layouts.sha256
+!results/layout_contact_sheet.png
