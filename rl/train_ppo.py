@@ -74,9 +74,14 @@ class CurriculumCallback(BaseCallback):
 
     def _on_training_start(self) -> None:
         # Envs were built already in phase A (prebought army) so even the first episodes are deploy-only.
+        # On resume (num_timesteps > 0) the phase is restored from the timestep: before the boundary -> A, after -> B.
+        resumed = self.num_timesteps > 0
         self.switched = self.boundary <= 0
-        if not self.switched:
-            self._apply(self.army, "A")
+        if self.boundary > 0 and resumed and self.num_timesteps >= self.boundary:
+            self.switched = True
+            self._apply(None, "B-resume")
+        elif not self.switched:
+            self._apply(self.army, "A-resume" if resumed else "A")
 
     def _on_step(self) -> bool:
         # Envs are only reset when an episode ends, so the new setting takes effect from the next episode.
@@ -116,6 +121,16 @@ class ValidationCallback(BaseCallback):
                     self.model.save(self.run_dir / "best.zip")
 
     def _on_training_start(self) -> None:
+        if self.num_timesteps > 0:  # resumed: continue the eval schedule and best-score tracking, no t=0 eval
+            self.last = (self.num_timesteps // self.freq) * self.freq
+            if self.csv_path.exists():
+                import pandas as pd
+                allv = pd.read_csv(self.csv_path)
+                allv = allv[allv["timestep"] <= self.num_timesteps]  # drop evals from the discarded post-checkpoint segment
+                allv.to_csv(self.csv_path, index=False)
+                v = allv[allv["mode"] == "full"]
+                self.best = float(v["overall"].max()) if len(v) else -1.0
+            return
         self._eval()  # t=0 baseline
 
     def _on_step(self) -> bool:
@@ -134,6 +149,28 @@ def make_env(records: list[dict], aug: str, seed: int, rank: int, prebought: lis
     return _init
 
 
+def latest_checkpoint(run_dir: Path) -> Path | None:
+    """Newest ``checkpoints/ckpt_<steps>_steps.zip`` (by step count), or None."""
+    found = []
+    for f in (run_dir / "checkpoints").glob("ckpt_*_steps.zip"):
+        try:
+            found.append((int(f.stem.split("_")[1]), f))
+        except (IndexError, ValueError):
+            continue
+    return max(found)[1] if found else None
+
+
+def clean_run_dir(run_dir: Path) -> None:
+    import shutil
+    if not run_dir.exists():
+        return
+    for name in ("final.zip", "best.zip", "val_eval.csv", "curriculum.log", "model_identity.json"):
+        (run_dir / name).unlink(missing_ok=True)
+    for f in run_dir.glob("progress*.csv"):
+        f.unlink()
+    shutil.rmtree(run_dir / "checkpoints", ignore_errors=True)
+
+
 def main(argv: list[str] | None = None) -> Path:
     p = argparse.ArgumentParser()
     p.add_argument("--aug", choices=["none", "d4"], default="none")
@@ -149,40 +186,70 @@ def main(argv: list[str] | None = None) -> Path:
     p.add_argument("--val-freq", type=int, default=25_000)
     p.add_argument("--checkpoint-freq", type=int, default=50_000)
     p.add_argument("--n-envs", type=int, default=HYPERPARAMS["n_envs"])
+    p.add_argument("--resume", action="store_true", help="skip if final.zip exists; continue from the latest checkpoint if any; else start fresh")
     args = p.parse_args(argv)
 
     th.set_num_threads(1)  # measured: no speedup from more threads; 1 thread lets us run ~1 job per core in parallel
     hp = dict(HYPERPARAMS, n_envs=args.n_envs, learning_rate=args.lr, n_epochs=args.n_epochs, target_kl=args.target_kl)
     phase_a_army = GREEDY_ARMY if args.phase_a_army == "fixed" else "random"
     run_dir = MODELS_DIR / args.run_name
+    ident_path = run_dir / "model_identity.json"
+    if args.resume and (run_dir / "final.zip").exists():
+        print(f"[skip] {args.run_name}: final.zip exists", flush=True)
+        return run_dir
+    ckpt_path = latest_checkpoint(run_dir) if args.resume else None
+    if ckpt_path is None:
+        clean_run_dir(run_dir)  # fresh start: never mix with stale artifacts of an interrupted run
     run_dir.mkdir(parents=True, exist_ok=True)
     train_records, val_records = load_split()
     assert all(r["pool"] == "DEV" and r["tag"] == "familiar" for r in train_records + val_records)
     assert not {r["id"] for r in train_records} & {r["id"] for r in val_records}
 
     boundary = 0 if args.curriculum == "off" else (args.phase_a_steps if args.phase_a_steps is not None else args.timesteps // 3)
+    prior = json.loads(ident_path.read_text()) if ckpt_path is not None and ident_path.exists() else None
+    if prior is not None:  # resuming: the original run's settings win (curriculum boundary, seed, ...)
+        boundary = prior["curriculum_phase_b_start_timestep"] or 0
+        args.timesteps = prior["timesteps_requested"]
     venv = DummyVecEnv([make_env(train_records, args.aug, args.seed, i, phase_a_army if boundary > 0 else None) for i in range(hp["n_envs"])])
-    th.manual_seed(args.seed)
-    model = MaskablePPO(
-        "MultiInputPolicy", venv, seed=args.seed, verbose=0, device="cpu",
-        n_steps=hp["n_steps"], batch_size=hp["batch_size"], n_epochs=hp["n_epochs"], learning_rate=hp["learning_rate"],
-        gamma=hp["gamma"], gae_lambda=hp["gae_lambda"], clip_range=hp["clip_range"], ent_coef=hp["ent_coef"],
-        vf_coef=hp["vf_coef"], max_grad_norm=hp["max_grad_norm"], target_kl=hp["target_kl"],
-        policy_kwargs=dict(features_extractor_class=SiegeFeaturesExtractor, net_arch=dict(pi=hp["net_arch"], vf=hp["net_arch"])),
-    )
+    if ckpt_path is None:
+        th.manual_seed(args.seed)
+        model = MaskablePPO(
+            "MultiInputPolicy", venv, seed=args.seed, verbose=0, device="cpu",
+            n_steps=hp["n_steps"], batch_size=hp["batch_size"], n_epochs=hp["n_epochs"], learning_rate=hp["learning_rate"],
+            gamma=hp["gamma"], gae_lambda=hp["gae_lambda"], clip_range=hp["clip_range"], ent_coef=hp["ent_coef"],
+            vf_coef=hp["vf_coef"], max_grad_norm=hp["max_grad_norm"], target_kl=hp["target_kl"],
+            policy_kwargs=dict(features_extractor_class=SiegeFeaturesExtractor, net_arch=dict(pi=hp["net_arch"], vf=hp["net_arch"])),
+        )
+        n_resumes = 0
+    else:
+        n_resumes = len(prior.get("resumes", [])) + 1 if prior else 1
+        model = MaskablePPO.load(ckpt_path, env=venv, device="cpu")  # restores weights, optimizer, num_timesteps
+        # RNG streams are not restorable from a checkpoint: reseed deterministically per resume (resumed runs are
+        # reproducible given the same kill point, but not bit-identical to an uninterrupted run).
+        model.set_random_seed(args.seed + 100_003 * n_resumes)
+        venv.seed(args.seed + 100_003 * n_resumes)
+        pc = run_dir / "progress.csv"
+        if pc.exists():
+            pc.rename(run_dir / f"progress_part{n_resumes}.csv")  # the CSV logger truncates; keep the earlier segment
+        print(f"[resume] {args.run_name} from {ckpt_path.name} (t={model.num_timesteps}), resume #{n_resumes}", flush=True)
     model.set_logger(configure(str(run_dir), ["csv", "stdout"]))
+    start_t = int(model.num_timesteps)
 
-    identity = {
-        "algorithm": "MaskablePPO", "run_name": args.run_name, "aug": args.aug, "seed": args.seed,
-        "timesteps_requested": args.timesteps, "curriculum": args.curriculum,
-        "curriculum_phase_a_army": phase_a_army if args.curriculum == "on" else None,
-        "curriculum_phase_b_start_timestep": boundary if args.curriculum == "on" else None,
-        **git_info(), "layouts_json_sha256": layouts_sha(), "n_train_layouts": len(train_records),
-        "val_layout_ids": [r["id"] for r in val_records], "hyperparameters": hp,
-        "features_extractor": "rl.features.SiegeFeaturesExtractor", "python": sys.version.split()[0],
-        "torch": th.__version__, "status": "running",
-    }
-    ident_path = run_dir / "model_identity.json"
+    if prior is None:
+        identity = {
+            "algorithm": "MaskablePPO", "run_name": args.run_name, "aug": args.aug, "seed": args.seed,
+            "timesteps_requested": args.timesteps, "curriculum": args.curriculum,
+            "curriculum_phase_a_army": phase_a_army if args.curriculum == "on" else None,
+            "curriculum_phase_b_start_timestep": boundary if args.curriculum == "on" else None,
+            **git_info(), "layouts_json_sha256": layouts_sha(), "n_train_layouts": len(train_records),
+            "val_layout_ids": [r["id"] for r in val_records], "hyperparameters": hp,
+            "features_extractor": "rl.features.SiegeFeaturesExtractor", "python": sys.version.split()[0],
+            "torch": th.__version__, "status": "running",
+        }
+    else:
+        identity = prior
+        identity["status"] = "running"
+        identity.setdefault("resumes", []).append({"checkpoint": ckpt_path.name, "at_timestep": start_t, **git_info()})
     ident_path.write_text(json.dumps(identity, indent=2))
 
     callbacks = [
@@ -192,11 +259,11 @@ def main(argv: list[str] | None = None) -> Path:
     if args.curriculum == "on":
         callbacks.insert(0, CurriculumCallback(boundary, phase_a_army, run_dir / "curriculum.log"))
     t0 = time.time()
-    model.learn(total_timesteps=args.timesteps, callback=CallbackList(callbacks), log_interval=20)
+    model.learn(total_timesteps=max(1, args.timesteps - start_t), callback=CallbackList(callbacks), log_interval=20, reset_num_timesteps=(ckpt_path is None))
     wall = time.time() - t0
     model.save(run_dir / "final.zip")
-    identity.update(status="finished", timesteps_trained=int(model.num_timesteps), wall_seconds=round(wall, 1),
-                    steps_per_second=round(model.num_timesteps / wall, 1))
+    identity.update(status="finished", timesteps_trained=int(model.num_timesteps), wall_seconds_last_segment=round(wall, 1),
+                    steps_per_second=round((model.num_timesteps - start_t) / wall, 1))
     ident_path.write_text(json.dumps(identity, indent=2))
     print(f"[done] {model.num_timesteps} steps in {wall:.0f}s = {model.num_timesteps / wall:.0f} steps/s -> {run_dir}", flush=True)
     return run_dir

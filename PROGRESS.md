@@ -214,6 +214,32 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   Revised budget for 20 runs: 1M steps each = 20M steps ~ 5.5-6 h at 6 parallel; 500k ~ 3 h.
 - Run dirs: models/tune_{A,B,C}_s{0,1}/; logs in logs_6b/.
 
+### STEP 7: PPO experiment grid written (NOT launched)
+- **Config A is frozen for the grid** (fixed Greedy phase-A army, lr 3e-4, 10 epochs). Config B (random phase-A army, `--phase-a-army random`) is a
+  **candidate ablation** (+0.025 val over A in step 6b, below the 0.03 adoption bar, deploys rangers better). Config C (lr 1e-4, 5 epochs, target_kl 0.03)
+  failed: collapsed to a single troop type per seed (all-swarm / all-ranger), val 0.23 vs A 0.33. The 6b deploy-diagnostic table (PPO ranger
+  deployment 0.04 vs scripted 0.17) is in the STEP 6b notes above.
+- **Primary checkpoint for all headline results = `final.zip`.** `best.zip` (selected on validation score) is kept but NOT used for headline numbers
+  (selecting on the 20 validation layouts is optimistic; final.zip is the pre-declared, unselected artifact).
+- `scripts/run_ppo_grid.sh` (`--dry-run` prints commands): aug {none,d4} x seeds 10-19, 1M timesteps, curriculum on, interleaved order
+  (s10 none, s10 d4, s11 none, ...), 6 parallel via `xargs -P`, one log per run in `results/logs/<run>.log` (appended), run names `ppo_none_s10`, `ppo_d4_s10`, ...
+  Env overrides: `SEEDS`, `TIMESTEPS`, `PARALLEL`, `PREFIX`, `EXTRA`. `scripts/run_one.sh` runs one run (short args: macOS xargs -I has a 255-byte limit).
+- **Resumable:** `rl.train_ppo --resume`: skips if `final.zip` exists; else continues from the latest `checkpoints/ckpt_<steps>_steps.zip` (every 50k steps,
+  so an interruption loses <= 50k steps); with no checkpoint it cleans stale artifacts and restarts. Restores weights, optimizer and `num_timesteps`; curriculum
+  phase is recomputed from the timestep (before the boundary -> `A-resume`, after -> `B-resume`; boundary and requested timesteps come from the original
+  model_identity.json). Earlier `progress.csv` is kept as `progress_part<k>.csv`; val_eval.csv rows after the checkpoint are dropped and the eval schedule/best score continue; identity
+  json gets a `resumes` list. **Resumed runs are not bit-identical to uninterrupted ones** (RNG state is not in checkpoints; reseeded as seed+100003*k);
+  the audit log `curriculum.log` keeps entries from the discarded segment. Tests: tests/test_step6.py (3 new; 123 tests total).
+- `scripts/status.py [--prefix ppo] [--seeds 10-19]`: table of runs (finished / running / interrupted / not started), current timestep (max of latest
+  checkpoint and latest validation eval, so granular to 25k), % progress, latest and best validation score, resume count. "running" = a matching `rl.train_ppo` process exists.
+- Verified with a 4-run mini-grid (seeds 900, 901 x none/d4; the script always runs both augs per seed), 20k steps, 3 parallel: logs, status, kill -9 of one run
+  at t>=10k (status -> interrupted), rerun -> resumed from ckpt_10000 in phase B, finished. Mini-grid models/logs deleted.
+- Expected cost: ~167 steps/s per job at 6 parallel => 1M steps ~ 1.7 h/job, 20 jobs in ~3.4 waves => roughly 6-7 h wall.
+- Commands to run (own terminal):
+      cd ~/base-siege && caffeinate -i nohup scripts/run_ppo_grid.sh > results/logs/grid.out 2>&1 &
+      .venv/bin/python scripts/status.py            # check progress anytime
+      # after a crash/reboot/Ctrl-C: just run the same command again; finished runs are skipped, others resume
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -256,7 +282,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
   tanks-only, a mixed heuristic -- reuse `siege/armies.py`'s fixed compositions) evaluated on DEV for
   sanity before any learning is involved.
-- (STEP 6 done above; next is STEP 7) STEP 6 was: re-run the PPO pipeline properly (`rl/train.py`/`rl/eval.py` already exist; adapt to sample
+- (STEP 6/6b/7 done above; next is launching the grid yourself, then DDQN/TRPO/evaluation/app/explainability) STEP 6 was: re-run the PPO pipeline properly (`rl/train.py`/`rl/eval.py` already exist; adapt to sample
   only `siege.layouts.load_layout_pool(pool="DEV", tag="familiar")`) now that balance is fixed.
 - STEP 7: launch the real PPO grid (hyperparameter sweep).
 - STEP 8: `app/` -- streamlit UI to visualize a trained agent's buy/deploy choices and battles, now last.

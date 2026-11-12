@@ -92,3 +92,59 @@ def test_random_phase_a_army_is_legal_varied_and_phase_a_cli_option():
     assert any(a[1] > 0 for a in armies) and any(a[3] > 0 for a in armies)  # rangers and splash get deployed too
     env.reset(seed=0, options={"prebought": False})  # override -> normal shopping
     assert env.phase != PHASE_DEPLOY
+
+
+def _tiny_args(name, extra=()):
+    return ["--aug", "d4", "--timesteps", "1536", "--n-envs", "2", "--run-name", name, "--val-freq", "512",
+            "--phase-a-steps", "700", "--checkpoint-freq", "256", *extra]
+
+
+def _simulate_crash(run, keep_step):
+    """Make a finished run look like a job killed right after checkpoint `keep_step`."""
+    (run / "final.zip").unlink()
+    for f in (run / "checkpoints").glob("ckpt_*_steps.zip"):
+        if int(f.stem.split("_")[1]) > keep_step:
+            f.unlink()
+    ident = json.loads((run / "model_identity.json").read_text())
+    ident["status"] = "running"
+    (run / "model_identity.json").write_text(json.dumps(ident))
+
+
+def test_resume_skips_finished_and_restarts_fresh_without_checkpoint(tmp_path, monkeypatch):
+    monkeypatch.setattr(train_ppo, "MODELS_DIR", tmp_path)
+    run = train_ppo.main(_tiny_args("r") + ["--resume"])
+    mtime = (run / "final.zip").stat().st_mtime_ns
+    train_ppo.main(_tiny_args("r") + ["--resume"])  # finished -> no-op
+    assert (run / "final.zip").stat().st_mtime_ns == mtime
+    for f in (run / "checkpoints").glob("*.zip"):
+        f.unlink()
+    (run / "final.zip").unlink()
+    train_ppo.main(_tiny_args("r") + ["--resume"])  # interrupted before any checkpoint -> clean fresh start
+    log = [json.loads(l) for l in (run / "curriculum.log").read_text().splitlines()]
+    assert [e["phase"] for e in log] == ["A", "B"]  # no stale entries from the earlier attempt
+
+
+def test_resume_before_and_after_curriculum_boundary(tmp_path, monkeypatch):
+    monkeypatch.setattr(train_ppo, "MODELS_DIR", tmp_path)
+    for name, keep, expect in (("pre", 512, "A-resume"), ("post", 1024, "B-resume")):
+        run = train_ppo.main(_tiny_args(name))
+        _simulate_crash(run, keep)
+        ck = train_ppo.latest_checkpoint(run)
+        t_ck = int(ck.stem.split("_")[1])
+        assert (t_ck < 700) == (expect == "A-resume")
+        train_ppo.main(_tiny_args(name, ["--resume"]))
+        ident = json.loads((run / "model_identity.json").read_text())
+        assert ident["status"] == "finished" and ident["timesteps_trained"] >= 1536  # continued to the requested total
+        assert ident["resumes"][0]["at_timestep"] == t_ck  # restored the checkpoint's timestep, not 0
+        log = [json.loads(l) for l in (run / "curriculum.log").read_text().splitlines()]
+        resumed_log = log[next(i for i, e in enumerate(log) if e["phase"].endswith("-resume")):]  # audit log keeps the discarded segment
+        if expect == "A-resume":  # resumed before the boundary: phase A restored, then the switch still happens at >= 700
+            assert [e["phase"] for e in resumed_log] == ["A-resume", "B"] and resumed_log[-1]["timestep"] >= 700
+        else:  # resumed after the boundary: straight into phase B, no second switch
+            assert [e["phase"] for e in resumed_log] == ["B-resume"] and resumed_log[0]["prebought"] is None
+        # validation schedule continues with no duplicates and no second t=0 eval
+        v = __import__("pandas").read_csv(run / "val_eval.csv")
+        full = v[v["mode"] == "full"]["timestep"].tolist()
+        assert full == sorted(set(full)) and full.count(0) == 1
+        assert (run / "progress_part1.csv").exists()
+        assert (run / "final.zip").exists()
