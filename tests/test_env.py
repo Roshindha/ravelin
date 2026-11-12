@@ -51,14 +51,14 @@ def test_unaffordable_buy_masked():
     assert not env.action_masks()[:4].any()
 
 
-def test_illegal_action_raises():
+def test_illegal_action_is_noop():
     env = SiegeEnv()
     env.reset(seed=0)
-    try:
-        env.step(E.WAIT)
-    except ValueError:
-        return
-    raise AssertionError("expected ValueError")
+    obs, reward, term, trunc, info = env.step(E.WAIT)
+    assert env.observation_space.contains(obs)
+    assert reward == 0.0
+    assert not term and not trunc
+    assert info == {}
 
 
 def test_determinism_same_seed():

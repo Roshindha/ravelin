@@ -45,6 +45,9 @@ WALL_HP = 70
 
 N_BUILDINGS_RANGE = (6, 13)  # [6, 12] inclusive
 N_TURRETS_RANGE = (2, 6)  # [2, 5] inclusive
+# scattered_outposts only: turrets are drawn PER OUTPOST so every outpost is defended (v2 shared 2-5
+# turrets across 3-5 outposts, leaving most outposts bare and trivially clearable by rangers).
+SCATTER_TURRETS_PER_OUTPOST = (1, 3)  # [1, 2] inclusive
 
 FAMILIES = ("ring_defence", "clustered_core", "scattered_outposts")
 
@@ -167,15 +170,15 @@ def generate_scattered_outposts(rng) -> dict:
     anchors = [_OUTPOST_ANCHORS[i] for i in chosen]
 
     n_buildings = int(rng.integers(*N_BUILDINGS_RANGE))
-    n_turrets = int(rng.integers(*N_TURRETS_RANGE))
 
     buildings: list[dict] = []
     turrets: list[dict] = []
     walls: dict[tuple[int, int], int] = {}
     for i, (ax, ay) in enumerate(anchors):
-        # Round-robin the building/turret budget across outposts so each gets at least one building.
+        # Round-robin the building budget across outposts so each gets at least one building;
+        # turrets are drawn independently per outpost so every outpost is defended.
         n_b_here = n_buildings // n_outposts + (1 if i < n_buildings % n_outposts else 0)
-        n_t_here = n_turrets // n_outposts + (1 if i < n_turrets % n_outposts else 0)
+        n_t_here = int(rng.integers(*SCATTER_TURRETS_PER_OUTPOST))
         # A two-tile wall nook guarding the outpost's "back corner" (away from the board center).
         # Computed first and excluded from the building/turret cell pool so a wall never lands on
         # top of a building/turret tile.

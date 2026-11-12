@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -41,6 +42,11 @@ DEV_FRACTION = 0.8
 
 MIN_FEASIBLE_DESTRUCTION = 0.10
 RANGER_FULL_CLEAR = 0.99
+
+
+def stable_family_hash(family: str) -> int:
+    """Process-independent replacement for hash(family) (str hashes are salted per run)."""
+    return zlib.crc32(family.encode("utf-8")) % 10_000
 
 
 def _army_for(name: str) -> list[str]:
@@ -104,10 +110,12 @@ def build_layout_pool(
     seed_base: int = 0,
     dev_fraction: float = DEV_FRACTION,
     split_seed: int = 1,
+    rejection_log: dict[str, dict[str, int]] | None = None,
 ) -> tuple[list[dict], dict[str, int]]:
     """Generate accepted layouts per family up to `target_counts`, then assign pool/tag.
 
-    Returns (records, rejection_counts). `records` is unsorted-by-id until the caller assigns ids.
+    Returns (records, rejection_counts). If `rejection_log` is given it is filled with
+    {family: {reason: count}}. Acceptance is decided per layout alone (never from pool membership).
     """
     rejection_counts: dict[str, int] = {}
     accepted_by_family: dict[str, list[int]] = {family: [] for family in target_counts}
@@ -122,6 +130,9 @@ def build_layout_pool(
                 accepted_by_family[family].append(seed)
             else:
                 rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+                if rejection_log is not None:
+                    fam_log = rejection_log.setdefault(family, {})
+                    fam_log[reason] = fam_log.get(reason, 0) + 1
             seed += 1
 
     records: list[dict] = []
@@ -132,7 +143,7 @@ def build_layout_pool(
                 records.append({"id": next_id, "family": family, "seed": s, "pool": "FINAL", "tag": "transfer"})
                 next_id += 1
             continue
-        split_rng = np.random.default_rng(split_seed + hash(family) % 10_000)
+        split_rng = np.random.default_rng(split_seed + stable_family_hash(family))
         order = split_rng.permutation(len(seeds))
         n_dev = int(round(len(seeds) * dev_fraction))
         for rank, idx in enumerate(order):

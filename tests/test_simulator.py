@@ -76,3 +76,46 @@ def test_tank_breaches_adjacent_wall_before_farther_building():
     result = simulate_battle(army, buildings, walls, turrets, max_ticks=2)
     assert (4, 4) not in result.frames[-1]["walls"] or all(w["x"] != 4 or w["y"] != 4 for w in result.frames[-1]["walls"])
     assert result.destroyed_value == 0  # the building was never touched
+
+
+# -- STEP 5c: splash area damage, simultaneous turrets -------------------------------------------
+def test_splash_hits_neighbours_but_single_target_does_not():
+    from siege.troops import get_troop_spec
+
+    sp = get_troop_spec("splash")
+    assert sp.splash_radius > 0 and sp.splash_falloff > 0
+    layout_b = [
+        {"x": 5, "y": 5, "hp": 80, "value": 10},  # struck target
+        {"x": 5, "y": 6, "hp": 80, "value": 10},  # adjacent -> splashed
+        {"x": 5, "y": 8, "hp": 80, "value": 10},  # 3 away -> untouched
+    ]
+    splash_hit = simulate_battle([{"type": "splash", "x": 5, "y": 4}], layout_b, {}, [], max_ticks=1)
+    hp = {(b["x"], b["y"]): b["hp"] for b in splash_hit.frames[-1]["buildings"]}
+    assert hp[(5, 5)] == 80 - 34
+    assert hp[(5, 6)] == 80 - int(34 * sp.splash_falloff)
+    assert hp[(5, 8)] == 80
+    swarm_hit = simulate_battle([{"type": "swarm", "x": 5, "y": 4}], layout_b, {}, [], max_ticks=1)
+    assert {(b["x"], b["y"]): b["hp"] for b in swarm_hit.frames[-1]["buildings"]}[(5, 6)] == 80
+
+
+def test_splash_damages_walls_and_counts_splash_kills_toward_destruction():
+    # list-of-dicts form carries explicit hp (a {pos: hp} dict currently falls back to the 80 default)
+    walls = [{"x": 5, "y": 5, "hp": 70}, {"x": 5, "y": 6, "hp": 70}]
+    r = simulate_battle([{"type": "splash", "x": 5, "y": 4}], [], walls, [], max_ticks=1)
+    wall_hp = {(w["x"], w["y"]): w["hp"] for w in r.frames[-1]["walls"]}
+    assert wall_hp[(5, 5)] == 70 - 34 and wall_hp[(5, 6)] < 70
+    weak = [{"x": 5, "y": 5, "hp": 80, "value": 10}, {"x": 5, "y": 6, "hp": 5, "value": 30}]
+    r2 = simulate_battle([{"type": "splash", "x": 5, "y": 4}], weak, {}, [], max_ticks=1)
+    assert r2.destroyed_value == 30  # the splashed building died: its value counts
+
+
+def test_turret_fire_is_simultaneous_so_turret_order_does_not_matter():
+    army = [{"type": "swarm", "x": 5, "y": 5}, {"type": "swarm", "x": 5, "y": 6}]
+    turrets = [
+        {"x": 5, "y": 3, "hp": 99, "damage": 18, "range": 6},
+        {"x": 5, "y": 2, "hp": 99, "damage": 18, "range": 6},
+    ]
+    buildings = [{"x": 15, "y": 15, "hp": 50, "value": 10}]
+    a = simulate_battle(army, buildings, {}, turrets, max_ticks=3)
+    b = simulate_battle(army, buildings, {}, list(reversed(turrets)), max_ticks=3)
+    assert [t["hp"] for t in a.final_troops] == [t["hp"] for t in b.final_troops]

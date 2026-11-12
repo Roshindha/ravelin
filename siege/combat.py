@@ -49,6 +49,8 @@ def _normalize_army(army: Iterable[dict]) -> list[dict]:
                 "x": int(d.get("x", 0)),
                 "y": int(d.get("y", 0)),
                 "target_preference": tuple(d.get("target_preference", spec.target_preference)),
+                "splash_radius": float(d.get("splash_radius", spec.splash_radius)),
+                "splash_falloff": float(d.get("splash_falloff", spec.splash_falloff)),
                 "alive": True,
             }
         )
@@ -131,27 +133,38 @@ def _select_target(troop: dict, buildings: list[dict], turrets: list[dict], wall
     if not target_priority:
         target_priority = ["building", "turret", "wall"]
 
-    options: list[tuple[int, float, int, int, str, tuple[int, int]]] = []
+    # Tie-breaks use only D4-invariant properties (distance, then the target's own stats, then its
+    # label/id) -- never board coordinates -- so rotating/mirroring a battle cannot change who is hit.
+    options: list[tuple[int, float, tuple, int, str, tuple[int, int]]] = []
     for rank, kind in enumerate(target_priority):
         if kind == "building":
             for b in buildings:
                 if b["alive"]:
-                    options.append((rank, _dist((troop["x"], troop["y"]), (b["x"], b["y"])), b["y"], b["x"], kind, (b["x"], b["y"])))
+                    options.append((rank, _dist((troop["x"], troop["y"]), (b["x"], b["y"])), (b["hp"], b["value"]), b["id"], kind, (b["x"], b["y"])))
         elif kind == "turret":
             for t in turrets:
                 if t["alive"]:
-                    options.append((rank, _dist((troop["x"], troop["y"]), (t["x"], t["y"])), t["y"], t["x"], kind, (t["x"], t["y"])))
+                    options.append((rank, _dist((troop["x"], troop["y"]), (t["x"], t["y"])), (t["hp"], t["damage"], t["range"]), t["id"], kind, (t["x"], t["y"])))
         elif kind == "wall":
-            for pos in sorted(walls):
-                options.append((rank, _dist((troop["x"], troop["y"]), pos), pos[1], pos[0], kind, pos))
+            for idx, (pos, hp) in enumerate(walls.items()):  # insertion order == wall label
+                options.append((rank, _dist((troop["x"], troop["y"]), pos), (hp,), idx, kind, pos))
     if not options:
         return ("", (-1, -1), 1e9)
-    options.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
-    _, dist, _, _, kind, pos = options[0]
+    options.sort(key=lambda item: item[:4])
+    best = options[0]
+    # Still tied on (rank, distance, own stats) -> e.g. two equal-hp wall tiles equally far away.
+    # Prefer the one nearer the rest of the base (D4-invariant, order-independent via fsum); the
+    # label (id) only decides if even that ties.
+    tied = [o for o in options if o[:3] == best[:3]]
+    if len(tied) > 1:
+        anchors = [(b["x"], b["y"]) for b in buildings if b["alive"]] + [(t["x"], t["y"]) for t in turrets if t["alive"]]
+        tied.sort(key=lambda o: (math.fsum(_dist(o[5], a) for a in anchors), o[3]))
+        best = tied[0]
+    _, dist, _, _, kind, pos = best
     return kind, pos, dist
 
 
-def _move_troop(troop: dict, target: tuple[int, int], walls: dict[tuple[int, int], int]) -> None:
+def _move_troop(troop: dict, target: tuple[int, int], walls: dict[tuple[int, int], int], buildings: list[dict] | None = None, turrets: list[dict] | None = None) -> None:
     tx, ty = target
     x, y = troop["x"], troop["y"]
     if (x, y) == (tx, ty):
@@ -166,7 +179,6 @@ def _move_troop(troop: dict, target: tuple[int, int], walls: dict[tuple[int, int
         candidate_steps.append((x, y + dy))
     if dx != 0 and dy != 0:
         candidate_steps.extend([(x + dx, y + dy), (x, y)])
-    # Deterministic tie-breaker: north, east, south, west order for blocked or equal-distance options.
     ordered = []
     for nx, ny in candidate_steps:
         if not (BOARD_MIN <= nx <= BOARD_MAX and BOARD_MIN <= ny <= BOARD_MAX):
@@ -176,7 +188,24 @@ def _move_troop(troop: dict, target: tuple[int, int], walls: dict[tuple[int, int
         ordered.append((nx, ny))
     if not ordered:
         ordered = [(x, y)]
-    nx, ny = min(ordered, key=lambda p: (abs(p[0] - tx) + abs(p[1] - ty), p[1], p[0]))
+    # Prefer the step that gets closest (Manhattan, then Euclidean: i.e. shrink the longer axis
+    # first). Both are D4-invariant. A tie here means the troop sits on the diagonal to its target
+    # with the diagonal blocked; it is then broken by which step leaves the troop closer to the
+    # remaining structures overall (also D4-invariant, and order-independent via fsum). Only a
+    # world that is itself mirror-symmetric about that diagonal can still tie, where either choice
+    # is equivalent; a fixed coordinate order resolves that last case.
+    def primary(p: tuple[int, int]) -> tuple[int, float]:
+        return (abs(p[0] - tx) + abs(p[1] - ty), _dist(p, target))
+
+    best = min(primary(p) for p in ordered)
+    tied = [p for p in ordered if primary(p) == best]
+    if len(tied) > 1:
+        anchors = [(o["x"], o["y"]) for o in (buildings or []) if o["alive"]]
+        anchors += [(o["x"], o["y"]) for o in (turrets or []) if o["alive"]]
+        anchors += list(walls)
+        nx, ny = min(tied, key=lambda p: (math.fsum(_dist(p, a) for a in anchors), p[1], p[0]))
+    else:
+        nx, ny = tied[0]
     if (nx, ny) != (x, y):
         troop["x"], troop["y"] = nx, ny
 
@@ -190,16 +219,63 @@ def _deal_damage(target: dict, amount: int) -> bool:
     return False
 
 
+def _hit_wall(walls: dict[tuple[int, int], int], pos: tuple[int, int], amount: int) -> None:
+    if pos in walls:
+        walls[pos] = max(0, walls[pos] - amount)
+        if walls[pos] <= 0:
+            del walls[pos]
+
+
+def _strike(troop: dict, kind: str, pos: tuple[int, int], buildings: list[dict], turrets: list[dict], walls: dict[tuple[int, int], int]) -> int:
+    """One attack on the target at `pos`; returns the building value destroyed (incl. splash).
+
+    Splash troops also damage everything within `splash_radius` of `pos` for
+    int(damage * splash_falloff). All damage in a strike is applied independently, so the result
+    does not depend on iteration order (and radius is rotation/mirror invariant).
+    """
+    gained = 0
+    dmg = troop["damage"]
+    splash = int(dmg * troop["splash_falloff"]) if troop["splash_radius"] > 0 else 0
+
+    def in_splash(p: tuple[int, int]) -> bool:
+        return splash > 0 and _dist(pos, p) <= troop["splash_radius"]
+
+    for b in buildings:
+        if not b["alive"]:
+            continue
+        here = (b["x"], b["y"])
+        amount = dmg if (kind == "building" and here == pos) else (splash if in_splash(here) else 0)
+        if amount and _deal_damage(b, amount):
+            gained += b["value"]
+    for t in turrets:
+        if not t["alive"]:
+            continue
+        here = (t["x"], t["y"])
+        amount = dmg if (kind == "turret" and here == pos) else (splash if in_splash(here) else 0)
+        if amount:
+            _deal_damage(t, amount)
+    if kind == "wall":
+        _hit_wall(walls, pos, dmg)
+    if splash > 0:
+        for wpos in [w for w in walls if w != pos or kind != "wall"]:
+            if in_splash(wpos):
+                _hit_wall(walls, wpos, splash)
+    return gained
+
+
 def simulate_battle(army, buildings, walls, turrets, max_ticks: int = 48):
     """Run a deterministic tick-based battle.
 
-    Tie-breaking rules are intentionally fixed and stable:
-      1. troop actions are processed in ascending id order.
-      2. each troop picks the nearest valid target of its preferred category, resolving equal
-         distances by (target type priority, y, x).
-      3. movement uses the shortest legal step toward the target and resolves blocked cells by
-         a north-east-south-west order before falling back to staying put.
-      4. turret shots prefer the nearest troop by Euclidean distance; ties resolve by (y, x, id).
+    Tie-breaking rules are fixed, stable, and D4-invariant (rotating/mirroring the whole battle,
+    including the army, gives the identical outcome -- see tests/test_augment.py):
+      1. troop actions are processed in ascending id order (id == deployment order).
+      2. each troop picks the nearest valid target of its highest-ranked preferred category; equal
+         distances resolve by the target's own stats (hp, value / damage, range), then its label (id).
+      3. movement takes the diagonal step toward the target when open; otherwise the open orthogonal
+         step with the smallest Manhattan, then Euclidean, remaining distance; walls block moves.
+      4. turrets fire simultaneously at the nearest troop (ties: lowest hp, then id); damage is
+         applied after all targets are chosen, so turret order is irrelevant.
+      5. splash troops also damage every structure within splash_radius of the struck tile.
     """
     troops = _normalize_army(army)
     buildings = _normalize_buildings(buildings)
@@ -225,57 +301,33 @@ def simulate_battle(army, buildings, walls, turrets, max_ticks: int = 48):
                 continue
             kind, target_pos, target_dist = _select_target(troop, buildings, turrets, walls)
             if kind and target_dist <= troop["range"]:
-                if kind == "building":
-                    target = next((b for b in buildings if b["alive"] and (b["x"], b["y"]) == target_pos), None)
-                    if target is not None:
-                        _deal_damage(target, troop["damage"])
-                        if not target["alive"]:
-                            destroyed_value += target["value"]
-                elif kind == "turret":
-                    target = next((t for t in turrets if t["alive"] and (t["x"], t["y"]) == target_pos), None)
-                    if target is not None:
-                        _deal_damage(target, troop["damage"])
-                elif kind == "wall":
-                    if (target_pos[0], target_pos[1]) in walls:
-                        walls[(target_pos[0], target_pos[1])] = max(0, walls[(target_pos[0], target_pos[1])] - troop["damage"])
-                        if walls[(target_pos[0], target_pos[1])] <= 0:
-                            del walls[(target_pos[0], target_pos[1])]
+                destroyed_value += _strike(troop, kind, target_pos, buildings, turrets, walls)
             elif kind:
-                _move_troop(troop, target_pos, walls)
+                _move_troop(troop, target_pos, walls, buildings, turrets)
                 # Re-evaluate after moving to see whether target is now in range.
                 kind2, target_pos2, target_dist2 = _select_target(troop, buildings, turrets, walls)
                 if kind2 and target_dist2 <= troop["range"]:
-                    if kind2 == "building":
-                        target = next((b for b in buildings if b["alive"] and (b["x"], b["y"]) == target_pos2), None)
-                        if target is not None:
-                            _deal_damage(target, troop["damage"])
-                            if not target["alive"]:
-                                destroyed_value += target["value"]
-                    elif kind2 == "turret":
-                        target = next((t for t in turrets if t["alive"] and (t["x"], t["y"]) == target_pos2), None)
-                        if target is not None:
-                            _deal_damage(target, troop["damage"])
-                    elif kind2 == "wall":
-                        if (target_pos2[0], target_pos2[1]) in walls:
-                            walls[(target_pos2[0], target_pos2[1])] = max(0, walls[(target_pos2[0], target_pos2[1])] - troop["damage"])
-                            if walls[(target_pos2[0], target_pos2[1])] <= 0:
-                                del walls[(target_pos2[0], target_pos2[1])]
+                    destroyed_value += _strike(troop, kind2, target_pos2, buildings, turrets, walls)
 
-        # Turrets fire at the nearest troop.
-        for turret in sorted((t for t in turrets if t["alive"]), key=lambda t: (t["y"], t["x"], t["id"])):
-            candidates = [
-                troop for troop in troops if troop["alive"] and _dist((troop["x"], troop["y"]), (turret["x"], turret["y"])) <= turret["range"]
-            ]
+        # Turrets fire simultaneously: every turret picks its target from the start-of-phase state
+        # (nearest troop, ties by lowest hp then id) and damage is applied afterwards, so the outcome
+        # cannot depend on turret processing order (overkill is allowed).
+        live_turrets = [t for t in turrets if t["alive"]]
+        live_troops = [(t, t["hp"]) for t in troops if t["alive"]]
+        pending: dict[int, int] = {}
+        for turret in live_turrets:
+            tpos = (turret["x"], turret["y"])
+            candidates = [(troop, hp) for troop, hp in live_troops if _dist((troop["x"], troop["y"]), tpos) <= turret["range"]]
             if not candidates:
                 continue
-            target = min(
-                candidates,
-                key=lambda troop: (_dist((troop["x"], troop["y"]), (turret["x"], turret["y"])), troop["y"], troop["x"], troop["id"]),
-            )
-            troop_hp = target["hp"] - turret["damage"]
-            target["hp"] = max(0, troop_hp)
-            if target["hp"] == 0:
-                target["alive"] = False
+            target, _ = min(candidates, key=lambda c: (_dist((c[0]["x"], c[0]["y"]), tpos), c[1], c[0]["id"]))
+            pending[target["id"]] = pending.get(target["id"], 0) + turret["damage"]
+        for troop, _ in live_troops:
+            dmg = pending.get(troop["id"], 0)
+            if dmg:
+                troop["hp"] = max(0, troop["hp"] - dmg)
+                if troop["hp"] == 0:
+                    troop["alive"] = False
 
         # Remove dead targets.
         for b in buildings:

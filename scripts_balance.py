@@ -45,6 +45,23 @@ def run(n_per_family: int, seed_base: int = 0) -> dict:
     return scores
 
 
+def run_pool(pools: list[tuple[str | None, str | None]]) -> dict:
+    """Score the armies on the frozen pool's actual layouts (same push point rule as acceptance).
+
+    `pools` is a list of (pool, tag) filters passed to load_layout_pool. Default use: DEV-familiar
+    plus the transfer family (which is entirely FINAL; only aggregate balance is reported).
+    """
+    from siege.layouts import generate_and_score, load_layout_pool
+
+    scores: dict[tuple[str, str], list[float]] = defaultdict(list)
+    for pool, tag in pools:
+        for rec in load_layout_pool(pool=pool, tag=tag):
+            _, s = generate_and_score(rec["seed"], rec["family"])
+            for name in ARMY_NAMES:
+                scores[(rec["family"], name)].append(s[name])
+    return scores
+
+
 def print_table(scores: dict[tuple[str, str], list[float]]) -> None:
     header = f"{'family':<20}" + "".join(f"{name:>16}" for name in ARMY_NAMES)
     print(header)
@@ -73,8 +90,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", type=int, default=200)
     parser.add_argument("--seed-base", type=int, default=0)
+    parser.add_argument("--pool", action="store_true", help="score the frozen pool (DEV-familiar + transfer) instead of fresh seeds")
     args = parser.parse_args()
 
+    if args.pool:
+        print_table(run_pool([("DEV", "familiar"), (None, "transfer")]))
+        return
     scores = run(args.n, seed_base=args.seed_base)
     print_table(scores)
 

@@ -2,14 +2,14 @@
 
 The battlefield uses four troop archetypes with distinct combat roles. Costs are paired so a 200-resource budget encourages meaningful trade-offs rather than a single dominant pick.
 
-## Current (v2) stats
+## Stats (v2 base; v3 adds splash area damage -- see the STEP 5c section at the end)
 
 | Name | Cost | HP | Damage | Speed | Range | Role | Target preference |
 | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
 | swarm | 10 | 18 | 8 | 1.5 | 1.2 | cheap skirmisher | building > turret > wall |
 | ranger | 25 | 30 | 12 | 1.0 | 4.0 | ranged attacker | turret > building > wall |
 | tank | 30 | 150 | 24 | 0.7 | 1.4 | frontliner | wall > building > turret |
-| splash | 40 | 75 | 34 | 0.6 | 2.5 | wall-breaker | wall > building > turret |
+| splash | 40 | 75 | 34 | 0.6 | 2.5 | wall-breaker (area damage r=1.5, 30% falloff, added in v3) | wall > building > turret |
 
 Base/turret knobs that changed alongside troops (`siege/bases.py`):
 
@@ -81,3 +81,46 @@ spread-out defenses with lots of open sight lines reward raw range/DPS over surv
 remains the weakest archetype overall -- a real candidate for another iteration once there's a UI to
 actually watch why it's dying (my hypothesis: its speed of 0.6, the slowest in the game, means it
 spends more ticks under turret fire before reaching the wall than its HP buff fully compensates for).
+
+## Layout pool v2 (STEP 5b)
+`results/layouts_v1.json` / `layouts_v1.sha256` are the original frozen pool, kept for the record but
+**superseded**: they were accepted under the old simulator, whose position-ordered tie-breaks were not
+D4-equivariant. After the equivariance fix (see PROGRESS.md, STEP 5), 23 of its 241 layouts no longer
+passed the acceptance rules. v2 (`results/layouts.json`, build log in `results/layouts_build.json`) uses the
+same generators, acceptance rules and split logic with fresh seeds (seed_base 5,000,000).
+
+
+## Final balance pass (STEP 5c, v3 stats) -- every change and why
+
+Tuned **only** on a separate TUNING seed set (300 raw layouts per family; seeds 9,000,000 / 19,000,000 /
+29,000,000 + 0..299; recorded in `results/layouts_build.json`; disjoint from the v1, v2 and v3 pools and
+never touching FINAL). Two tuning iterations used, then frozen. Harness: `scripts_tuning.py` (fixed armies,
+acceptance rates, oracle search with per-type ban test); iteration-2 splash sweep: `scripts_sweep_splash.py`.
+Raw outputs: `results/tuning_iter0_baseline.json`, `tuning_iter1.json`, `tuning_iter2.json`.
+
+| Change | Before | After | Reason |
+| --- | --- | --- | --- |
+| splash area damage (new mechanic) | none (single target) | radius 1.5, falloff 0.3 (10 dmg to everything within 1.5 of the struck tile) | splash had no area effect despite its name, so it was just a slow 40-gold single-target unit (mean 0.00-0.02 on walled families; banning it cost the oracle <=0.03). Area damage makes it good against dense building cores and wall rings. |
+| splash stats | 40 g / 75 hp / 34 dmg / range 2.5 | unchanged | |
+| turret fire | sequential in id order | simultaneous (targets chosen from start-of-phase state, damage applied together) | removes the last label (id) dependence in the simulator; allows overkill. Residual D4 id-shuffle mismatches went from 4/7000 to 0/7000. |
+| scattered_outposts turrets | 2-5 total, shared round-robin across 3-5 outposts | 1-2 per outpost (`SCATTER_TURRETS_PER_OUTPOST = (1, 3)`) | most outposts had no turret, so a rangers-only army averaged 0.88 (raw) and 83% of generated layouts were `ranger_trivial`. |
+| GreedyAgent | buy by damage/cost | buy by Lanchester value hp*damage/cost^2, same deploy rule as best-single | see below |
+
+Iteration log (tuning set, fixed armies, mean destruction; splash alone / mixed_breach / ranger):
+
+| iteration | splash falloff | ring_defence | clustered_core | scattered_outposts | verdict |
+| --- | --- | --- | --- | --- | --- |
+| 0 (v2 stats) | no AoE | 0.014 / 0.168 / 0.044 | 0.003 / 0.080 / 0.177 | 0.266 / 0.560 / 0.881 | splash dead, outposts trivial |
+| 1 | 0.6 | 0.622 / 0.557 / 0.045 | 0.561 / 0.486 / 0.182 | 0.363 / 0.501 / 0.442 | splash overshoots (strictly best army on 77% / 67% of ring / clustered layouts); outposts goal met |
+| 2 | 0.3 (picked by a 4-point sweep 0.2-0.5 on the same tuning seeds) | 0.274 / 0.353 / 0.045 | 0.215 / 0.241 / 0.182 | 0.120 / 0.259 / 0.442 | accepted and frozen |
+
+### Why GreedyAgent scored below Random
+The old Greedy ranked troops by damage per gold. splash (34/40 = 0.85) came first, so it bought
+**five splash and nothing else** (visible in `_greedy_army`: `['splash'] * 5`) -- the weakest unit in practice
+(slowest, walls-first targeting, no area damage). It was not stacking tiles; it was a bad composition. The new
+Greedy ranks by hp*damage/cost^2 (swarm 1.44, ranger 0.58, tank 4.00, splash 1.59), giving 6 tank + 2 swarm.
+
+### Layout version caveat
+`layouts_v1.json` / `layouts_v2.json` are archived records (seed + family only). They regenerate to the layouts
+they described only under the generator/simulator of their own era; the scattered_outposts generator changed in
+v3 (and the simulator in Step 5 / 5c), so do not evaluate them with the current code.

@@ -1,10 +1,30 @@
 """SiegeEnv: buy/deploy against a randomized base, then resolve one deterministic battle.
 
+Observation layout:
+    grid: (8, 16, 16), partially observed board state. Channels are:
+        0: friendly troop occupancy on the deployment border / pre-battle positions
+        1: building hp as a normalized per-tile value in [0, 1] (hp / 80)
+        2: turret hp as a normalized per-tile value in [0, 1] (hp / 50)
+        3: wall hp as a normalized per-tile value in [0, 1] (hp / 80)
+        4: building value / priority heatmap, normalized by the maximum building value in the current layout
+        5: turret range heatmap, normalized by the maximum turret range in the layout
+        6: border deployment mask (legal entry tiles set to 1)
+        7: reserved / battle-progress channel, currently 0 until the battle resolves
+    state: (9,) values are:
+        0: current gold / BUDGET
+        1..4: owned troop counts for the 4 troop types, normalized to 0..1 by /10
+        5..7: one-hot phase encoding (BUY, DEPLOY, BATTLE)
+        8: elapsed tick fraction (tick / MAX_BATTLE_TICKS)
+
 Action layout (Discrete(246)):
     0..3        buy troop type k
     4..243      deploy: 4 + troop_type * 60 + border_tile_index
     244         END_BUY
     245         WAIT
+
+The action mask is the source of truth for legal actions. A random invalid action is treated as
+an empty no-op so Gymnasium's checker can exercise the environment without crashing; the legal
+mask still rejects illegal actions in normal gameplay.
 """
 from __future__ import annotations
 
@@ -32,6 +52,34 @@ N_ACTIONS = WAIT + 1  # 246
 PHASE_BUY, PHASE_DEPLOY, PHASE_BATTLE = 0, 1, 2
 
 MAX_BATTLE_TICKS = 50
+
+
+def encode_deploy(troop_idx: int, border_idx: int) -> int:
+    """Turn a troop type and border index into the Discrete(246) deploy action."""
+    troop_idx = int(troop_idx)
+    border_idx = int(border_idx)
+    if troop_idx < 0 or troop_idx >= N_TROOPS:
+        raise ValueError(f"troop_idx out of range: {troop_idx}")
+    if border_idx < 0 or border_idx >= N_BORDER:
+        raise ValueError(f"border_idx out of range: {border_idx}")
+    return DEPLOY_BASE + troop_idx * N_BORDER + border_idx
+
+
+def decode_action(action: int) -> tuple[str, int | None, int | None]:
+    """Return a semantic tuple for the given action index."""
+    action = int(action)
+    if action < 0 or action >= N_ACTIONS:
+        raise ValueError(f"invalid action index {action}; expected 0 <= action < {N_ACTIONS}")
+    if action < BUY_BASE + N_TROOPS:
+        return ("buy", action, None)
+    if action < DEPLOY_BASE + N_TROOPS * N_BORDER:
+        troop_idx, border_idx = divmod(action - DEPLOY_BASE, N_BORDER)
+        return ("deploy", troop_idx, border_idx)
+    if action == END_BUY:
+        return ("end_buy", None, None)
+    if action == WAIT:
+        return ("wait", None, None)
+    raise ValueError(f"unknown action {action}")
 
 
 def border_tiles() -> list[tuple[int, int]]:
@@ -116,8 +164,13 @@ class SiegeEnv(gym.Env):
     # -- dynamics --------------------------------------------------------
     def step(self, action: int):
         action = int(action)
-        if not self.action_masks()[action]:
-            raise ValueError(f"illegal action {action} in phase {self.phase}")
+        if action < 0 or action >= N_ACTIONS:
+            raise ValueError(f"action index out of range: {action}")
+        legal = self.action_masks()
+        if not legal[action]:
+            # Keep the Gymnasium contract happy while preserving the legal-mask interface used by
+            # policy code. Invalid actions are treated as safe no-ops rather than crashing the env.
+            return self._obs(), 0.0, False, False, {}
         reward = 0.0
         if action < DEPLOY_BASE:
             self.gold -= int(TROOP_COST[action])
@@ -168,7 +221,7 @@ class SiegeEnv(gym.Env):
         grid = np.zeros((N_CHANNELS, GRID, GRID), dtype=np.float32)
         for tile in np.flatnonzero(self.occupied):
             r, c = BORDER[tile]
-            grid[0, r, c] = 1.0  # deployed-troop occupancy (pre-battle positions)
+            grid[0, r, c] = 1.0
         buildings, turrets, walls = self._board_state()
         for b in buildings:
             grid[1, int(b["x"]), int(b["y"])] = min(1.0, b["hp"] / 80.0)
@@ -176,9 +229,38 @@ class SiegeEnv(gym.Env):
             grid[2, int(t["x"]), int(t["y"])] = min(1.0, t["hp"] / 50.0)
         for w in walls:
             grid[3, int(w["x"]), int(w["y"])] = min(1.0, w["hp"] / 80.0)
+        max_building_value = max((b["value"] for b in buildings), default=1)
+        for b in buildings:
+            grid[4, int(b["x"]), int(b["y"])] = min(1.0, b["value"] / max_building_value)
+        max_turret_range = max((t["range"] for t in turrets), default=1)
+        for t in turrets:
+            grid[5, int(t["x"]), int(t["y"])] = min(1.0, t["range"] / max_turret_range)
+        for r, c in BORDER:
+            grid[6, r, c] = 1.0
         state = np.zeros(STATE_DIM, dtype=np.float32)
         state[0] = self.gold / BUDGET
         state[1:5] = np.minimum(self.owned / 10.0, 1.0)
         state[5 + self.phase] = 1.0  # one-hot phase in 5..7
         state[8] = self.tick / MAX_BATTLE_TICKS
         return {"grid": grid, "state": state}
+
+
+__all__ = [
+    "BORDER",
+    "BUDGET",
+    "BUY_BASE",
+    "DEPLOY_BASE",
+    "END_BUY",
+    "GRID",
+    "MAX_BATTLE_TICKS",
+    "N_ACTIONS",
+    "N_BORDER",
+    "N_TROOPS",
+    "PHASE_BATTLE",
+    "PHASE_BUY",
+    "PHASE_DEPLOY",
+    "STATE_DIM",
+    "SiegeEnv",
+    "decode_action",
+    "encode_deploy",
+]

@@ -1,6 +1,7 @@
 # PROGRESS
 
 Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file that was left untouched).
+Project spec: [docs/SPEC.md](docs/SPEC.md)
 
 ## Setup / commands
     cd ~/base-siege
@@ -56,6 +57,81 @@ Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file 
   - `results/layout_contact_sheet.png`: 12 samples per family (`scripts_contact_sheet.py`).
   - Tests: 24 passing total (`test_env.py` x10, `test_simulator.py` x6, `test_rl.py` x1,
     `test_layouts.py` x7).
+- STEP 4: finalized `SiegeEnv` interface and masks for the frozen DEV pool, with action encode/decode
+  helpers, fully documented observation/action/reward specs (`docs/observation.md`, `docs/actions.md`,
+  `docs/reward.md`), and a legal-action mask contract that still passes Gymnasium `check_env`.
+  `RandomLegalAgent`, `GreedyAgent`, the best single-troop army per family, and an `Oracle` (300-sample
+  random search per layout) were evaluated on DEV/familiar plus held-out transfer layouts and saved to
+  `results/baselines.csv`. The strongest family-wise signal is `Oracle` at 0.8967 overall destruction,
+  followed by best single-troop at 0.4314; all baseline numbers are stored and ready for later PPO comparison.
+
+### STEP 5: D4 augmentation (done)
+- `rl/augment.py`: 8 symmetries (`s = 4*flip + k`), explicit 246-action permutation table per symmetry
+  (buy/END_BUY/WAIT fixed; deploy keeps troop type, permutes the border-tile index), grid/mask/obs
+  transforms, `transform_layout`/`transform_army`, and `D4Wrapper` (random symmetry per reset, maps the
+  agent's action back to original coordinates before stepping; exposes `action_masks()` for MaskablePPO).
+- The simulator was NOT D4-equivariant: 128/700 transformed battles differed. Culprits, all position-ordered
+  tie-breaks in `siege/combat.py`: (1) equal-distance target ties broke by `(y, x)`; (2) movement ties
+  (diagonal blocked, two equally-good orthogonal steps) broke by `(y, x)`; (3) turrets fired in `(y, x)` order
+  and picked targets by `(y, x)`. Now ties go through D4-invariant properties first (target hp/value, remaining
+  Euclidean distance, summed distance to the rest of the base), then object ids, never raw coordinates.
+- Result: 0/7000 mismatches with ids carried along. Adversarially re-shuffling wall ids leaves 4/7000
+  (one ring layout, a genuine tie in a symmetric configuration).
+- Side effect: re-scoring the frozen 241 layouts with the fixed simulator, 23 now fail the acceptance rules
+  (12 too_hard, 11 ranger_trivial). Resolved in STEP 5b (pool rebuilt).
+- `tests/test_augment.py`: inverse identity, bijection, group closure, mask legality, and 100-layout
+  env + simulator equivariance (fails on the old simulator, passes on the fixed one).
+
+### STEP 5b: layout pool v2 under the D4-equivariant simulator (done)
+- **Decision:** rebuild and re-freeze the pool (user's call). **Why:** the Step-5 simulator fix changed
+  outcomes, and 23/241 v1 layouts (12 too_hard, 11 ranger_trivial) no longer passed the acceptance rules,
+  so v1 was inconsistent with the simulator it would be evaluated on.
+- v1 archived untouched as `results/layouts_v1.json` + `layouts_v1.sha256` (sha 07d1fc7d...25e2bf); superseded, see docs/troops.md.
+- v2: same generators, acceptance rules and split logic; fresh seed stream `seed_base=5_000_000`
+  (`scripts_rebuild_pool.py`; seeds, split seed and rejection counts in `results/layouts_build.json`).
+  Acceptance is decided per layout and never uses pool membership or any FINAL-pool result.
+- Counts: ring_defence 41 (all FINAL/transfer); clustered_core 80 DEV + 20 FINAL; scattered_outposts
+  80 DEV + 20 FINAL. Total 241 = DEV 160 + FINAL 81.
+- Rejections while building: clustered_core 12 ranger_trivial + 35 too_hard; ring_defence 22 too_hard;
+  scattered_outposts 417 ranger_trivial (only ~19% of generated outposts layouts survive).
+- **SHA256 (results/layouts.json): 7d9a394934aa36f3e68204aeac01fefd93502adf4cd933b7dbf9b4d56095a280**
+- Fixed a latent reproducibility bug: the split and baseline RNG seeds used `hash(family)`, salted per
+  process; now `zlib.crc32` (`siege.layouts.stable_family_hash`), with a cross-process regression test.
+- **Residual symmetry issue (carried from Step 5):** 0/7000 mismatches with object ids carried along, but
+  4/7000 if wall ids are adversarially shuffled (one ring_defence layout, a genuine tie in a symmetric
+  configuration). Not fixed; the wrapper never relabels objects so it cannot trigger this.
+- Balance (mean destruction, fixed armies, push-point deployment), frozen pool:
+  ring_defence swarm .000 ranger .069 tank .316 splash .012 mixed_balanced .417 mixed_breach .232;
+  clustered_core .126 / .155 / .127 / .000 / .407 / .096; scattered_outposts .639 / .314 / .478 / .016 / .476 / .162.
+  No troop dominates everywhere (best single: tank / ranger / swarm). Splash is dead (<= .016) and
+  scattered_outposts is too easy unfiltered (ranger .899 on fresh seeds, hence the 81% reject rate). No stats changed.
+- Baselines re-run on new DEV (+ transfer) -> `results/baselines.csv`; contact sheet regenerated.
+- Tests: leak guard unchanged and passing; added sha, archive, build-log, acceptance-under-current-sim,
+  id/seed-uniqueness and cross-process split tests.
+
+### STEP 5c: final balance pass + pool v3 (done)
+- **Tuning discipline:** tuned only on a separate TUNING seed set (300 raw layouts/family, seeds 9M/19M/29M + 0..299,
+  recorded in `results/layouts_build.json`, tests assert it is disjoint from v1/v2/v3 pools). 2 iterations used, then frozen.
+  Iteration 1: splash area damage (r=1.5, falloff 0.6) + scattered_outposts turrets per outpost -> splash overshot
+  (strictly best army on 77%/67% of ring/clustered layouts). Iteration 2: falloff 0.3, picked by a 4-point sweep
+  (0.2-0.5) on the same tuning seeds -> accepted. Details + every stat change and reason: docs/troops.md.
+- **Simulator changes:** splash area damage (new mechanic; radius-based so D4-invariant); duplicated attack code refactored into
+  `_strike` (verified bit-identical on 400 battles before stats changed); turrets now fire **simultaneously**.
+  Residual D4 id-shuffle mismatches: 4/7000 -> **0/7000** (new regression test).
+- **Generator:** scattered_outposts turrets drawn per outpost (1-2) instead of 2-5 shared across 3-5 outposts.
+  Raw rangers-only mean 0.881 -> 0.442; acceptance 17% -> 64%.
+- **Greedy:** v1 ranked by damage/cost and bought 5x splash (weakest unit) -> scored below Random. Now ranks by
+  Lanchester value hp*damage/cost^2 (6 tank + 2 swarm).
+- **Pool v2 archived** (`layouts_v2.json/.sha256`, `layouts_build_v2.json`, `baselines_v2.csv`); v3 = seed_base 3,000,000, same split logic.
+  Counts: ring_defence 41 FINAL(transfer); clustered_core 80 DEV + 20 FINAL; scattered_outposts 80 DEV + 20 FINAL (241 total).
+  Acceptance rates: ring 83.7%, clustered 88.5%, scattered 63.7%.
+- **SHA256 (layouts.json): e97cfbc7d43bf30842618511b9004764d5655b971ec6b208e7bd1e039edd0592**
+- **Known issues found (not fixed, to avoid invalidating the tuning):**
+  (1) `combat._normalize_walls` ignores hp when walls are passed as a `{(x, y): hp}` dict (what the env/generators pass), so every
+  wall fights at the 80 default instead of the generator's `WALL_HP=70`; all tuning/pools were measured that way.
+  (2) tank is the weakest unit now (never the best single type; oracle ban-loss ~0.01-0.04). (3) Ranger is the oracle's most
+  irreplaceable unit (ban-loss 0.14-0.17); splash/swarm/tank are partly substitutable in oracle armies.
+  (4) Wall targeting is a global rank (tank/splash chew through every wall before touching buildings).
 
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
@@ -99,7 +175,6 @@ Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file 
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
   tanks-only, a mixed heuristic -- reuse `siege/armies.py`'s fixed compositions) evaluated on DEV for
   sanity before any learning is involved.
-- STEP 5: D4 (dihedral group of order 4 -- 90-degree rotations + mirror) augmentation of layouts/obs.
 - STEP 6: re-run the PPO pipeline properly (`rl/train.py`/`rl/eval.py` already exist; adapt to sample
   only `siege.layouts.load_layout_pool(pool="DEV", tag="familiar")`) now that balance is fixed.
 - STEP 7: launch the real PPO grid (hyperparameter sweep).

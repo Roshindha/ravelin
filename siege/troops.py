@@ -34,6 +34,11 @@ class TroopSpec:
     range: float
     role: str
     target_preference: tuple[str, ...]
+    # Area damage: every building/turret/wall within `splash_radius` (Euclidean, cells) of the struck
+    # tile also takes `int(damage * splash_falloff)`. 0 radius = single-target. Radius-based, so
+    # it is D4-invariant.
+    splash_radius: float = 0.0
+    splash_falloff: float = 0.0
 
     @property
     def key(self) -> str:
@@ -44,7 +49,7 @@ TROOP_TYPES = (
     TroopSpec("swarm", 10, 18, 8, 1.5, 1.2, "cheap skirmisher", ("building", "turret", "wall")),
     TroopSpec("ranger", 25, 30, 12, 1.0, 4.0, "ranged attacker", ("turret", "building", "wall")),
     TroopSpec("tank", 30, 150, 24, 0.7, 1.4, "frontliner", ("wall", "building", "turret")),
-    TroopSpec("splash", 40, 75, 34, 0.6, 2.5, "wall-breaker", ("wall", "building", "turret")),
+    TroopSpec("splash", 40, 75, 34, 0.6, 2.5, "wall-breaker", ("wall", "building", "turret"), splash_radius=1.5, splash_falloff=0.3),
 )
 
 TROOP_TYPE_BY_NAME = {spec.key: spec for spec in TROOP_TYPES}
