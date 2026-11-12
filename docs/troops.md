@@ -18,9 +18,13 @@ Base/turret knobs that changed alongside troops (`siege/bases.py`):
 | turret HP | 30-50 | 70-110 |
 | turret damage | 8-15 | 10-18 |
 | turret range | 3-6 | 4-6 |
-| wall HP | 80 | 70 |
+| wall HP | 80 | 80 (effective; see note) |
 | buildings per layout | 3-5 | 6-12 |
 | turrets per layout | 1-2 | 2-5 |
+
+Note on wall HP: v2 documented 70, and the generator constant was 70, but the simulator ignored the hp in
+the wall dict and used its default of 80 for every wall. All balance numbers and the frozen pools were
+measured at 80, so the constant and docs now say 80 (simulator behaviour unchanged). Wall HP is **80**.
 
 ## Why v1 was broken
 

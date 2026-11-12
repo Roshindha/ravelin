@@ -108,9 +108,13 @@ class SiegeEnv(gym.Env):
 
     metadata = {"render_modes": []}
 
-    def __init__(self, layout_pool: list[dict] | None = None) -> None:
+    def __init__(self, layout_pool: list[dict] | None = None, prebought: list[int] | str | None = None) -> None:
         super().__init__()
         self.layout_pool = layout_pool
+        # Curriculum hook: troop counts [swarm, ranger, tank, splash] bought for the agent at reset.
+        # None = normal game (agent shops). Switched mid-training via `set_prebought`.
+        self.prebought: list[int] | None = None
+        self.set_prebought(prebought)
         self.action_space = spaces.Discrete(N_ACTIONS)
         self.observation_space = spaces.Dict(
             {
@@ -132,10 +136,46 @@ class SiegeEnv(gym.Env):
         self.tick = 0
         self.destruction = 0.0
 
+    def _random_army(self) -> list[int]:
+        """A random legal army: buy a uniformly random affordable type until broke, stopping early w.p. 0.1 per buy."""
+        counts, gold = [0] * N_TROOPS, BUDGET
+        while True:
+            afford = [k for k in range(N_TROOPS) if TROOP_COST[k] <= gold]
+            if not afford or (sum(counts) > 0 and self.np_random.random() < 0.1):
+                return counts
+            k = afford[int(self.np_random.integers(len(afford)))]
+            counts[k] += 1
+            gold -= int(TROOP_COST[k])
+
+    def set_prebought(self, counts: list[int] | str | None) -> None:
+        """Enable (counts, or "random" = fresh random legal army each episode) or disable (None) the deploy-only curriculum."""
+        if isinstance(counts, str):
+            if counts != "random":
+                raise ValueError(counts)
+        elif counts is not None:
+            counts = [int(c) for c in counts]
+            if len(counts) != N_TROOPS or min(counts) < 0 or int(np.dot(counts, TROOP_COST)) > BUDGET:
+                raise ValueError(f"invalid prebought army {counts}")
+        self.prebought = counts
+
     def reset(self, *, seed: int | None = None, options: dict | None = None):
+        """options (all optional): ``layout_record`` pins the layout; ``prebought`` overrides the
+        curriculum army for this episode (a count list, or ``False`` to force normal shopping)."""
         super().reset(seed=seed)  # seeds self.np_random
         self._reset_state()
-        if self.layout_pool:
+        options = options or {}
+        prebought = options.get("prebought", self.prebought)
+        if isinstance(prebought, str):  # "random"
+            prebought = self._random_army()
+        if prebought:  # deployment-first curriculum: skip BUY, start in DEPLOY with the army owned
+            self.owned = np.array(prebought, dtype=np.int32)
+            self.gold = BUDGET - int(np.dot(prebought, TROOP_COST))
+            self.phase = PHASE_DEPLOY
+        if options.get("layout_record") is not None:
+            record = options["layout_record"]
+            self.layout_record = record
+            self.layout = generate_base_layout(np.random.default_rng(record["seed"]), family=record["family"])
+        elif self.layout_pool:
             record = self.layout_pool[int(self.np_random.integers(len(self.layout_pool)))]
             self.layout_record = record
             self.layout = generate_base_layout(np.random.default_rng(record["seed"]), family=record["family"])

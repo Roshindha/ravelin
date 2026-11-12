@@ -119,3 +119,17 @@ def test_turret_fire_is_simultaneous_so_turret_order_does_not_matter():
     a = simulate_battle(army, buildings, {}, turrets, max_ticks=3)
     b = simulate_battle(army, buildings, {}, list(reversed(turrets)), max_ticks=3)
     assert [t["hp"] for t in a.final_troops] == [t["hp"] for t in b.final_troops]
+
+
+def test_walls_have_80_hp():
+    """Walls are 80 hp everywhere: generator constant, generated layouts, and the simulator's battle state."""
+    import numpy as np
+
+    from siege.bases import FAMILIES, WALL_HP, generate_base_layout
+
+    assert WALL_HP == 80
+    for family in FAMILIES:
+        layout = generate_base_layout(np.random.default_rng(3), family=family)
+        assert layout["walls"] and set(layout["walls"].values()) == {80}
+        r = simulate_battle([], layout["buildings"], layout["walls"], layout["turrets"], max_ticks=1)
+        assert {w["hp"] for w in r.frames[0]["walls"]} == {80}

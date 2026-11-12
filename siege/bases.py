@@ -41,7 +41,10 @@ BUILDING_VALUE_RANGE = (10, 31)
 TURRET_HP_RANGE = (70, 111)
 TURRET_DAMAGE_RANGE = (10, 19)
 TURRET_RANGE_RANGE = (4, 7)
-WALL_HP = 70
+# Effective wall HP is 80: combat._normalize_walls defaults every wall to 80 (it ignores the hp in the
+# {(x, y): hp} dict the generators pass). All tuning and the frozen pools were measured at 80, so this
+# constant is set to match reality; tests/test_simulator.py pins it.
+WALL_HP = 80
 
 N_BUILDINGS_RANGE = (6, 13)  # [6, 12] inclusive
 N_TURRETS_RANGE = (2, 6)  # [2, 5] inclusive

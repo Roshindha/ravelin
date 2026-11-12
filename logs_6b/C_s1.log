@@ -1,0 +1,185 @@
+Logging to /Users/roshinisudhakar/base-siege/models/tune_C_s1
+[curriculum] t=0: phase A (prebought=random)
+[val] t=0 full=0.000 army=[0.0, 0.0, 0.0, 1.0]
+[val] t=25000 full=0.000 army=[0.0, 0.0, 0.0, 0.5]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 5.75        |
+|    ep_rew_mean          | 0.0636      |
+| time/                   |             |
+|    fps                  | 289         |
+|    iterations           | 20          |
+|    time_elapsed         | 141         |
+|    total_timesteps      | 40960       |
+| train/                  |             |
+|    approx_kl            | 0.012860024 |
+|    clip_fraction        | 0.0969      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -4.32       |
+|    explained_variance   | 0.271       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0773     |
+|    n_updates            | 95          |
+|    policy_gradient_loss | -0.0204     |
+|    value_loss           | 0.0201      |
+| val/                    |             |
+|    deploy_only_overall  | 0.0845      |
+|    full_overall         | 0           |
+-----------------------------------------
+[val] t=50000 full=0.000 army=[0.0, 0.0, 0.0, 0.0]
+[val] t=75000 full=0.000 army=[0.0, 0.0, 0.0, 0.0]
+----------------------------------------
+| rollout/                |            |
+|    ep_len_mean          | 5.49       |
+|    ep_rew_mean          | 0.157      |
+| time/                   |            |
+|    fps                  | 278        |
+|    iterations           | 40         |
+|    time_elapsed         | 294        |
+|    total_timesteps      | 81920      |
+| train/                  |            |
+|    approx_kl            | 0.01176793 |
+|    clip_fraction        | 0.0875     |
+|    clip_range           | 0.2        |
+|    entropy_loss         | -3.35      |
+|    explained_variance   | 0.433      |
+|    learning_rate        | 0.0001     |
+|    loss                 | -0.0339    |
+|    n_updates            | 195        |
+|    policy_gradient_loss | -0.0165    |
+|    value_loss           | 0.0322     |
+| val/                    |            |
+|    deploy_only_overall  | 0.192      |
+|    full_overall         | 0          |
+----------------------------------------
+[curriculum] t=100000: phase B (prebought=None)
+[val] t=100000 full=0.000 army=[0.0, 0.0, 0.0, 0.0]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 22.2        |
+|    ep_rew_mean          | 0.442       |
+| time/                   |             |
+|    fps                  | 259         |
+|    iterations           | 60          |
+|    time_elapsed         | 474         |
+|    total_timesteps      | 122880      |
+| train/                  |             |
+|    approx_kl            | 0.009027061 |
+|    clip_fraction        | 0.0677      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.67       |
+|    explained_variance   | 0.622       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0275     |
+|    n_updates            | 292         |
+|    policy_gradient_loss | -0.0116     |
+|    value_loss           | 0.0119      |
+| val/                    |             |
+|    deploy_only_overall  | 0.229       |
+|    full_overall         | 0           |
+-----------------------------------------
+[val] t=125000 full=0.264 army=[20.0, 0.0, 0.0, 0.0]
+[val] t=150000 full=0.247 army=[20.0, 0.0, 0.0, 0.0]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 21.9        |
+|    ep_rew_mean          | 0.467       |
+| time/                   |             |
+|    fps                  | 257         |
+|    iterations           | 80          |
+|    time_elapsed         | 636         |
+|    total_timesteps      | 163840      |
+| train/                  |             |
+|    approx_kl            | 0.007518065 |
+|    clip_fraction        | 0.0431      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.55       |
+|    explained_variance   | 0.709       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0306     |
+|    n_updates            | 392         |
+|    policy_gradient_loss | -0.00931    |
+|    value_loss           | 0.00953     |
+| val/                    |             |
+|    deploy_only_overall  | 0.289       |
+|    full_overall         | 0.247       |
+-----------------------------------------
+[val] t=175000 full=0.371 army=[10.0, 4.0, 0.0, 0.0]
+[val] t=200000 full=0.294 army=[10.0, 4.0, 0.0, 0.0]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 22.3        |
+|    ep_rew_mean          | 0.458       |
+| time/                   |             |
+|    fps                  | 251         |
+|    iterations           | 100         |
+|    time_elapsed         | 813         |
+|    total_timesteps      | 204800      |
+| train/                  |             |
+|    approx_kl            | 0.010341668 |
+|    clip_fraction        | 0.068       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.46       |
+|    explained_variance   | 0.805       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0274     |
+|    n_updates            | 492         |
+|    policy_gradient_loss | -0.0111     |
+|    value_loss           | 0.00727     |
+| val/                    |             |
+|    deploy_only_overall  | 0.249       |
+|    full_overall         | 0.294       |
+-----------------------------------------
+[val] t=225000 full=0.288 army=[10.0, 4.0, 0.0, 0.0]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 20.4        |
+|    ep_rew_mean          | 0.531       |
+| time/                   |             |
+|    fps                  | 254         |
+|    iterations           | 120         |
+|    time_elapsed         | 966         |
+|    total_timesteps      | 245760      |
+| train/                  |             |
+|    approx_kl            | 0.011409942 |
+|    clip_fraction        | 0.0539      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.46       |
+|    explained_variance   | 0.633       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0327     |
+|    n_updates            | 592         |
+|    policy_gradient_loss | -0.00897    |
+|    value_loss           | 0.00934     |
+| val/                    |             |
+|    deploy_only_overall  | 0.248       |
+|    full_overall         | 0.288       |
+-----------------------------------------
+[val] t=250000 full=0.251 army=[20.0, 0.0, 0.0, 0.0]
+[val] t=275000 full=0.147 army=[10.0, 4.0, 0.0, 0.0]
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 21.6        |
+|    ep_rew_mean          | 0.472       |
+| time/                   |             |
+|    fps                  | 253         |
+|    iterations           | 140         |
+|    time_elapsed         | 1129        |
+|    total_timesteps      | 286720      |
+| train/                  |             |
+|    approx_kl            | 0.009879982 |
+|    clip_fraction        | 0.0787      |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.46       |
+|    explained_variance   | 0.742       |
+|    learning_rate        | 0.0001      |
+|    loss                 | -0.0183     |
+|    n_updates            | 692         |
+|    policy_gradient_loss | -0.00909    |
+|    value_loss           | 0.00806     |
+| val/                    |             |
+|    deploy_only_overall  | 0.249       |
+|    full_overall         | 0.147       |
+-----------------------------------------
+[val] t=300000 full=0.191 army=[0.0, 8.0, 0.0, 0.0]
+[done] 301056 steps in 1186s = 254 steps/s -> /Users/roshinisudhakar/base-siege/models/tune_C_s1
