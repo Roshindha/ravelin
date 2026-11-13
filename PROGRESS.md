@@ -260,6 +260,24 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - **Sampled-action probe (EXPLORATORY, 5 sampled rollouts/layout, torch seed per model x layout x rollout):** sampled minus deterministic mean destruction: none headline -0.058 [-0.078, -0.039], d4 -0.038 [-0.047, -0.028]; sampling hurts both. Deterministic stays the reported mode.
 - Caveats: seeds s13-s15 (both conditions) were resumed twice (not bit-identical to uninterrupted runs); all models ~1.0015M steps (rollout granularity). No evaluator bug found; nothing was tuned or re-run after seeing FINAL results.
 
+### STEP 9a: diagnostics on the finished grid (no training, no tuning, no re-evaluation)
+- **FINAL was evaluated exactly once (step 8, commit 6fe8366). Everything after that is diagnostic and must not drive tuning; any further model choices use DEV/validation only.**
+- `rl/diagnose_grid.py` + `tests/test_diagnose_grid.py` (3 tests); outputs in `results/diagnostics/` (1_*, 2_*, 3_*, 4_*, 5_provenance.json, 2_validation_curves.png, stdout.txt). Reads final_eval.csv, baselines_per_layout.csv, models/*/val_eval.csv.
+  Only fresh computation: fixed single-troop scores (simulator) per group for the hindsight reference. Command: `.venv/bin/python -m rl.diagnose_grid`.
+- **1. By group (Random / Greedy / BestSingle(DEV-chosen) / PPO plain / PPO D4 / NON-DEPLOYABLE hindsight best single / Oracle):**
+  DEV-train .074/.326/.419/.433/.276/.419/-; validation .073/.193/.341/.314/.227/.346/-; FINAL-familiar .059/.175/.382/.278/.197/.382/.891; transfer .110/.281/.000/.268/.207/.301/.963.
+  Reading: (a) plain PPO barely beats the fixed best-single baseline even on training layouts (.433 vs .419) and is BELOW it on FINAL-familiar (.278 vs .382). The gap is entirely scattered_outposts, where a fixed
+  swarm army scores .545 (FINAL) / .575 (DEV-train) but plain PPO gets .204 / .364. On clustered_core plain PPO beats the best single (.352 vs .218 FINAL). (b) clustered_core is harder on FINAL (best single .263 -> .218, Greedy .304 -> .102)
+  but plain PPO drops more (.502 -> .352), so about 0.1 of that gap is overfit, the rest layout difficulty. (c) transfer: DEV-chosen single troop (pooled swarm) = 0.000 vs hindsight splash .301, so that baseline is meaningless there; PPO plain .268 is about Greedy (.281).
+- **2. Curves (validation, full task, every 25k):** mean change over last 250k steps (window around 750k -> last ~3 evals): plain +0.013 (6/10 seeds up, slope 0.014/M steps, essentially flat, peak of mean .332 at 975k),
+  D4 +0.037 (9/10 seeds up, slope 0.18/M, still rising; val .194 -> .232). D4 is slower, not converged at 1M; plain has plateaued around 0.30-0.33.
+- **3. Per seed (final.zip):** validation plain min/max .264/.352, D4 .150/.314; DEV-train plain .415/.460, D4 .224/.342; FINAL-headline plain .238/.345, D4 .151/.256.
+  Worst plain seed beats best D4 seed on DEV-train (yes, .415 > .342) but NOT on validation (.264 < .314) nor FINAL-headline (.238 < .256); seed ranges overlap there although the paired mean difference is large.
+  Seeds 13-15 (resumed twice) are flagged in 3_per_seed.csv; their numbers are within the other seeds' range.
+- **4. Army (mean counts s/r/t/sp, FINAL clustered_core):** plain 3.4/2.5/0.8/1.8, D4 3.1/1.5/1.1/2.4, Greedy 2/0/6/0 (fixed, layout-independent). scattered_outposts: plain 5.8/1.0/2.3/1.1, D4 6.5/0.7/2.5/0.9. ring_defence: plain 2.5/1.2/3.1/1.1, D4 2.6/0.9/3.7/0.9.
+  Oracle army counts were never stored; only gold shares from step 4 (DEV, 80 layouts/family, and transfer): ranger 28-40%, tank 25-31%, splash 23-34%, swarm 11-12%. PPO buys far more swarm (13-30% of gold, 5-6 units on scattered) and fewer rangers than the Oracle.
+- **5. Provenance confirmed:** final_eval_summary.json top-level `commit` = eval commit 6fe8366; the TRAINING commit 6c2a800 (dirty=false) is recorded per model in `models[].train_git_commit` (all 20), layouts sha256 e97cfbc7... matches train and eval. Nothing missing; no final_eval files rewritten.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
