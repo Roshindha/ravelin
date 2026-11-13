@@ -240,6 +240,26 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
       .venv/bin/python scripts/status.py            # check progress anytime
       # after a crash/reboot/Ctrl-C: just run the same command again; finished runs are skipped, others resume
 
+### STEP 8: full evaluation of the 20-model PPO grid (run ONCE)
+- Run on clean commit `6fe8366` (all 20 runs were trained at `6c2a800`, clean; nothing to commit beforehand). layouts sha256 `e97cfbc7...0592` (matches all models).
+  Command: `nohup .venv/bin/python -m rl.eval_all --workers 7 > results/logs/eval_all.log 2>&1 &` (~4 min wall). Code `rl/eval_all.py`, tests `tests/test_eval_all.py` (8 tests; 131 total).
+- **D4 models are evaluated on the canonical view**: bare `SiegeEnv`, no `D4Wrapper` (identity symmetry, nothing random). Test checks it equals a `D4Wrapper(symmetry=IDENTITY)` rollout.
+  Deterministic actions (masked argmax), `final.zip` only. Groups: DEV-train 140, validation 20 (both SEEN in training/checkpointing, never headline), FINAL-familiar 40 + transfer 41 (HEADLINE, 81 layouts, never seen).
+  Evaluator asserts every layout id is in the declared groups; unknown group names raise.
+- Outputs: `results/final_eval.csv` (20 x 241 rows with identity), `results/final_eval_summary.json`, `results/final_eval_tables/*.csv`
+  (model_identity, per_model, condition_summary, condition_family_summary, paired_diff*, baselines_*, sampled_probe_*), charts `results/{destruction_by_condition,familiar_vs_transfer,army_composition}.png`,
+  sampled probe per layout `results/final_eval_sampled_EXPLORATORY.csv`. Bootstrap: 10000 resamples over learners, seed 8080, percentile 95% CI.
+- **Headline (mean destruction, 10 learners, 95% CI):** none 0.273 [0.257, 0.293] vs d4 0.202 [0.184, 0.220]; full clear none 0.094 vs d4 0.053.
+  FINAL-familiar: none 0.278 / d4 0.197; transfer (ring_defence): none 0.268 / d4 0.207. Paired none-d4 headline +0.071 [0.054, 0.091], none wins 10/10 seeds
+  (familiar +0.081, 10/10; transfer +0.061, 10/10). **D4 augmentation HURT at 1M steps** (also on seen DEV-train: 0.433 vs 0.276), i.e. consistent with D4 underfitting, not a held-out-only effect.
+  By family: clustered_core none 0.352 vs d4 0.182; scattered_outposts 0.204 vs 0.212 (tie).
+- Baselines (headline 81 layouts): Random 0.084, Greedy 0.229, BestSingle 0.189, Oracle 0.927 (FINAL-familiar 0.891, transfer 0.963). PPO beats Random and (narrowly, none only) Greedy; far below Oracle.
+  Oracle budget: `oracle_search` defaults, 200 random armies + 200 hill-climb steps (~400 sims/layout), seed [id, 4242]; a lower bound on the optimum.
+  BestSingle troop chosen on DEV only: clustered_core=splash, scattered_outposts=swarm; ring_defence has no DEV layouts, so the pooled-DEV best (swarm) is used, which scores 0.000 on ring_defence (weak baseline there; an artifact of the no-peeking rule).
+- Army bought (mean counts swarm/ranger/tank/splash, FINAL): see `army_composition.png` and condition_family_summary.csv. None, clustered_core: 3.4/2.5/0.8/1.8; d4: 3.1/1.5/1.1/2.4. scattered_outposts is swarm-heavy (5.8-6.5).
+- **Sampled-action probe (EXPLORATORY, 5 sampled rollouts/layout, torch seed per model x layout x rollout):** sampled minus deterministic mean destruction: none headline -0.058 [-0.078, -0.039], d4 -0.038 [-0.047, -0.028]; sampling hurts both. Deterministic stays the reported mode.
+- Caveats: seeds s13-s15 (both conditions) were resumed twice (not bit-identical to uninterrupted runs); all models ~1.0015M steps (rollout granularity). No evaluator bug found; nothing was tuned or re-run after seeing FINAL results.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -278,6 +298,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
   tanks-only, a mixed heuristic -- reuse `siege/armies.py`'s fixed compositions) evaluated on DEV for
