@@ -321,6 +321,14 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - B2 speed gate: battle <= 60 ms mean, random loop >= 300 steps/s (=> >= 100 steps/s/job); else 150 ticks, then 12x12.
 - Step budget: from pilot slopes (table) capped by T_cap = 18000*r; shaped-reward fallback (potential-based preview) defined, used only if G7 fails; armies x deployers pilot diagnostic on TUNE-val; B20 removes siege/, B21 README with "Inspired by" line (source name needed from the owner).
 
+### STEP 10c: SPEC_V2 amendments (design only, no code)
+- G2/G3/G4 now need the point threshold AND a 95% paired bootstrap lower bound > 0 (same layouts, same Oracle/template seeds, bootstrap over layouts, 10000 resamples, seed 8080; thresholds in `data/v2/gate_thresholds.json`, doc-checked by test).
+- G7: BestSingle = per-family best single-unit army chosen on TUNE-train, scored on TUNE-val. One-time pre-registered extension to 600k if the mean last-100k slope >= +0.02 score/100k (my reading of the unit); otherwise fail.
+- Revision budget now 3 in B5 + 1 after G7 (4 total), TUNE/LAB-DESIGN only. Post-G7 revision = stats or reward only, never generators; stat changes re-accept the pool from the same seed streams (new sha) before any agent evaluation. FINAL-access ledger (`data/v2/final_access.log`) + pytest that no agent evaluation of FINAL exists before the final eval.
+- Defenders: Gun (r4), Lancer (r6, min 2, threatens range-5 units), Flak (area, r5, punishes clumped Scouts) with stats and generator-mix rules. Walls and turrets carry no score value.
+- B5 report per unit: effective hp/gold incl. armor (per defender type), dps/gold, threatening defenders, single-unit-army score table per family.
+- B21 README line uses placeholders AUTHOR_NAME / AUTHOR_URL; test fails until replaced.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
