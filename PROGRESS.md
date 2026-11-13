@@ -303,6 +303,16 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   D4 is worse mainly at deployment (own army .266 vs scripted deployer on the same armies .367).
   Oracle's lead is mostly deployment: the same Oracle army scores .856 with oracle deployment vs .331-.397 with PPO/scripted. All of this is on DEV/validation only (nothing from FINAL), diagnostic, no tuning.
 
+### STEP 10a: v2 redesign decision (BreachLens) -- DESIGN ONLY, no code
+- **Decision:** prototype frozen at git tag `prototype-v1` (commit ef43f63); redesign continues on branch `v2-redesign`. `master` untouched.
+  Design lives in [docs/SPEC_V2.md](docs/SPEC_V2.md): drone fleet vs automated citadel, 14x14, budget 240, 240 ticks, max 20 units, 52 border tiles,
+  5 units (Scout/Sniper/Bulwark/Blaster/Mender), Discrete(267), 9 channels + 11 state, 4 families (labyrinth held out), pool of 300 (180 DEV / 120 FINAL),
+  learners PPO / PPO+D4 / masked DDQN / policy-guided planner (N = 8, 32, 128), D4 TTA, "Why this move?", duel mode, blueprint-theme app.
+- **Why:** prototype PPO stayed far below Oracle (0.27 vs 0.93), D4 underfit, one unit (splash/tank) was weak in every tuning pass, and phase A used a single fixed army.
+  v2 targets those: explicit non-dominance/non-dead gates, random phase-A armies, equivariance-by-construction tie rules (split/abstain, no ids), larger step budget.
+- Unit stats and the 6 balance gates in the spec are PROPOSED, not tested. Training-time estimate (22-29 h wall for the full grid) is an extrapolation to be re-measured in build steps B2/B10.
+- 20 build steps (B1-B20) with a pytest requirement each are listed in the spec. Nothing is started until told.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -341,6 +351,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2: review docs/SPEC_V2.md on branch `v2-redesign`; B1 starts only when told.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
