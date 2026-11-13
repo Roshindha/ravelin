@@ -329,6 +329,11 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - B5 report per unit: effective hp/gold incl. armor (per defender type), dps/gold, threatening defenders, single-unit-army score table per family.
 - B21 README line uses placeholders AUTHOR_NAME / AUTHOR_URL; test fails until replaced.
 
+### STEP B1 (v2): scaffold, constants, action codec, border tiles (done, branch v2-redesign)
+- New package `breachlens/`: `constants.py` (14x14, budget 240, 240 ticks, cap 20, 52 border tiles, 5 unit names, Discrete(267) layout, obs shape constants 9ch/11 state), `actions.py` (clockwise border from top-left, `encode_buy`/`encode_deploy`/`decode_action`).
+- `tests/test_b1_constants.py` (14 tests): 52 unique clockwise contiguous edge tiles, codec bijection over 267, range errors, constants parsed from SPEC_V2 section 2 and compared. Full suite 153 passing (prototype tests untouched; `siege/` still present until B20).
+- No unit stats, simulator, env or layouts yet (B2+). Run: `.venv/bin/pytest tests/test_b1_constants.py`.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -367,7 +372,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: review docs/SPEC_V2.md on branch `v2-redesign`; B1 starts only when told.
+- v2: B1 done; B2 (units/combat core + simulator speed gate) starts only when told.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
