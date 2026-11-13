@@ -313,6 +313,14 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Unit stats and the 6 balance gates in the spec are PROPOSED, not tested. Training-time estimate (22-29 h wall for the full grid) is an extrapolation to be re-measured in build steps B2/B10.
 - 20 build steps (B1-B20) with a pytest requirement each are listed in the spec. Nothing is started until told.
 
+### STEP 10b: SPEC_V2 amendments (design only, no code)
+- Added gates **G7** (3 PPO seeds x 300k on TUNE must beat max(BestSingle, Greedy) by >= 0.05 score, 2/3 seeds, no collapse), **G8** (army search >= +0.10 and full Oracle >= +0.20 over best single unit, per familiar family), **G9** (LAB-DESIGN labyrinth: Oracle >= 0.60, Greedy 0.10-0.45). Thresholds are frozen in the spec; rationale from prototype seed spread (SD ~0.05-0.06) and the scattered_outposts finding that buying did not matter.
+- Design sets TUNE (180/60) and LAB-DESIGN (40) on disjoint seed streams; labyrinth FINAL generated only at B6 after a recorded `generator_hash`; content-hash disjointness test. Revision budget: 2 total, <= 1 in B5, 1 reserved for after G7.
+- Movement: exact tie-break chain for equal-length shortest paths (Euclid to target, turret cover, centroid, canonical-form fallback; always moves); pytest for no-deadlock on exact diagonals and D4-exactness in labyrinth.
+- Planner: nested N=8/32/128 prefixes, RAS-N (random-army search + scripted deploy) and RPS-N controls at equal N, cost estimate 1.2-2.4 h, 3-step fallback if projected > 3 h.
+- B2 speed gate: battle <= 60 ms mean, random loop >= 300 steps/s (=> >= 100 steps/s/job); else 150 ticks, then 12x12.
+- Step budget: from pilot slopes (table) capped by T_cap = 18000*r; shaped-reward fallback (potential-based preview) defined, used only if G7 fails; armies x deployers pilot diagnostic on TUNE-val; B20 removes siege/, B21 README with "Inspired by" line (source name needed from the owner).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
