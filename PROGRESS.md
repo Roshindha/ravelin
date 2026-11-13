@@ -278,6 +278,31 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   Oracle army counts were never stored; only gold shares from step 4 (DEV, 80 layouts/family, and transfer): ranger 28-40%, tank 25-31%, splash 23-34%, swarm 11-12%. PPO buys far more swarm (13-30% of gold, 5-6 units on scattered) and fewer rangers than the Oracle.
 - **5. Provenance confirmed:** final_eval_summary.json top-level `commit` = eval commit 6fe8366; the TRAINING commit 6c2a800 (dirty=false) is recorded per model in `models[].train_git_commit` (all 20), layouts sha256 e97cfbc7... matches train and eval. Nothing missing; no final_eval files rewritten.
 
+### STEP 9b: buy-vs-deploy decomposition (eval-only, DEV/validation layouts only)
+- `rl/diagnose_buy_deploy.py` + `tests/test_diagnose_buy_deploy.py` (5 tests). 60 layouts = 20 validation + 40 DEV-train (20/family, seed 9090). FINAL-familiar/transfer never loaded (test asserts). 4 workers, 73 s.
+  Outputs `results/diagnostics/9b/`: matrix.csv (ALL60 / validation / DEV-train-subset x family), episodes.csv, ranger_efficiency.csv, oracle_armies.json (60 armies + start tile), own_army_counts.csv, run.log.
+  Armies are forced via real buy actions + END_BUY; scripted deployer = `place_on_border(army in Greedy ranking order, _default_start_idx)`; Oracle deployer = oracle's own order + start tile (same search/seed/budget as steps 4/8).
+- Control check: own-buy x PPO reproduces final_eval.csv exactly (1200 episodes, max diff 0.0). Scripted x Greedy / best-single reproduce baselines_per_layout.csv.
+- **Matrix, mean destruction, 60 layouts (PPO cells: mean over 10 learners [95% CI]):**
+
+  | army \ deployer | PPO plain | PPO D4 | scripted | Oracle deploy |
+  |---|---|---|---|---|
+  | own buying | .399 [.384,.413] | .266 [.246,.289] | .382 / .367 (plain / D4 own armies) | - |
+  | Greedy army | .274 [.261,.288] | .205 [.182,.228] | .299 | - |
+  | DEV-chosen best single | .360 [.338,.380] | .320 [.309,.330] | .413 | - |
+  | Oracle army | .331 [.312,.345] | .203 [.169,.238] | .397 | .856 |
+
+  clustered_core: own .489/.249, Greedy .240/.116, best-single(splash) .233/.175, Oracle army .484/.256, scripted .447 (own) .307 .258 .466, oracle deploy .917.
+  scattered_outposts: own .309/.284, Greedy .307/.294, best-single(swarm) .486/.465, Oracle army .178/.150, scripted .316 (own) .291 .568 .328, oracle deploy .794.
+- **Ranger efficiency** (destruction per 100 gold, 8-ranger army): PPO plain .060, D4 .066, scripted .083 overall; clustered_core PPO .091/.113 vs scripted .042 (PPO better); scattered_outposts PPO .029/.020 vs scripted .124 (PPO ~4-6x worse).
+  Marginal ranger contribution inside own armies (destruction lost when rangers are removed, per 100 ranger gold): plain .434, D4 .225, scripted on plain's armies .385. So plain deploys rangers fine inside mixed armies; D4 does not; and a ranger-only army on scattered_outposts is where PPO fails.
+- **Training-distribution check:** phase A (first 1/3 = 333k steps) pre-bought ONLY the Greedy army (2 swarm + 6 tank). A test confirms the forced-buy state (grid + state vector, after END_BUY) is bit-identical to the phase-A observation, so case (b) is in-distribution for deployment.
+  Cases (c)/(d) are NOT: those post-buy states appear in training only if the policy itself bought such an army in phase B (its own armies, e.g. ~5-6 swarm on scattered, 2-3 rangers on clustered, never a 20-swarm, 8-ranger or oracle mix on demand). PPO-deployer numbers for (c)/(d) therefore mix "cannot deploy" with "off-distribution state"; treat as a lower bound on deployment skill.
+- **Interpretation:** clustered_core: buying is NOT the bottleneck (PPO's own army x PPO deploy .489 is its best cell; Oracle's army only matches it at .484; remaining 0.43 to the Oracle is deployment/ordering/start-tile that neither PPO nor the scripted deployer finds).
+  scattered_outposts: BUYING is the main bottleneck (a swarm army deployed by the plain script gets .568 vs .309 for PPO's own army; swapping the deployer on PPO's own army changes nothing: .309 vs .316), with a secondary deployment loss (swarm .486 PPO vs .568 scripted; rangers/splash badly deployed).
+  D4 is worse mainly at deployment (own army .266 vs scripted deployer on the same armies .367).
+  Oracle's lead is mostly deployment: the same Oracle army scores .856 with oracle deployment vs .331-.397 with PPO/scripted. All of this is on DEV/validation only (nothing from FINAL), diagnostic, no tuning.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
