@@ -110,13 +110,14 @@ def test_every_unit_defender_and_structure_stat_is_pinned():
              for k, v in raw["units"].items()}
     assert units == {
         "scout": (8, 16, 6, 12, 15, 0, ("building", "turret", "wall"), 0, 0, 0, 0),
-        "sniper": (24, 28, 12, 50, 10, 0, ("turret", "building", "wall"), 0, 0, 0, 0),
+        "sniper": (28, 28, 12, 50, 10, 0, ("turret", "building", "wall"), 0, 0, 0, 0),   # revision 1: cost 24 -> 28
         "bulwark": (30, 170, 16, 14, 7, 4, ("wall", "turret", "building"), 0, 0, 0, 0),
         "blaster": (36, 60, 26, 25, 7, 0, ("building", "wall", "turret"), 15, 50, 0, 0),
         "mender": (28, 40, 0, 0, 10, 0, (), 0, 0, 8, 20)}
     d = {k: (v["hp"], v["damage"], v["damage_neighbour"], v["min_range_x10"], v["max_range_x10"], v["period"], v["area"], v["splash_r_x10"]) for k, v in raw["defenders"].items()}
-    assert d == {"gun": (90, 12, 0, 0, 40, 1, False, 0), "lancer": (70, 18, 0, 20, 60, 1, False, 0), "flak": (100, 14, 7, 20, 50, 2, True, 15)}
-    assert raw["structures"] == {"wall_hp": 80, "core_hp": 200, "building_hp_default": 60} and raw["fixed_point_scale"] == 840
+    assert d == {"gun": (126, 12, 0, 0, 40, 1, False, 0), "lancer": (98, 18, 0, 20, 60, 1, False, 0), "flak": (140, 14, 7, 20, 50, 2, True, 15)}
+    assert raw["structures"] == {"wall_hp": 80, "core_hp": 840, "building_hp_default": 84} and raw["fixed_point_scale"] == 840   # revision 1
+    assert raw["units"]["sniper"]["class_damage_pct"] == {"building": 40, "wall": 40, "turret": 100} and raw["stats_version"] == "v2-rev1"
     assert raw["rules"] == {"stalemate_ticks": 12, "min_hit_hp": 1}
 
 

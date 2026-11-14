@@ -52,7 +52,7 @@ A drone fleet breaches an automated citadel. The agent buys a fleet under a budg
 | Unit | Cost | HP | Damage/tick | Range | Speed | Armor | Target pref. | Special |
 |---|---:|---:|---:|---:|---:|---:|---|---|
 | **Scout** | 8 | 16 | 6 | 1.2 | 1.5 | 0 | building > turret > wall | Cheap swarm body |
-| **Sniper** | 24 | 28 | 12 | 5.0 | 1.0 | 0 | turret > building > wall | Outranges range-4 turrets |
+| **Sniper** | 28 | 28 | 12 | 5.0 | 1.0 | 0 | turret > building > wall | Outranges range-4 turrets |
 | **Bulwark** | 30 | 170 | 16 | 1.4 | 0.7 | 4 | wall > turret > building | Flat −4 on each hit taken; draws turret fire (turrets shoot nearest unit) |
 | **Blaster** | 36 | 60 | 26 | 2.5 | 0.7 | 0 | building > wall > turret | Splash r = 1.5, 50 % falloff, hits structures only |
 | **Mender** | 28 | 40 | 0 | — | 1.0 | 0 | — (no attack) | Heals **nearest damaged ally within range 2 per tick**, 8 hp/tick |

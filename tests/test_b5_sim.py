@@ -17,7 +17,7 @@ def layout(buildings=(), core=(13, 13), walls=(), defenders=()):
 
 
 def test_sim_code_version_bumped_and_changes_sim_version():
-    assert K.SIM_CODE_VERSION == "breachlens-sim-b5.0"
+    assert K.SIM_CODE_VERSION == "breachlens-sim-b5.1-rev1"
     old = "breachlens-sim-b3.0"
     import hashlib
     h = hashlib.sha256(); h.update(K.STATS_PATH.read_bytes()); h.update(b"\x00"); h.update(old.encode())

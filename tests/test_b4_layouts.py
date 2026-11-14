@@ -65,13 +65,20 @@ def test_every_layout_passes_every_acceptance_rule():
 def test_core_and_every_building_reachable_without_breaking_walls_all_families():
     for n, rec, L in ALL:
         reach = Y.passable_reach(L)
-        assert tuple(L["core"]["cell"]) in reach, rec["id"]
+        assert tuple(L["core"]["cell"]) in reach or Y.is_sealed(L), rec["id"]     # revision 1: ~50 % of layouts have a sealed core (the only waiver)
         assert all(tuple(b["cell"]) in reach for b in L["buildings"]), rec["id"]
 
 
 def test_labyrinth_core_is_deep_and_the_path_is_long():
     from collections import deque
     for rec, L in SETS["LAB-DESIGN"]:
+        if Y.is_sealed(L):      # revision 1: sealing only adds ring walls to the unsealed twin (same seed); the depth rule is measured on the twin
+            old = Y.GEN_PARAMS["sealed_fraction"]
+            Y.GEN_PARAMS["sealed_fraction"] = 0.0
+            try:
+                L = Y.candidate("labyrinth", rec["seed"])
+            finally:
+                Y.GEN_PARAMS["sealed_fraction"] = old
         walls = set(map(tuple, L["walls"]))
         ok = lambda r, c: 0 <= r < GRID and 0 <= c < GRID and (r, c) not in walls
         dist = {}
@@ -92,7 +99,9 @@ def test_labyrinth_core_is_deep_and_the_path_is_long():
 
 def test_counts_value_weights_and_defender_mix_in_range():
     for n, rec, L in ALL:
-        rc = Y.COUNT_RANGES[rec["family"]]
+        rc = dict(Y.COUNT_RANGES[rec["family"]])
+        if Y.is_sealed(L):                    # revision 1: sealed layouts may carry the 8 ring walls on top of the family maximum
+            rc["walls"] = (rc["walls"][0], rc["walls"][1] + 8)
         for key, v in (("buildings", len(L["buildings"])), ("defenders", len(L["defenders"])), ("walls", len(L["walls"])),
                        ("value_total", sum(b["value"] for b in L["buildings"]))):
             assert rc[key][0] <= v <= rc[key][1], (rec["id"], key, v)
@@ -123,7 +132,8 @@ def _good():
     return Y.candidate("bunker_nest", Y.stream_range("T", "bunker_nest")[0] + 5)
 
 
-def test_rules_reject_bad_layouts():
+def test_rules_reject_bad_layouts(monkeypatch):
+    monkeypatch.setitem(Y.GEN_PARAMS, "sealed_fraction", 0.0)    # the sealed-core waiver is off: a walled-in core must be rejected
     L = _good()
     assert Y.check(L, "bunker_nest") == []
     E = {"buildings": [], "core": {"cell": (6, 6)}, "walls": [], "defenders": []}

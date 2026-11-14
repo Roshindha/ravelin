@@ -33,8 +33,12 @@ def _cfg_with(mod):
 
 # ------------------------------------------------------------------ class-damage multiplier
 def test_default_class_pct_is_100_and_stats_file_is_unchanged_by_the_feature():
-    assert all(u.class_pct == (100, 100, 100) for u in K.CFG.units) and K.CFG.unit_cap == 20
-    assert "class_damage_pct" not in json.loads(K.STATS_PATH.read_text())["units"]["sniper"]
+    # revision 1 (R2a): only the Sniper has a class-damage multiplier; every other unit is 100 %, the cap stays 20
+    assert all(u.class_pct == (100, 100, 100) for u in K.CFG.units if u.name != "sniper") and K.CFG.unit_cap == 20
+    assert K.CFG.units[SNIPER].class_pct == (40, 100, 40)
+    raw = json.loads(K.STATS_PATH.read_text())["units"]
+    assert raw["sniper"]["class_damage_pct"] == {"building": 40, "wall": 40, "turret": 100}
+    assert all("class_damage_pct" not in v for k, v in raw.items() if k != "sniper")
 
 
 def test_sniper_deals_40_percent_to_buildings_walls_core_and_100_to_turrets():
@@ -44,14 +48,23 @@ def test_sniper_deals_40_percent_to_buildings_walls_core_and_100_to_turrets():
     assert cfg.units[SNIPER].class_pct == (40, 100, 40) and cfg.units[SCOUT].class_pct == (100, 100, 100)
     L = layout(buildings=[((6, 6), 1)], core=(6, 7))
     army = [(SNIPER, 20)]
-    full, cut = simulate(Prepared(L), army), simulate(Prepared(L, cfg), army)
+    cfg100 = _cfg_with(lambda raw: raw["units"]["sniper"].pop("class_damage_pct"))      # revision 1 ships the 40 % Sniper; this is the 100 % reference
+    full, cut = simulate(Prepared(L, cfg100), army), simulate(Prepared(L, cfg), army)
     assert full.core_destroyed and cut.core_destroyed and cut.ticks > full.ticks * 2          # ~2.5x slower on buildings and the core
     # vs a turret: 100 % (4 Snipers next to a Gun kill it in 2 ticks and lose nobody); the same cfg with turret 40 % kills it in ~5 ticks and loses a Sniper
     Lt = layout(buildings=[((12, 12), 1)], core=(12, 11), defenders=[((1, 3), "gun")])
     four = [(SNIPER, t) for t in (2, 3, 4, 5)]
-    cfg_all40 = _cfg_with(lambda raw: raw["units"]["sniper"].__setitem__("class_damage_pct", {"building": 40, "wall": 40, "turret": 40}))
+    # the turret scenario was calibrated on the revision-0 Gun (hp 90; revision 1 ships 126), so pin the Gun hp to 90 here
+    def gun90(extra):
+        def m(raw):
+            raw["defenders"]["gun"]["hp"] = 90
+            extra(raw)
+        return _cfg_with(m)
+    c100 = gun90(lambda raw: raw["units"]["sniper"].pop("class_damage_pct"))
+    c40t100 = gun90(lambda raw: None)
+    cfg_all40 = gun90(lambda raw: raw["units"]["sniper"].__setitem__("class_damage_pct", {"building": 40, "wall": 40, "turret": 40}))
     alive = lambda c: simulate(Prepared(Lt, c), four, max_ticks=7).units_alive
-    assert alive(K.CFG) == 4 and alive(cfg) == 4 and alive(cfg_all40) < 4
+    assert alive(c100) == 4 and alive(c40t100) == 4 and alive(cfg_all40) < 4
     # exact integers: 40 % of the 12-damage hit is an exact multiple of the fixed-point scale split
     S = K.CFG.S
     assert (12 * S) * 40 // 100 * 100 == 12 * S * 40
@@ -102,14 +115,18 @@ def _stream_layouts(fam, n=60):
     return [(lo + i, Y.candidate(fam, lo + i)) for i in range(n)]
 
 
-def test_sealed_fraction_zero_is_bit_identical_and_draws_nothing():
-    assert Y.GEN_PARAMS["sealed_fraction"] == 0.0 and not Y.gen_override_active()
+def test_sealed_fraction_zero_is_bit_identical_and_draws_nothing(monkeypatch):
+    # revision 1 ships sealed_fraction 0.5 (stored sets are reproduced by the defaults); 0.0 must draw nothing: no sealed core except by chance
+    assert Y.GEN_PARAMS["sealed_fraction"] == 0.5 and Y.GEN_PARAMS["lancer_share"] == 0.4 and Y.GEN_PARAMS["island_gap"] == 4 and not Y.gen_override_active()
     rec = Y.load_design_sets_meta()["sets"]["TUNE-train"][0]
     assert Y.content_hash(Y.generate(rec["family"], rec["seed"])) == rec["content_hash"]
+    monkeypatch.setitem(Y.GEN_PARAMS, "sealed_fraction", 0.0)
+    assert not any(Y.is_sealed(Y.candidate("spine_pods", sd)) for sd, _ in _stream_layouts("spine_pods", 40))
 
 
 @pytest.mark.parametrize("fam", Y.FAMILIES)
 def test_sealed_layouts_enclose_the_core_keep_counts_and_relax_only_for_sealed(fam, monkeypatch):
+    monkeypatch.setitem(Y.GEN_PARAMS, "sealed_fraction", 0.0)
     base = {sd: Y.candidate(fam, sd) for sd, _ in _stream_layouts(fam)}
     monkeypatch.setitem(Y.GEN_PARAMS, "sealed_fraction", 0.5)
     n_sealed = n_ok = 0

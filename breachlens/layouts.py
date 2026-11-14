@@ -56,12 +56,13 @@ COUNT_RANGES = {   # (min, max) inclusive
     "bunker_nest": {"buildings": (4, 9),  "defenders": (7, 13), "walls": (36, 60), "value_total": (7, 22)},
     "labyrinth":   {"buildings": (3, 6),  "defenders": (4, 8),  "walls": (30, 90), "value_total": (5, 16)},
 }
-# Generator parameters that revisions may change (spec 3.5 iteration rule). The defaults ARE the current revision's values; with
-# lancer_share None and defender_count_mult 1.0 the generators are bit-identical to revision 0 (no extra rng draw).
-GEN_PARAMS = {"lancer_share": None,        # None = revision-0 rule (Lancer 0-2 per layout w.p. LANCER_P); a number = target share of defenders that are Lancers
+# Generator parameters that revisions may change (spec 3.5 iteration rule). The defaults ARE the current revision's values (revision 1 = R2a:
+# Lancer share 0.4, sealed cores 0.5). Revision 0 was lancer_share None, sealed_fraction 0.0 (bit-identical to the original generators).
+GENERATOR_VERSION = "v2-rev1"   # bump on ANY change to generator behaviour or GEN_PARAMS defaults
+GEN_PARAMS = {"lancer_share": 0.4,        # None = revision-0 rule (Lancer 0-2 per layout w.p. LANCER_P); a number = target share of defenders that are Lancers
               "defender_count_mult": 1.0,  # multiplies every family's defender count (and the accepted defender range)
               "island_gap": 4,             # B5-R2: archipelago minimum island-center Chebyshev spacing (4 = revision 0, bit-identical)
-              "sealed_fraction": 0.0}      # B5-R1b: fraction of layouts whose core is enclosed by a ring of 8 walls (separate rng stream: 0.0 draws nothing)
+              "sealed_fraction": 0.5}      # B5-R1b: fraction of layouts whose core is enclosed by a ring of 8 walls (separate rng stream: 0.0 draws nothing)
 if os.environ.get("BREACHLENS_GEN_PARAMS"):     # exploration hook (B5-R1 sweep only); the gate run asserts it is unset
     GEN_PARAMS.update(json.loads(os.environ["BREACHLENS_GEN_PARAMS"]))
 

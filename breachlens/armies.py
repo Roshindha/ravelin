@@ -38,7 +38,7 @@ def random_army(rng, layout: dict, min_units: int = 10, max_units: int = 20, bud
 # Simple scripted army (a fixed mixed composition, clustered on consecutive free border tiles starting at the
 # tile nearest the core; all choices are D4-covariant). Counts are fixed by this table; the spend is derived from
 # config (2 Bulwark + 2 Sniper + 2 Blaster + 1 Mender + 4 Scout = 240 gold at the current stats).
-SCRIPTED_COMPOSITION = (("bulwark", 2), ("sniper", 2), ("blaster", 2), ("mender", 1), ("scout", 4))
+SCRIPTED_COMPOSITION = (("bulwark", 2), ("sniper", 2), ("blaster", 2), ("mender", 1), ("scout", 3))   # revision 1: Sniper cost 28 -> 3 Scouts keep the army within the 240 budget (was 4 = 248)
 
 
 def scripted_army(layout: dict) -> list:

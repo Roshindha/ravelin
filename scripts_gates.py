@@ -16,8 +16,8 @@ from breachlens import layouts as Y
 from breachlens.acceptance import thresholds
 from breachlens.config import sim_version
 
-REVISION = 0   # B5 design revision number (0 = the spec's initial design; 1 = B5-R1, see REVISION_NOTES); incremented only by the owner's decision
-REVISION_NOTES = {0: 'initial design', 1: 'B5-R1: see data/v2/b5r1_sweep/sweep_summary.md (chosen arm applied)'}
+REVISION = 1   # B5 design revision number (0 = the spec's initial design; 1 = B5-R1, see REVISION_NOTES); incremented only by the owner's decision
+REVISION_NOTES = {0: 'initial design', 1: 'B5-R2b: R2a applied (hp x1.4, Lancer ~40%, Sniper 40% vs bldg/wall/core, sealed cores 50%, core hp x3, Sniper cost 28); waiver SPEC 3.4 (f)'}
 
 
 def fmt_ci(b, p=3):
@@ -105,10 +105,18 @@ def markdown(rep) -> str:
     for f, v in rep["wall_metrics"].items():
         t = v["family_totals"]
         L.append(f"| {f} | {t['single_unit_armies']['wall_share_of_alive_attacker_unit_ticks']:.3f} | {t['single_unit_armies']['share_of_battle_ticks_any_wall_attack']:.3f} | {t['oracle_armies']['wall_share_of_alive_attacker_unit_ticks']:.3f} | {t['oracle_armies']['share_of_battle_ticks_any_wall_attack']:.3f} |")
+    L.append("\n### Monotone ban-loss of every unit in every family (mean [95% CI]; one-sided 98.75% lower bound; reported, only the 3 TUNE families gate G2)\n")
+    L.append("| unit | " + " | ".join(rep["ban_loss_all"]["families"]) + " |\n|---|" + "---|" * len(rep["ban_loss_all"]["families"]))
+    for u in G.UNIT_TYPES:
+        L.append(f"| {u} | " + " | ".join(f"{fmt_ci(rep['ban_loss_all']['table'][f'{u}/{f}'])} (1s lo {rep['ban_loss_all']['table'][f'{u}/{f}']['lo_1s']:.3f})" for f in rep["ban_loss_all"]["families"]) + " |")
     L.append("\n## 6. Oracle / baselines per family\n")
     L.append("| set | Oracle mean | Oracle breach | Oracle units | Oracle counts s/sn/b/bl/m | army-search mean | Greedy mean |\n|---|---|---|---|---|---|---|")
     for f, v in rep["oracle_summary"].items():
         L.append(f"| {f} | {v['oracle_mean_score']:.3f} | {v['oracle_breach_rate']:.2f} | {v['oracle_mean_units']:.1f} | {', '.join(f'{x:.1f}' for x in v['oracle_mean_unit_counts'])} | {v['army_search_mean_score']:.3f} | {v['greedy_mean_score']:.3f} |")
+    L.append("\n**Gold share of each unit in Oracle armies** (pooled gold / mean of per-layout shares)\n")
+    L.append("| set | " + " | ".join(G.UNIT_TYPES) + " |\n|---|" + "---|" * 5)
+    for f, v in rep["oracle_summary"].items():
+        L.append(f"| {f} | " + " | ".join(f"{v['oracle_gold_share_pooled'][u]:.3f} / {v['oracle_gold_share_mean_per_layout'][u]:.3f}" for u in G.UNIT_TYPES) + " |")
     L.append("\n## 7. Defender mix per family and generator-rule checks (spec 3.1b)\n")
     L.append("| family | layouts | mean defenders | gun / lancer / flak total | share with Lancer | share with Flak | gun majority |\n|---|---|---|---|---|---|---|")
     for f, v in rep["defender_mix"].items():
@@ -122,7 +130,7 @@ def markdown(rep) -> str:
     return "\n".join(L) + "\n"
 
 
-def build_report(raw, record_hash=True, git=None):
+def build_report(raw, record_hash=False, git=None):   # B5-R2b: generator_hash is never recorded unless the owner asks (--record-hash)
     th = thresholds()
     gates = G.compute_gates(raw, th)
     meta_sets = Y.load_design_sets_meta()
@@ -133,6 +141,7 @@ def build_report(raw, record_hash=True, git=None):
         "thresholds": th, "gates": gates, "unit_static": G.unit_static_report(), "single_unit_table": G.single_unit_table(raw, th),
         "wall_metrics": G.wall_table(raw), "oracle_summary": G.oracle_summary(raw), "defender_mix": mix, "defender_mix_rules": G.defender_mix_rules(mix),
         "stat_acceptance": meta_sets["stat_acceptance"],
+        "ban_loss_all": {"families": list(Y.FAMILIAR) + ["LAB-DESIGN"], "table": G.ban_loss_all_families(raw, th)},
     }
     if gates["all_pass"] and record_hash:
         (G.DATA / "generator_hash.json").write_text(json.dumps({"generator_hash": rep["meta"]["generator_hash"], "source": "breachlens/layouts.py (sha256)",
@@ -158,6 +167,6 @@ if __name__ == "__main__":
     else:
         raw = G.run_raw(G.design_tasks())
         (G.DATA / "b5_raw.json").write_text(json.dumps({"sim_version": sim_version(), "layouts": raw}) + "\n")
-    rep = build_report(raw, git=git0)
+    rep = build_report(raw, record_hash="--record-hash" in sys.argv, git=git0)
     write_outputs(raw, rep)
     print(f"done in {time.time() - t0:.0f}s; all_pass={rep['gates']['all_pass']} failed={rep['gates']['failed']}")

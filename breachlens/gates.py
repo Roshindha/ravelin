@@ -447,6 +447,23 @@ def defender_mix_rules(mix: dict) -> dict:
     return r
 
 
+def _gold_shares(rows):
+    """(pooled gold share, mean per-layout gold share) of each of the 5 units in the full Oracle's armies."""
+    cost = np.array([CFG.units[t].cost for t in range(5)], float)
+    gold = np.array([np.array(r["oracle"]["all"]["counts"], float) * cost for r in rows])
+    return (gold.sum(axis=0) / max(gold.sum(), 1)).tolist(), (gold / np.maximum(gold.sum(axis=1, keepdims=True), 1)).mean(axis=0).tolist()
+
+
+def ban_loss_all_families(raw, th, estimator=None) -> dict:
+    """Reported (not gating): monotone ban-loss of EVERY unit in EVERY family, labyrinth = LAB-DESIGN (B5-R2b report requirement)."""
+    estimator = estimator or th["G2"]["estimator"]
+    out = {}
+    for name, rows in {**{f: _tune(raw, f) for f in FAM3}, "LAB-DESIGN": _rows(raw, "labyrinth", ("LAB-DESIGN",))}.items():
+        for u in range(5):
+            out[f"{UNIT_TYPES[u]}/{name}"] = bootstrap_mean(ban_loss_values(rows, u, estimator), th)
+    return out
+
+
 def oracle_summary(raw) -> dict:
     out = {}
     cols = {**{f: _tune(raw, f) for f in FAM3}, "LAB-DESIGN": _rows(raw, "labyrinth", ("LAB-DESIGN",))}
@@ -455,6 +472,8 @@ def oracle_summary(raw) -> dict:
                      "oracle_breach_rate": float(np.mean([r["oracle"]["all"]["breach"] for r in rows])),
                      "oracle_mean_units": float(_col(rows, lambda r: r["oracle"]["all"]["units"]).mean()),
                      "oracle_mean_unit_counts": np.mean([r["oracle"]["all"]["counts"] for r in rows], axis=0).tolist(),
+                     "oracle_gold_share_pooled": dict(zip(UNIT_TYPES, _gold_shares(rows)[0])),     # B5-R2b: each unit's share of the gold spent in Oracle armies
+                     "oracle_gold_share_mean_per_layout": dict(zip(UNIT_TYPES, _gold_shares(rows)[1])),
                      "army_search_mean_score": float(_col(rows, lambda r: r["army_search"]["score"]).mean()),
                      "greedy_mean_score": float(_col(rows, lambda r: r["greedy"]["score"]).mean()),
                      "oracle_exit_reasons": dict(Counter(r["oracle"]["all"]["reason"] for r in rows))}

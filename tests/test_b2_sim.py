@@ -103,7 +103,7 @@ def test_range_sniper_attacks_at_its_range_scout_must_close_in():
     r_sc = simulate(L, [(SCOUT, 3)], record=True, max_ticks=1)
     assert r_sn.trace[0][0][2] == 2          # attacked on tick 0
     assert r_sc.trace[0][0][2] in (0, 1)     # did not attack
-    assert r_sn.struct_hp[0] == CFG.building_hp_default - sn.damage
+    assert r_sn.struct_hp[0] == CFG.building_hp_default - sn.damage * sn.class_pct[0] // 100   # revision 1: Sniper deals 40 % to buildings
     assert r_sc.struct_hp[0] == CFG.building_hp_default
 
 

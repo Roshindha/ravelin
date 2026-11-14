@@ -53,7 +53,7 @@ def test_oracle_is_deterministic_legal_and_reproduces_its_own_score():
         b = O.oracle_search(L, O.oracle_rng(rec["seed"]), warm_starts=warm_starts())
         assert (a.score, a.types, a.start, a.sims) == (b.score, b.types, b.start, b.sims)
         _legal(a, L)
-        assert simulate(P, list(a.army)).score == a.score
+        assert simulate(P, list(a.army)).score == pytest.approx(a.score, abs=1e-12)   # sim float vs exact-integer key / den: may differ by 1 ulp
         assert a.sims <= O.N_RANDOM + O.N_REFINE + len(warm_starts())
 
 
@@ -63,7 +63,7 @@ def test_oracle_never_below_any_warm_start_and_banned_type_never_used():
         res = O.oracle_search(L, O.oracle_rng(rec["seed"]), prepared=P, warm_starts=warm_starts())
         for types, start in warm_starts():
             army = place_on_border(L, list(types), start)
-            assert res.score >= simulate(P, army).score
+            assert res.score >= simulate(P, army).score - 1e-12     # exact ranking is by integer key; floats may differ by 1 ulp
         for ban in range(5):
             allowed = tuple(t for t in range(5) if t != ban)
             rb = O.oracle_search(L, O.oracle_rng(rec["seed"]), allowed=allowed, warm_starts=warm_starts(), prepared=P)
