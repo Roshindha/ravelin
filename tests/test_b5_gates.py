@@ -205,7 +205,8 @@ def test_design_sets_are_disjoint_from_stream_F_every_pool_and_the_ledger_is_emp
         assert not ({r["seed"] for r in recs} & {r["seed"] for r in all_recs})
     ledger = DATA / "final_access.log"
     # B6: the ledger now holds the pool-build entries; it must hold no agent evaluation (purpose "eval")
-    assert all(json.loads(x)["purpose"] == "build" for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip())
+    _e = [json.loads(x) for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip()]
+    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 4
     src = (ROOT / "breachlens" / "acceptance.py").read_text() + (ROOT / "breachlens" / "gates.py").read_text()
     assert 'assert stream in ("T", "L")' in src
 

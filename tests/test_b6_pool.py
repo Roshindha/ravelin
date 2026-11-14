@@ -23,13 +23,23 @@ DESIGN_RECS = [r for v in DESIGN["sets"].values() for r in v]
 
 @pytest.fixture
 def tmp_ledger(tmp_path, monkeypatch):
-    """Tests that load FINAL layouts write to a throwaway ledger, never to data/v2/final_access.log."""
+    """Throwaway ledger for REFUSAL tests and synthetic-record tests only: no test loads FINAL layout content (that goes to the real ledger)."""
     p = tmp_path / "final_access.log"
-    monkeypatch.setenv("BREACHLENS_FINAL_LEDGER", str(p))
+    monkeypatch.setattr(P, "LEDGER_PATH", p)
     return p
 
 
 # ------------------------------------------------------------------ frozen generators / stats
+GENERATOR_HASH_LITERAL = "49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095"
+
+
+def test_generator_hash_equals_the_literal_frozen_value():
+    from breachlens.gates import generator_hash
+    assert generator_hash() == GENERATOR_HASH_LITERAL
+    assert json.loads((ROOT / "data/v2/generator_hash.json").read_text())["generator_hash"] == GENERATOR_HASH_LITERAL
+    assert DOC["generator_hash"] == GENERATOR_HASH_LITERAL
+
+
 def test_generators_and_stats_match_the_b5_record():
     rec = json.loads((ROOT / "data/v2/generator_hash.json").read_text())
     assert P.check_frozen()["generator_hash"] == rec["generator_hash"] == DOC["generator_hash"]
@@ -111,14 +121,13 @@ def test_walk_redraws_on_a_d4_collision_and_counts_it():
 
 
 # ------------------------------------------------------------------ acceptance under the current simulator
-def test_every_accepted_layout_is_still_accepted_and_final_stores_only_bits(tmp_ledger):
+def test_every_dev_layout_is_still_accepted():
+    """DEV only. The FINAL re-check is the manual script scripts_b6_verify_final.py (it writes to the real ledger; not part of the suite)."""
     for r in RECS:
-        rec = r
-        L = P.load_layout(rec, "build", purpose="build", entry_point="tests/test_b6_pool.py") if r["pool"] == "FINAL" else Y.generate(r["family"], r["seed"])
-        assert Y.check(L, r["family"]) == []
-        assert stat_check(L, r["seed"])["reasons"] == []           # result is used as a bit only; nothing is printed or stored
-    assert all(json.loads(x)["purpose"] == "build" for x in tmp_ledger.read_text().splitlines())
-    assert len(tmp_ledger.read_text().splitlines()) == 120       # one entry per FINAL load
+        if r["pool"] == "DEV":
+            L = Y.generate(r["family"], r["seed"])
+            assert Y.check(L, r["family"]) == []
+            assert stat_check(L, r["seed"])["reasons"] == []
 
 
 def test_final_candidate_log_holds_only_bits_and_rule_ids():
@@ -141,11 +150,93 @@ def test_final_candidate_log_holds_only_bits_and_rule_ids():
 
 # ------------------------------------------------------------------ ledger
 def test_ledger_has_build_entries_only_and_zero_eval():
-    entries = P.read_ledger(P.LEDGER_PATH)
-    assert len(entries) >= 4
-    assert all(e["purpose"] == "build" for e in entries) and sum(e["purpose"] == "eval" for e in entries) == 0
+    entries = P.read_ledger()
+    assert {e["purpose"] for e in entries} <= {"build"}
+    assert sum(e["purpose"] == "eval" for e in entries) == 0
+    assert sum(e["purpose"] == "build" for e in entries) == 4
     assert all({"time", "commit", "entry_point", "purpose"} <= set(e) for e in entries)
     assert {e["family"] for e in entries if e.get("action") == "walk"} == set(Y.FAMILIES)
+
+
+def test_ledger_path_cannot_be_redirected_in_non_test_code(monkeypatch, tmp_path):
+    import inspect
+    assert not hasattr(P, "ledger_path")
+    assert "path" not in inspect.signature(P.read_ledger).parameters
+    assert "path" not in inspect.signature(P.log_final_access).parameters
+    monkeypatch.setenv("BREACHLENS_FINAL_LEDGER", str(tmp_path / "x.log"))          # an env var must have no effect
+    before = P.LEDGER_PATH.read_bytes()
+    assert P.LEDGER_PATH == ROOT / "data" / "v2" / "final_access.log"
+    assert "BREACHLENS_FINAL_LEDGER" not in "".join(p.read_text() for p in _non_test_py())
+    assert P.LEDGER_PATH.read_bytes() == before
+
+
+def _non_test_py():
+    return [p for p in ROOT.rglob("*.py") if "tests" not in p.relative_to(ROOT).parts and ".venv" not in p.parts and "venv" not in p.parts
+            and "site-packages" not in p.parts]
+
+
+def _call_names(path):
+    import ast
+    names = set()
+    for n in ast.walk(ast.parse(path.read_text())):
+        if isinstance(n, ast.Call):
+            f = n.func
+            names.add(f.attr if isinstance(f, ast.Attribute) else getattr(f, "id", ""))
+    return names
+
+
+def test_no_code_outside_tests_loads_final_layouts_without_the_ledger():
+    import ast
+    allowed_generators = {"pool.py", "layouts.py", "gates.py", "acceptance.py", "scripts_b5r1_sweep.py", "scripts_b5r1b_sweep.py", "scripts_b5r3_sweep.py"}
+    pool_users = {"pool.py", "scripts_b6_build_pool.py", "scripts_b6_verify_final.py"}
+    for p in _non_test_py():
+        src = p.read_text()
+        calls = _call_names(p)
+        if calls & {"generate", "candidate"}:
+            assert p.name in allowed_generators, f"{p} generates layouts but is not on the audited list"
+        if p.name not in pool_users:
+            assert not (calls & {"load_layout", "load_pool_records", "build_pool", "walk", "verify_final_acceptance", "final_range"}), p
+            assert "pool_v1" not in src and "POOL_PATH" not in src and "FINAL_OFFSET" not in src, p
+            if p.name != "pool.py":
+                assert 'stream_range("F"' not in src and "stream_range('F'" not in src, p      # only pool.py walks stream F
+    # inside pool.py: every function that generates layouts logs first (a walk is preceded by a ledger entry in build_pool)
+    tree = ast.parse((ROOT / "breachlens" / "pool.py").read_text())
+    for fn in [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ("load_layout", "verify_final_acceptance")]:
+        calls = [(c.lineno, c.func.attr if isinstance(c.func, ast.Attribute) else getattr(c.func, "id", "")) for c in ast.walk(fn) if isinstance(c, ast.Call)]
+        log = min(l for l, n in calls if n == "log_final_access")
+        gen = min(l for l, n in calls if n == "generate")
+        assert log < gen, fn.name
+    bp = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "build_pool")
+    walks = sorted(c.lineno for c in ast.walk(bp) if isinstance(c, ast.Call) and getattr(c.func, "id", "") == "walk")
+    logs = sorted(c.lineno for c in ast.walk(bp) if isinstance(c, ast.Call) and getattr(c.func, "id", "") == "log_final_access")
+    assert len(walks) == 3 and len(logs) == 2          # DEV walk (no ledger), FINAL-familiar loop walk, labyrinth walk
+    assert logs[0] < walks[1] < logs[1] < walks[2]     # each FINAL walk is preceded by its ledger entry
+
+
+def test_final_load_writes_the_ledger_before_any_layout_content_exists(monkeypatch):
+    """Runtime: the ledger call precedes generation. The ledger call is stubbed to raise, so no FINAL layout is ever generated by this test."""
+    class Logged(Exception):
+        pass
+
+    def stub(*a, **k):
+        raise Logged
+
+    def no_gen(*a, **k):
+        raise AssertionError("layout content generated before the ledger entry")
+    monkeypatch.setattr(P, "log_final_access", stub)
+    monkeypatch.setattr(Y, "generate", no_gen)
+    monkeypatch.setattr(Y, "candidate", no_gen)
+    with pytest.raises(Logged):
+        P.load_layout(FINAL_REC, "build", purpose="build")
+    with pytest.raises(Logged):
+        P.verify_final_acceptance()
+    with pytest.raises(Logged):
+        P.load_pool_records("FINAL-familiar", "build", purpose="build")
+
+
+def test_log_writes_one_line_to_the_module_ledger_path(tmp_ledger):
+    e = P.log_final_access("build", "tests", {"id": "synthetic-0"})      # synthetic id: no layout content involved
+    assert P.read_ledger() == [e] and tmp_ledger.read_text().count("\n") == 1
 
 
 def test_log_rejects_unknown_purpose(tmp_ledger):
@@ -204,10 +295,7 @@ def test_eval_needs_unlock_and_matching_purpose_and_build_cannot_eval(tmp_ledger
         P.load_layout(FINAL_REC, "eval", purpose="build", unlock=True)
     with pytest.raises(PermissionError):
         P.load_layout(FINAL_REC, "build")                                      # no purpose
-    assert not tmp_ledger.exists()
-    L = P.load_layout(FINAL_REC, "build", purpose="build", entry_point="t")
-    assert Y.check(L, FINAL_REC["family"]) == []
-    assert [e["purpose"] for e in P.read_ledger(tmp_ledger)] == ["build"]
+    assert not tmp_ledger.exists()                                            # refusals leave no entry; the allowed path is covered with a stub below
 
 
 def test_dev_sampler_never_yields_final_or_labyrinth():

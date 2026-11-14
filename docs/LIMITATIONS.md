@@ -33,3 +33,4 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - D4 duplicate redraws against all other sets: 0 in every walk. Zero overlaps with TUNE-train, TUNE-val, LAB-DESIGN.
 - DEV defender mix (DEV only): Gun share 0.59 / 0.54 / 0.59, Lancer 0.38 / 0.34 / 0.39 (spine_pods / archipelago / bunker_nest); sealed-core share 0.42 / 0.65 / 0.50.
 - FINAL scores, baselines and Oracle results are not stored anywhere; the pool carries accept bits and rule ids only. Pool statistics of FINAL cannot be reported before the final eval.
+- Freeze guarantee: the sha256 test (`test_pool_file_is_read_only_and_sha256_matches`, against `pool_v1.sha256` and the recorded hash), not file permissions, is what guarantees the pool is frozen. The 0444 mode is a convenience; anyone can chmod it. Likewise the ledger is an append-only convention, not an access-control mechanism; its integrity is checked by tests (build entries only, zero eval).

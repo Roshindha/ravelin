@@ -90,10 +90,6 @@ def check_frozen() -> dict:
 
 
 # ---------------------------------------------------------------- FINAL-access ledger
-def ledger_path() -> Path:
-    return Path(os.environ.get("BREACHLENS_FINAL_LEDGER") or LEDGER_PATH)
-
-
 def _git(*a) -> str:
     try:
         return subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
@@ -107,18 +103,17 @@ def log_final_access(purpose: str, entry_point: str, detail: dict | None = None)
         raise ValueError(purpose)
     entry = {"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "commit": _git("rev-parse", "HEAD"),
              "dirty": bool(_git("status", "--porcelain")), "entry_point": entry_point, "purpose": purpose, **(detail or {})}
-    p = ledger_path()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "a") as f:
+    # The ledger location is the module constant LEDGER_PATH: no env var, argument or helper can redirect it in non-test code.
+    LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(LEDGER_PATH, "a") as f:
         f.write(json.dumps(entry, sort_keys=True) + "\n")
     return entry
 
 
-def read_ledger(path: Path | None = None) -> list[dict]:
-    p = Path(path) if path else ledger_path()
-    if not p.exists():
+def read_ledger() -> list[dict]:
+    if not LEDGER_PATH.exists():
         return []
-    return [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
+    return [json.loads(x) for x in LEDGER_PATH.read_text().splitlines() if x.strip()]
 
 
 # ---------------------------------------------------------------- role-guarded loaders
@@ -168,6 +163,28 @@ def load_layout(rec: dict, role: str, purpose: str | None = None, unlock: bool =
     L = Y.generate(rec["family"], rec["seed"])
     assert Y.content_hash(L) == rec["content_hash"], f"layout content changed for {rec['id']}"
     return L
+
+
+def verify_final_acceptance(entry_point: str = "scripts_b6_verify_final.py") -> dict:
+    """Manual build check (never run by the test suite): re-run acceptance on every FINAL / transfer layout of the frozen pool.
+    Refuses if the ledger holds any 'eval' entry; writes ONE 'build' entry to the real ledger; returns counts only
+    ({family: {n, accepted}}, {rule id: rejections}), no score, baseline or Oracle value."""
+    if any(e.get("purpose") == "eval" for e in read_ledger()):
+        raise PermissionError("ledger contains an 'eval' entry: FINAL has been used for evaluation; refusing to re-check")
+    recs = [r for r in json.loads(POOL_PATH.read_text())["records"] if r["split"] in FINAL_SPLITS]
+    log_final_access("build", entry_point, {"action": "verify_final_acceptance", "n": len(recs)})
+    fam: dict = {}
+    rules: dict = {}
+    for r in recs:
+        L = Y.generate(r["family"], r["seed"])
+        assert Y.content_hash(L) == r["content_hash"], f"layout content changed for {r['id']}"
+        bad = list(Y.check(L, r["family"])) or list(stat_check(L, r["seed"])["reasons"])
+        d = fam.setdefault(r["family"], {"n": 0, "accepted": 0})
+        d["n"] += 1
+        d["accepted"] += not bad
+        for b in bad:
+            rules[b] = rules.get(b, 0) + 1
+    return {"per_family": fam, "rejections_per_rule": rules}
 
 
 def dev_records(role: str, path: Path = POOL_PATH) -> list[dict]:
