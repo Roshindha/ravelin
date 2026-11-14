@@ -237,7 +237,7 @@ def test_content_hash_is_d4_canonical_and_catches_a_regenerated_duplicate():
 
 def test_final_access_ledger_has_no_entries_from_this_step(tmp_path):
     ledger = ROOT / "data" / "v2" / "final_access.log"
-    assert (not ledger.exists()) or ledger.read_text().strip() == ""
+    assert all(json.loads(x)["purpose"] == "build" for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip())   # B6: build entries only
     bad = copy.deepcopy(META)                              # the loader refuses a stream-F seed
     rec = bad["sets"]["TUNE-train"][0]
     rec["seed"] = Y.stream_range("F", "spine_pods")[0]
@@ -245,7 +245,7 @@ def test_final_access_ledger_has_no_entries_from_this_step(tmp_path):
     p.write_text(json.dumps(bad))
     with pytest.raises(PermissionError):
         Y.load_design_set("TUNE-train", "spine_pods", path=p)
-    assert (not ledger.exists()) or ledger.read_text().strip() == ""
+    assert all(json.loads(x)["purpose"] == "build" for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip())   # B6: build entries only
 
 
 # ------------------------------------------------------------------ contact sheets

@@ -437,6 +437,16 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - `data/v2/generator_hash.json`: generator_hash 49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095, commit f1bf4ad, revision 1, documented_failing_gates [G2, G3, G8].
 - Full plain `pytest`: `343 passed in 395.37s (0:06:35)`, exit 0.
 
+### STEP B6 (v2): 300-layout pool built from stream F and frozen; FINAL never scored, ledger has build entries only
+- `breachlens/pool.py` (loaders, ledger, walk), `scripts_b6_build_pool.py`, `tests/test_b6_pool.py` (22 tests). `layouts.py` untouched, so `generator_hash` 49b8a18c... and stats version 3048422b... equal data/v2/generator_hash.json / design_sets.json (`check_frozen()` runs at build and in a test).
+- Pool: DEV-train 50/50/50 + DEV-validation 10/10/10 + FINAL-familiar 20/20/20 (spine_pods / archipelago / bunker_nest) + FINAL-transfer labyrinth 60 = 300. Stream F of each family is split: DEV = first 500k seeds, FINAL = last 500k (labyrinth FINAL only); within a walk the first 50 accepted = train, next 10 = validation.
+- Acceptance as in the gate runs (structural rules + too_hard + single_type_trivial). Workers return rule ids only; FINAL stores accept bit + rule ids (`walk.*.candidate_bits`). D4 duplicate check against TUNE-train, TUNE-val, LAB-DESIGN and the pool: 0 redraws in every walk, 0 overlaps.
+- Candidates (accepted/candidates): DEV 60/67, 60/223, 60/77; FINAL 20/23, 20/79, 20/23, labyrinth 60/94. Rejection counts per rule are in docs/LIMITATIONS.md.
+- Ledger `data/v2/final_access.log`: 4 entries, all purpose=build (one walk per FINAL family / labyrinth), zero eval. Loader role guards: train / validation / tuning raise PermissionError on FINAL / transfer ids; eval needs unlock + purpose eval.
+- Freeze: `data/v2/pool_v1.json` read-only (0444), sha256 1346536dea209eb7953eb00eb0d69f24bed930a2a81d89daea7ec1b705f834e4 in `pool_v1.sha256`. Old ledger-empty assertions in test_b4_layouts / test_b5_gates relaxed to "no eval entries".
+- No contact sheets or plots made. DEV stats (DEV only): sealed-core share 0.42 / 0.65 / 0.50, Gun 0.59 / 0.54 / 0.59, Lancer 0.38 / 0.34 / 0.39, Flak 0.04 / 0.13 / 0.01.
+- Full plain `pytest`: `365 passed in 566.00s (0:09:26)`, exit 0.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -475,7 +485,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B5 CLOSED at revision 1 (G2/G3/G8 documented limitations, hash recorded); next is B6 (build the 300-layout pool from stream F), only when told. History: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
+- v2: B6 DONE (pool frozen, sha 1346536d...); next is B7, only when told. Before that: B5 CLOSED at revision 1 (G2/G3/G8 documented limitations, hash recorded); next is B6 (build the 300-layout pool from stream F), only when told. History: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

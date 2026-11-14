@@ -1,0 +1,6105 @@
+{
+ "design_set_hashes_checked": 280,
+ "design_sets_sha256": "3eda096c0527ddfd0096fdfc68e1ffdb37ebb1de88390bd30d0406b2ff96c5d2",
+ "generator_hash": "49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095",
+ "generator_hash_record": "f1bf4ad4b4a5d8ec713c66daf8fd19c4835e06a4",
+ "generator_version": "v2-rev1",
+ "note": "B6: 300-layout pool from stream F. FINAL records carry id / family / split / seed / content hash only; walk.candidate_bits holds [seed, accept bit, rule ids] per candidate. No score, baseline or Oracle value is stored for any FINAL layout.",
+ "pool_version": "pool_v1",
+ "records": [
+  {
+   "content_hash": "023bdaaa2eed6b9002cfaf1a3b5dbf47c11c39eae62ab850462d33388e3c2f10",
+   "family": "spine_pods",
+   "id": "spine_pods-300000000",
+   "pool": "DEV",
+   "seed": 300000000,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "989576349163b9318fd36294f775a5f964126995a2a95e27c08b9ec7fa6e0775",
+   "family": "spine_pods",
+   "id": "spine_pods-300000001",
+   "pool": "DEV",
+   "seed": 300000001,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "0a900921dce095043993dff7717d7af0b13e4083aac88a4c09bccf41940a3d5c",
+   "family": "spine_pods",
+   "id": "spine_pods-300000002",
+   "pool": "DEV",
+   "seed": 300000002,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b169605b54fb7f87b88b16ed192a23cd6bbf1f98e8e71d520eee85d02a69b70a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000003",
+   "pool": "DEV",
+   "seed": 300000003,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3bc83c8fe5d99453c0bde76c7219fcabda0461b0fef1a2beab33f455c2890026",
+   "family": "spine_pods",
+   "id": "spine_pods-300000004",
+   "pool": "DEV",
+   "seed": 300000004,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e14e40c4c84ba08d24764beadf72c005d74b50e8d5abce152733f39a5dbd663b",
+   "family": "spine_pods",
+   "id": "spine_pods-300000005",
+   "pool": "DEV",
+   "seed": 300000005,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7f17ed1243671e0cb95ca808a64f8b6a23c6e3845830f2b48636b74ae53f413e",
+   "family": "spine_pods",
+   "id": "spine_pods-300000006",
+   "pool": "DEV",
+   "seed": 300000006,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "774b87abd9171fc10efc20b97717e526ab0b79ce18fa365919f7907fb0eaa127",
+   "family": "spine_pods",
+   "id": "spine_pods-300000007",
+   "pool": "DEV",
+   "seed": 300000007,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b8c06f5765e44b69cb021af2f083cdcf0628970f0961fa9463f25fd4d6b14e02",
+   "family": "spine_pods",
+   "id": "spine_pods-300000008",
+   "pool": "DEV",
+   "seed": 300000008,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7249f88800f14283d718bf9c88a0285d5e4169d589b1ad4429efa3dbcc9d30a1",
+   "family": "spine_pods",
+   "id": "spine_pods-300000009",
+   "pool": "DEV",
+   "seed": 300000009,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "179543c93aa7349f567d6ebd5dc03488c741cf152af303f2832a0118ccaf8769",
+   "family": "spine_pods",
+   "id": "spine_pods-300000010",
+   "pool": "DEV",
+   "seed": 300000010,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "826cd48ea54ce125807701213cac784db0f7df76289f86f91a74a7737510ba4d",
+   "family": "spine_pods",
+   "id": "spine_pods-300000011",
+   "pool": "DEV",
+   "seed": 300000011,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "1865cd81852980824de172cb3f96fa984cc6686d12ed29f2f13f5f26604bb4e8",
+   "family": "spine_pods",
+   "id": "spine_pods-300000013",
+   "pool": "DEV",
+   "seed": 300000013,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "1572d72c27757653f22cfba805fecde4dbbac6b908ba20392c25e861883f7b9a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000014",
+   "pool": "DEV",
+   "seed": 300000014,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "62231927ecc77f0e9522d0165c0e1213722b8502b7bc9d96888c85723bc6874b",
+   "family": "spine_pods",
+   "id": "spine_pods-300000016",
+   "pool": "DEV",
+   "seed": 300000016,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b8509fb17f14c288f4bceb8b942d266ba15baa3e73846327f80887b87e5fc51e",
+   "family": "spine_pods",
+   "id": "spine_pods-300000017",
+   "pool": "DEV",
+   "seed": 300000017,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7a9fafed0a689d562c16014678bd14dad3220c7b303ce10db76ebdc597e62cff",
+   "family": "spine_pods",
+   "id": "spine_pods-300000018",
+   "pool": "DEV",
+   "seed": 300000018,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "df23259a9436f26fa051beed07014f4d52eac729e375196b53b0cf375b62ebad",
+   "family": "spine_pods",
+   "id": "spine_pods-300000019",
+   "pool": "DEV",
+   "seed": 300000019,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "106383f64f368f95c2c1435fb6f79bdb3b12e5a09ba6b44d9ad69c331cd79fb6",
+   "family": "spine_pods",
+   "id": "spine_pods-300000020",
+   "pool": "DEV",
+   "seed": 300000020,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "520fe002e8a7dab12295ade1daf5ade2dbe7fb1dc10286098229244967436d02",
+   "family": "spine_pods",
+   "id": "spine_pods-300000021",
+   "pool": "DEV",
+   "seed": 300000021,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6c45a1c07b6936c228fe1b22e2b8d227eab82ae54d6c7120c5c57873a44d4056",
+   "family": "spine_pods",
+   "id": "spine_pods-300000022",
+   "pool": "DEV",
+   "seed": 300000022,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "84f9194420a13b8daca35e48274cfab35721afa403d68325f5dd5f220a63468a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000024",
+   "pool": "DEV",
+   "seed": 300000024,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2769775f2a7c3d9b46c5d6d2d22fde736bea6184c9e6cc5b0d68f3ac5b31b9e9",
+   "family": "spine_pods",
+   "id": "spine_pods-300000025",
+   "pool": "DEV",
+   "seed": 300000025,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "70bb86f16bce24cb2f2d4d692aeebf5700429e9cd3334a0b8476df8fd27b293a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000026",
+   "pool": "DEV",
+   "seed": 300000026,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "8a2ec168fa955b37d7d1a2fde9ee0ba68d4427257035d6c755a17e61b038706f",
+   "family": "spine_pods",
+   "id": "spine_pods-300000027",
+   "pool": "DEV",
+   "seed": 300000027,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b17232173bbf4a414b6d65e0a3231121b1501e86e248eb703f1b71bdb3119199",
+   "family": "spine_pods",
+   "id": "spine_pods-300000028",
+   "pool": "DEV",
+   "seed": 300000028,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2e4d4d270c779aaaac8783546154032c669fd0d85487d77c4073239d01213b30",
+   "family": "spine_pods",
+   "id": "spine_pods-300000029",
+   "pool": "DEV",
+   "seed": 300000029,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e0a3c71f20f624efcb6f099cd9dddb8f03978f2c5d216a58af3fdd95fdfb1187",
+   "family": "spine_pods",
+   "id": "spine_pods-300000030",
+   "pool": "DEV",
+   "seed": 300000030,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "0b8238c7c8491a291c7e465d0ae6867ca9ab36ca864c9bc2db6a047647dcb3a2",
+   "family": "spine_pods",
+   "id": "spine_pods-300000032",
+   "pool": "DEV",
+   "seed": 300000032,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7903521d9582948997cafc42cc3aab50f6529803cc9d66564016de16e75d3a93",
+   "family": "spine_pods",
+   "id": "spine_pods-300000033",
+   "pool": "DEV",
+   "seed": 300000033,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b46afcd926b45f9a2ae1942219440a4aff279c269844af89cf10f2824f0f618c",
+   "family": "spine_pods",
+   "id": "spine_pods-300000035",
+   "pool": "DEV",
+   "seed": 300000035,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "581ed631848eb347d811740ab3feeb32b6fc226332f5227f27d5e9d7a1c3ccbf",
+   "family": "spine_pods",
+   "id": "spine_pods-300000036",
+   "pool": "DEV",
+   "seed": 300000036,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7ce764296e078f84c57612a7c62ec34b9835ce1a509556968e614c9153ffdee2",
+   "family": "spine_pods",
+   "id": "spine_pods-300000037",
+   "pool": "DEV",
+   "seed": 300000037,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "822d4da33b406f66a3aadca833774911e96879e5a29800ba08039546893717f2",
+   "family": "spine_pods",
+   "id": "spine_pods-300000038",
+   "pool": "DEV",
+   "seed": 300000038,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "9d3f18556c2cdcf8f63774285b80baff02e344fae7753c20c28f77a066efd8a7",
+   "family": "spine_pods",
+   "id": "spine_pods-300000039",
+   "pool": "DEV",
+   "seed": 300000039,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ada4e92888361de4ef283507182edd8c66fa6ff7cfcc38bf335463255ff4e997",
+   "family": "spine_pods",
+   "id": "spine_pods-300000040",
+   "pool": "DEV",
+   "seed": 300000040,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "575101a95540846871f28ffbe1d5d45eccadf86037c00416d01ff09ab4fd1910",
+   "family": "spine_pods",
+   "id": "spine_pods-300000041",
+   "pool": "DEV",
+   "seed": 300000041,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2084d9b446155814996693b44e3162314bd79cd5be0aa6d2a2e4a392ac8b3c27",
+   "family": "spine_pods",
+   "id": "spine_pods-300000042",
+   "pool": "DEV",
+   "seed": 300000042,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f1aa84e8aca1cec9c44afc246dff65f5d09dbe96130f41cda26de4a8f155596d",
+   "family": "spine_pods",
+   "id": "spine_pods-300000043",
+   "pool": "DEV",
+   "seed": 300000043,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2d9467b6877cf3e0a2c22addb23d46f9c95fac4772bf5264353b4feb8f215fc6",
+   "family": "spine_pods",
+   "id": "spine_pods-300000044",
+   "pool": "DEV",
+   "seed": 300000044,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "066aab93474ca9d7d982dcddc04e1613125a38b88f07f167057c63d93c139919",
+   "family": "spine_pods",
+   "id": "spine_pods-300000045",
+   "pool": "DEV",
+   "seed": 300000045,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "100806f0921b6071f28d5a7e3607a9dba14ab764be48925c0c001bf293a57cb1",
+   "family": "spine_pods",
+   "id": "spine_pods-300000046",
+   "pool": "DEV",
+   "seed": 300000046,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "aa20991d6c7ce652452282becc254453d6d5ea3d175ff83fe1d07e43448c1a90",
+   "family": "spine_pods",
+   "id": "spine_pods-300000048",
+   "pool": "DEV",
+   "seed": 300000048,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2758f2d612dc0950ee752982656506f197e5b3a98a37fe8cfebd8f4f72f6d06f",
+   "family": "spine_pods",
+   "id": "spine_pods-300000049",
+   "pool": "DEV",
+   "seed": 300000049,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "31442deba887ade88534ce90438e6acb0ee66a498f2b405bb4eeb7f115841574",
+   "family": "spine_pods",
+   "id": "spine_pods-300000050",
+   "pool": "DEV",
+   "seed": 300000050,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "aa184b5ed8e428fa70222fdb33e23611e1233f9735902e2720416d503f644377",
+   "family": "spine_pods",
+   "id": "spine_pods-300000051",
+   "pool": "DEV",
+   "seed": 300000051,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e68f29ec7d7f8f971ffe31084242405af71e30d4b7ebf8113f2c9eef70506e42",
+   "family": "spine_pods",
+   "id": "spine_pods-300000052",
+   "pool": "DEV",
+   "seed": 300000052,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6fc5bb9f0c771e1040df539341f44584c3880282a86ab104ae308e3983956301",
+   "family": "spine_pods",
+   "id": "spine_pods-300000053",
+   "pool": "DEV",
+   "seed": 300000053,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e37f446803acf4b272f1a21f6f9a83eabe4c27e40dc3ec05e028a503dfee1b8a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000054",
+   "pool": "DEV",
+   "seed": 300000054,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b96525ca7b0bf4872b317b1993120ebea3313fddacbcf6ff9213c12f3b50fc5c",
+   "family": "spine_pods",
+   "id": "spine_pods-300000055",
+   "pool": "DEV",
+   "seed": 300000055,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "34b5e9ed1e25a8cdf9bbf05cb0e28430635f84e00594ec5859e3553335d2b942",
+   "family": "spine_pods",
+   "id": "spine_pods-300000056",
+   "pool": "DEV",
+   "seed": 300000056,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "cc28d14ef6b25c0d5a578265066e89eb7d319d6805fa8b4d8d1f148ad1b3c15a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000058",
+   "pool": "DEV",
+   "seed": 300000058,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "a11b1bc448664f96b5e5461788d2051dea4b0b385c1ed874f4a5086998dbfc46",
+   "family": "spine_pods",
+   "id": "spine_pods-300000059",
+   "pool": "DEV",
+   "seed": 300000059,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "8e3738ee212e98870d0ee5d3957f83d2b20eeb454e669eecf7cecd2cffe2ded0",
+   "family": "spine_pods",
+   "id": "spine_pods-300000060",
+   "pool": "DEV",
+   "seed": 300000060,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "b43381346d26d2e5227588db32f235a8d0849689dc874f10e0fa18fab7f052b4",
+   "family": "spine_pods",
+   "id": "spine_pods-300000061",
+   "pool": "DEV",
+   "seed": 300000061,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "87fa95185c1c9a1ea3c4efd1b80bc8053d5bdaafcfbebf2e73dcdaf10506a09c",
+   "family": "spine_pods",
+   "id": "spine_pods-300000062",
+   "pool": "DEV",
+   "seed": 300000062,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "19e59b2de9ca3f2277f27c9875d0279475b8b5244205a1c368acda00b78b8c2a",
+   "family": "spine_pods",
+   "id": "spine_pods-300000063",
+   "pool": "DEV",
+   "seed": 300000063,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "d1f6252534b8d3dfa8a434214e36893302ca15f612ea4a40baad68b1f832f569",
+   "family": "spine_pods",
+   "id": "spine_pods-300000064",
+   "pool": "DEV",
+   "seed": 300000064,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "c6f878ceaec9701568b582fdc97ce86ba5384380cd34efd3e70e5852f2b67b9c",
+   "family": "spine_pods",
+   "id": "spine_pods-300000065",
+   "pool": "DEV",
+   "seed": 300000065,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "7d306de28987975cc1d88e2cdd36ce839e8056b52944b317b85441f9272f21fd",
+   "family": "spine_pods",
+   "id": "spine_pods-300000066",
+   "pool": "DEV",
+   "seed": 300000066,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "fb82f5c50573c70f7de56742900d6f836f0edbf68f3be2c1a7ca6cf00c0eaa4b",
+   "family": "archipelago",
+   "id": "archipelago-301000011",
+   "pool": "DEV",
+   "seed": 301000011,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5217d11eaa7553fc97dbbe557dd3066956d3036fc71fbe9dfc079a851ded652e",
+   "family": "archipelago",
+   "id": "archipelago-301000012",
+   "pool": "DEV",
+   "seed": 301000012,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "343040d468ad51f3c559661f69c018c407d1de4c902389c5f0fbc071f7f22915",
+   "family": "archipelago",
+   "id": "archipelago-301000014",
+   "pool": "DEV",
+   "seed": 301000014,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5d46f6dbfc86aacc71dc7869f8b1039e684eaf6786f3c06e6f6d09e69201a14e",
+   "family": "archipelago",
+   "id": "archipelago-301000018",
+   "pool": "DEV",
+   "seed": 301000018,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3707d2c0a09e137c48e6bcb2403ee89650bdf6236998faeafa2aa9236082cc91",
+   "family": "archipelago",
+   "id": "archipelago-301000025",
+   "pool": "DEV",
+   "seed": 301000025,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "cb6bd8cfd01efe10d827e38fff5bb1454aba9ac6505f12a76cb021fb94bbf219",
+   "family": "archipelago",
+   "id": "archipelago-301000032",
+   "pool": "DEV",
+   "seed": 301000032,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6c8e275b69c67b34ac907771b8ace405f07ab6d0d9ad61334d6b0721ec8079dc",
+   "family": "archipelago",
+   "id": "archipelago-301000036",
+   "pool": "DEV",
+   "seed": 301000036,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "414210234b595b0563f52e35324f2fe87ee00f036698d0b683ea28c8b9416de3",
+   "family": "archipelago",
+   "id": "archipelago-301000039",
+   "pool": "DEV",
+   "seed": 301000039,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3824c2f107b2f7d8e4aecc515158203f8b78b672f8acc57f6db338f957533742",
+   "family": "archipelago",
+   "id": "archipelago-301000040",
+   "pool": "DEV",
+   "seed": 301000040,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "176a650e434fcc0f9b033d9672f6539f896c2346a8122173c522b553e27998b8",
+   "family": "archipelago",
+   "id": "archipelago-301000044",
+   "pool": "DEV",
+   "seed": 301000044,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3377e2e1bb0bf9b453e38a75cdb957f5bc28f0c3a40ba9eeec9522d3346c2136",
+   "family": "archipelago",
+   "id": "archipelago-301000045",
+   "pool": "DEV",
+   "seed": 301000045,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7e4efc13df18af1b9fb02c840af1c80464197931d8b9f12696b044a4c07614c3",
+   "family": "archipelago",
+   "id": "archipelago-301000046",
+   "pool": "DEV",
+   "seed": 301000046,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6153d5416b54a4b3e70c0140f9d7b87259d52bb601fd007c760b97fac35270a4",
+   "family": "archipelago",
+   "id": "archipelago-301000049",
+   "pool": "DEV",
+   "seed": 301000049,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "726e6d797601eab24ef1cca9472faee830a2918a2b728238c3aea4a114111f80",
+   "family": "archipelago",
+   "id": "archipelago-301000053",
+   "pool": "DEV",
+   "seed": 301000053,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "051beb8ef9215d42d897d8b785a811c332c8da91f7e5dfb89d970453c344eade",
+   "family": "archipelago",
+   "id": "archipelago-301000054",
+   "pool": "DEV",
+   "seed": 301000054,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e116b2fa1db3c120283b0c8df065f164320ddb61aad87ad75e03d590270a3a74",
+   "family": "archipelago",
+   "id": "archipelago-301000056",
+   "pool": "DEV",
+   "seed": 301000056,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "792880fc4c1af814a5eb9e8626ef256e04a2c63c93ef66a7c2f705c30c346fc2",
+   "family": "archipelago",
+   "id": "archipelago-301000065",
+   "pool": "DEV",
+   "seed": 301000065,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "a8ba943ea9e38d5d9f950f3d6b168aaab631d18b9dd4c1e5aa70f3a94454e76e",
+   "family": "archipelago",
+   "id": "archipelago-301000094",
+   "pool": "DEV",
+   "seed": 301000094,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "671c39f01dfab6a14a750546b2128919ff2e5826c612b75398913c163e82e4a5",
+   "family": "archipelago",
+   "id": "archipelago-301000095",
+   "pool": "DEV",
+   "seed": 301000095,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "82b366efff5d90ad2f9c8b9f32bbceb5e0a0d0557260da09c3c9780987b4e5bd",
+   "family": "archipelago",
+   "id": "archipelago-301000098",
+   "pool": "DEV",
+   "seed": 301000098,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "62c36174c9f2741725b6dae7c75cf78d288eba37d2dd1ac83aa34506ac361e15",
+   "family": "archipelago",
+   "id": "archipelago-301000101",
+   "pool": "DEV",
+   "seed": 301000101,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "31eb3c79e0b7333b366963abf6ef3e3ebf6acf0a123d85b789869276e9e735a0",
+   "family": "archipelago",
+   "id": "archipelago-301000103",
+   "pool": "DEV",
+   "seed": 301000103,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "fb82583c293486b8e5e8c50d6d040fb3e5ecab82157d6a478667db4b719f0b75",
+   "family": "archipelago",
+   "id": "archipelago-301000105",
+   "pool": "DEV",
+   "seed": 301000105,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2c70ff8599d49e298cc0370770346dd7ca044da822e681d65f98d15652605962",
+   "family": "archipelago",
+   "id": "archipelago-301000108",
+   "pool": "DEV",
+   "seed": 301000108,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5c3e9878f2e243a4f0225926be3ab18e5674872483207c92bc75deff67f92365",
+   "family": "archipelago",
+   "id": "archipelago-301000109",
+   "pool": "DEV",
+   "seed": 301000109,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "17d70b2a6ed69dc72f05afe1307cd7eab6ce654d19ad1a4e04b40e59c8015029",
+   "family": "archipelago",
+   "id": "archipelago-301000112",
+   "pool": "DEV",
+   "seed": 301000112,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3396f77b2711f72409d05ad0d28ec89b6314c3145f2dd9868641c351f27ededf",
+   "family": "archipelago",
+   "id": "archipelago-301000113",
+   "pool": "DEV",
+   "seed": 301000113,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "697495a2153de1b5c9fef10e7c86684001248e18df15bd06aa04a97b323de3b0",
+   "family": "archipelago",
+   "id": "archipelago-301000116",
+   "pool": "DEV",
+   "seed": 301000116,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5d2818d3b5076594e9230f129f64f9c18f077e6eb32ef41c0ac6eb59e7bb7690",
+   "family": "archipelago",
+   "id": "archipelago-301000126",
+   "pool": "DEV",
+   "seed": 301000126,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5635f2158eba305047e094ca1c82fc7e8f18f0a46aa6b92a0f749983132f0950",
+   "family": "archipelago",
+   "id": "archipelago-301000131",
+   "pool": "DEV",
+   "seed": 301000131,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "0332dfce43ecf7b4482a272740460903a2ace56936d9b04418fbadcfe2262a3a",
+   "family": "archipelago",
+   "id": "archipelago-301000139",
+   "pool": "DEV",
+   "seed": 301000139,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "29b224c706454bc669019dfcc6d658db493dca59ab699ba6a8ca44e8a53747be",
+   "family": "archipelago",
+   "id": "archipelago-301000141",
+   "pool": "DEV",
+   "seed": 301000141,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "764f190d6679a825edb98a65b3390c2409f00cf17a20c9ef4a7ef61f7e7f12a7",
+   "family": "archipelago",
+   "id": "archipelago-301000144",
+   "pool": "DEV",
+   "seed": 301000144,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "d68e838e48f7a2389d48306cd5a3d0a78e798f3ca8794073174e74406aa3f18d",
+   "family": "archipelago",
+   "id": "archipelago-301000154",
+   "pool": "DEV",
+   "seed": 301000154,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f680c6ed70ae43b5fcb63b984667caea8adb6254960882aafdebb86465675e14",
+   "family": "archipelago",
+   "id": "archipelago-301000155",
+   "pool": "DEV",
+   "seed": 301000155,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "faacc8a1a55bc2963e418bd4ac56b3636b4b7f4b1cb57e3b002caa5fabd4b596",
+   "family": "archipelago",
+   "id": "archipelago-301000159",
+   "pool": "DEV",
+   "seed": 301000159,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f1e9c985e585e866faf08d372421eb5c013af03596bf1e601fbdc6df18f1ea37",
+   "family": "archipelago",
+   "id": "archipelago-301000169",
+   "pool": "DEV",
+   "seed": 301000169,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "d6f4fcfff6be3093a5458f73ead23490d41ea71046bdaf95995a69016cbd7491",
+   "family": "archipelago",
+   "id": "archipelago-301000170",
+   "pool": "DEV",
+   "seed": 301000170,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ba649ebd797ff668c6d2f33f804a44263268c1570e1dcd85bc68149801192db9",
+   "family": "archipelago",
+   "id": "archipelago-301000171",
+   "pool": "DEV",
+   "seed": 301000171,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "99be57acc9ca130d4634fa087b2e769b5735b1689552f5282f3dffac9201fede",
+   "family": "archipelago",
+   "id": "archipelago-301000173",
+   "pool": "DEV",
+   "seed": 301000173,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e69ca6a63b2961f499637ef1a42a42cba1cee4f7d744d51a3dc6f14d125c62df",
+   "family": "archipelago",
+   "id": "archipelago-301000178",
+   "pool": "DEV",
+   "seed": 301000178,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f5806bf2daae024501f29c2e0a3f4ee90468b07e609043c1024f3fa53ef3bfc8",
+   "family": "archipelago",
+   "id": "archipelago-301000180",
+   "pool": "DEV",
+   "seed": 301000180,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f4ef5064c1c74d5f663dde74cd98201030b8dd0bbb3c3fd96024b463d3f4c2c3",
+   "family": "archipelago",
+   "id": "archipelago-301000182",
+   "pool": "DEV",
+   "seed": 301000182,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "8a63e23f788f9283bad87c3d3fd3a9ae22d9e492bb8b4961c7ec184f99e75580",
+   "family": "archipelago",
+   "id": "archipelago-301000184",
+   "pool": "DEV",
+   "seed": 301000184,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "c3fb90f53026ec9a6b986b0401c8556928ba8ff1edf055e8937607ffb89211b3",
+   "family": "archipelago",
+   "id": "archipelago-301000185",
+   "pool": "DEV",
+   "seed": 301000185,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e3197725a22f231e26f74b126e23e9d4470ab85d984a2cd6c12f529fd1bd332e",
+   "family": "archipelago",
+   "id": "archipelago-301000186",
+   "pool": "DEV",
+   "seed": 301000186,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "81c82fb8d48875f62f5c946ca190e1c21f9cd7cab3a2c1e59054bb2390140629",
+   "family": "archipelago",
+   "id": "archipelago-301000187",
+   "pool": "DEV",
+   "seed": 301000187,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "1e6b64ec7e04c813d3fe0d22f984ee2cbff77a700bfeca22783ec5d65f58fc0a",
+   "family": "archipelago",
+   "id": "archipelago-301000188",
+   "pool": "DEV",
+   "seed": 301000188,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "583774fc1b7ca762be7b8eefa7cf390d6bc993e8116105a0b7787410dc7c7a86",
+   "family": "archipelago",
+   "id": "archipelago-301000189",
+   "pool": "DEV",
+   "seed": 301000189,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "9490a94814697b0ca87409e878e3748bfe2d77d56c8126ca271f4ce6925c9bf5",
+   "family": "archipelago",
+   "id": "archipelago-301000193",
+   "pool": "DEV",
+   "seed": 301000193,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "dcfbb7f48e449423c6c6672a958f88b65a153f83e074fef203a50f9431ef0528",
+   "family": "archipelago",
+   "id": "archipelago-301000201",
+   "pool": "DEV",
+   "seed": 301000201,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "3f10e9c98c8ace9fb15e76ff3d440fdb9ce786fb6b000968b46d3bcfffb636ca",
+   "family": "archipelago",
+   "id": "archipelago-301000203",
+   "pool": "DEV",
+   "seed": 301000203,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "8031edfcfec1c7c6e192a6651415fc6a45d7db013686f513b162b1f3b1530e28",
+   "family": "archipelago",
+   "id": "archipelago-301000205",
+   "pool": "DEV",
+   "seed": 301000205,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "decdbae6352c912b5c7b013c75a13cc162fca97aef71b61e3f32b3449745808c",
+   "family": "archipelago",
+   "id": "archipelago-301000208",
+   "pool": "DEV",
+   "seed": 301000208,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "9feab05fe82d488550308b13f6afa5f05cbeaba59bfb6a886a73828a1b1044ac",
+   "family": "archipelago",
+   "id": "archipelago-301000212",
+   "pool": "DEV",
+   "seed": 301000212,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "ffb30da3b2940826cf38781277768a50399d67e31ad42ea0f875076ca7139619",
+   "family": "archipelago",
+   "id": "archipelago-301000214",
+   "pool": "DEV",
+   "seed": 301000214,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "c90cdb4876ea5acd0b93753805ea2a8f6f07e58bd21b12599d6f4121304ddb60",
+   "family": "archipelago",
+   "id": "archipelago-301000216",
+   "pool": "DEV",
+   "seed": 301000216,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "201dd3a164bdfac3eb5a74ee375749fab2dd230a794cef7c4f43e6854cd10253",
+   "family": "archipelago",
+   "id": "archipelago-301000218",
+   "pool": "DEV",
+   "seed": 301000218,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "36e603b98e29504f4ff8be677ae84b847039dcf0779670168cd2cf94fa4515fc",
+   "family": "archipelago",
+   "id": "archipelago-301000219",
+   "pool": "DEV",
+   "seed": 301000219,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "b3a8c248293c6a0b8e96f89fec0d215fc39a5dd7ff7088325b595868544ab594",
+   "family": "archipelago",
+   "id": "archipelago-301000222",
+   "pool": "DEV",
+   "seed": 301000222,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "7026b5b444763d2152c5bb2efa003ae1bb255acf277d0312340ecaa0a93bd339",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000000",
+   "pool": "DEV",
+   "seed": 302000000,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "30b0bf4ef6ceed7c828156533be7e34b889556a25eeb9ee3613d9a37f582ddb7",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000001",
+   "pool": "DEV",
+   "seed": 302000001,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "41b37e4f3193d1f2eb3803e6fcfaf2f7bab1b317144fed314208c4c6beccfa39",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000005",
+   "pool": "DEV",
+   "seed": 302000005,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "52c9af8f0b896b9203ed0908fcb446f62fb4a9fc4ef151f56042c868cd85bb6d",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000007",
+   "pool": "DEV",
+   "seed": 302000007,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e93c11e8e3fcc9d3ca425cfe9eed30e14ffcd3240b89b5eb00128d4f2543f174",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000008",
+   "pool": "DEV",
+   "seed": 302000008,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "962a1fd8c381ddc41dfd15b938be35040d5c53b5488c0df8d77526b1ed5e9d3c",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000009",
+   "pool": "DEV",
+   "seed": 302000009,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "2b547b46d20b18f47ae9454da5045c6f93cc0604a8d9b05e9368e02d765ea457",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000010",
+   "pool": "DEV",
+   "seed": 302000010,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e9191b96905ccdcf2a225a68496f1119aff33fd26fedf94757cd7b655a0b05d3",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000011",
+   "pool": "DEV",
+   "seed": 302000011,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "b9f5735d42890a057267e4edb624fc88783435acbeeccaf8df00dadcce022ec1",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000012",
+   "pool": "DEV",
+   "seed": 302000012,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "79a55651b832f3410e8479baaf93a05fb8309716619d2480314a5934034c6a64",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000013",
+   "pool": "DEV",
+   "seed": 302000013,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e493ec09a39806c687ba4f6739b1e438586e72f3293bf6b26accb8f01ff80017",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000014",
+   "pool": "DEV",
+   "seed": 302000014,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "1620d7cebc174edb9c49f2e77ab1acc7d19f718f348a8c48d0312497323a7743",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000016",
+   "pool": "DEV",
+   "seed": 302000016,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5b04023f68d5af72b77d8a7eab2e5dce71387094fb1fd5c9962b6b2e84cbd95d",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000017",
+   "pool": "DEV",
+   "seed": 302000017,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "7851d25024ec9418c33b6dc3f1fa9be0befecb685e2bd7b4786bd4ce961a537b",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000018",
+   "pool": "DEV",
+   "seed": 302000018,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "216c7b6cfde0a47461efa3a365d0c046765e74a01882f6a757f73543dec83aa2",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000020",
+   "pool": "DEV",
+   "seed": 302000020,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "0c012810662b6ac24e6c68ed0558c39bfd90ac8df32ffa78eb2c302a4c9fc5f0",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000021",
+   "pool": "DEV",
+   "seed": 302000021,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3c59c4db3eae3b2491e5fd5a536a8ac950d5be6c15373fd5e4669f58e9b8b410",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000022",
+   "pool": "DEV",
+   "seed": 302000022,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6665fab4a65ba6673578c2262f9b6e0b667a046c75c34b495210d4f80c728c3a",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000023",
+   "pool": "DEV",
+   "seed": 302000023,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "c276ecf9caa86db18606f5c710401f9071a1919da4896ba4bf61a26635cf3a14",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000024",
+   "pool": "DEV",
+   "seed": 302000024,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "034e51d62c76a20199b6e933ad9221c2ccf41127b591f546abf711e1fabb63ae",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000025",
+   "pool": "DEV",
+   "seed": 302000025,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3c192a6a0a537b6e3e9f1e443e90eb11fc0799a2e6e07f4aec2271504b7ea6f5",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000027",
+   "pool": "DEV",
+   "seed": 302000027,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "067d9a1bd2fb951d2b56637c1ea4a313ccd1807e88f3e9567faf42e0add70970",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000028",
+   "pool": "DEV",
+   "seed": 302000028,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ea63350d7b4c82ed935c70213528312cded87708d7ad9b5c16c3e8275ffbef8e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000029",
+   "pool": "DEV",
+   "seed": 302000029,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "9f83749a107c1649d3b1cf547a007fa3ccaddd48f15c23f76d5c5a45c167647e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000030",
+   "pool": "DEV",
+   "seed": 302000030,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "e5d2dd49f09171ecc17e693092fd348ae8b36598296177dfb45ce00f887664c4",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000031",
+   "pool": "DEV",
+   "seed": 302000031,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ffbd4380e98f7946d26a6217570aabb53b4ceab8f6e53ff240478d55ef3d4365",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000032",
+   "pool": "DEV",
+   "seed": 302000032,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "3482219fcb67d312e46b43ba3cedea477d29485aa01adb6e5ab346b64124406d",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000033",
+   "pool": "DEV",
+   "seed": 302000033,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "d34bef11db001a58aeb9baf3e6d6f3db06f2b7263f75b30960f30cd10140a063",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000034",
+   "pool": "DEV",
+   "seed": 302000034,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "5cea0875ae51104f004de1699f69321f499e49efed5f3ff0499d1095db23decf",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000036",
+   "pool": "DEV",
+   "seed": 302000036,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "acc785b932fa05f3b4dd198b608ad5c82a868bb1da77e5fdc093b131c83deebe",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000038",
+   "pool": "DEV",
+   "seed": 302000038,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "32150c0a815caa898336b58fce4420bd42fd20a9c6e8625a5a824a8dc95f8c79",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000039",
+   "pool": "DEV",
+   "seed": 302000039,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "fd2b222bd1181a7d6843ebb12f99930a3b85f513d98ddd341c9e02944299fc02",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000040",
+   "pool": "DEV",
+   "seed": 302000040,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "a8f460cb528a1967a9d58d432502e1174e4cf9340983ae78c8d2618d2dd2bb65",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000042",
+   "pool": "DEV",
+   "seed": 302000042,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6176f7f2d8c37211c5b166911c4408664541c1e164e5dc73d95f1bdca0d49620",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000043",
+   "pool": "DEV",
+   "seed": 302000043,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "a49fd01cfc27fd63f8f55a8a6308224921674cb088fd0d88bf02bb78d1eb1f02",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000044",
+   "pool": "DEV",
+   "seed": 302000044,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "9e7dde1a21aed4dadbffb5546b61c8fb6254c978ee7802cc2362eee135432754",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000047",
+   "pool": "DEV",
+   "seed": 302000047,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "62d1aee2b33d06be3d8afd3ccfe46a4bc02d8a266cf60963469f146cccb0fc66",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000048",
+   "pool": "DEV",
+   "seed": 302000048,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "0569d59f62e21c9344cd7c312178af4d30b3de7d479d88880483f690ae323d1a",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000050",
+   "pool": "DEV",
+   "seed": 302000050,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6167f8f85fe6eb6ee15560187a95c6fdc657485a16333b152a254fd53e8183fa",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000051",
+   "pool": "DEV",
+   "seed": 302000051,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "d13e706b22f10e5e3c87be2545072447bc40241be12e755e2caf99eba931da30",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000052",
+   "pool": "DEV",
+   "seed": 302000052,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "268bfa8cc90ae3d5ecf76bc5eef03a7c0b5e57401773dd15e95b6cd26d96a13d",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000055",
+   "pool": "DEV",
+   "seed": 302000055,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "fb1ff1de916b985517ecabe465021991a275d5eb7b638de55da47b196c89d275",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000056",
+   "pool": "DEV",
+   "seed": 302000056,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "6dde455d91de32c559be7c22f15d95c9c01b87e35eec98669ba1bd0da91939ab",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000057",
+   "pool": "DEV",
+   "seed": 302000057,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "081787c4a91f6492a72fa952807f0db36beed02f11ce93477e6a8cee5196c8c2",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000058",
+   "pool": "DEV",
+   "seed": 302000058,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "379380d033af9c9d6ecc866db93ab7a530b3ff58501ac9b0bee8f962677691a9",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000059",
+   "pool": "DEV",
+   "seed": 302000059,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ff3b941bf30f73e156cb0eb74c3c9fbeaa0bb1372d133e0aac014eb90054fa41",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000060",
+   "pool": "DEV",
+   "seed": 302000060,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "d4f38add6466c4b1b81e22091ee40d5f7737dcafd9f6651d7aa3ecca1235425e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000061",
+   "pool": "DEV",
+   "seed": 302000061,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "19f5e1c299f0f03e8d2e4165be775ff428d0c2d2c802fc08ad5267b502cf12cb",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000062",
+   "pool": "DEV",
+   "seed": 302000062,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "db051c692535c6a631da78b31b7670bf823b8efcfb10c70043a92ec8fd28670e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000063",
+   "pool": "DEV",
+   "seed": 302000063,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "ec401fa1e76eb08e13ab8a14c7835f7fa5987e3bdad53c5ac62c944c1110cf36",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000064",
+   "pool": "DEV",
+   "seed": 302000064,
+   "split": "DEV-train"
+  },
+  {
+   "content_hash": "f5b0ecb7d44204d5418be89afb8e27ced4c7e9224ec0fe036af33bbb7c9e3f13",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000065",
+   "pool": "DEV",
+   "seed": 302000065,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "82664d4b2568b9af78caf789114f45148ee05da2667c43d607703d3a8dba9da6",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000066",
+   "pool": "DEV",
+   "seed": 302000066,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "8fb261babf99aabafb29ce56c4e890644f6364d16470d697c2bbea557a8e9378",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000067",
+   "pool": "DEV",
+   "seed": 302000067,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "e9bff488fe4def019d067d828922de3f720a611986e9f29c226e145c3cc9f2c5",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000068",
+   "pool": "DEV",
+   "seed": 302000068,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "73c7be24706d83074b662dc7ba71f8325f3ec820aae0cf1bbcd3f5c9dadff1e1",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000069",
+   "pool": "DEV",
+   "seed": 302000069,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "7f3892d16467a724c0635edb673002b347ca39e900d69e8695bc45243f200cab",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000070",
+   "pool": "DEV",
+   "seed": 302000070,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "81c0fbd0b31946758462178899ade5530220a18f695b5cfe61a8f0a2b56d3149",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000072",
+   "pool": "DEV",
+   "seed": 302000072,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "91e735ca08c544aa42077bf503fa45fe94c4b2d76bf19a1f68f09e4d8f8564ed",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000073",
+   "pool": "DEV",
+   "seed": 302000073,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "5f4322e2a9cf2b8d89cb395734bc2a090a801c158ec9892694a5267158bdcb34",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000074",
+   "pool": "DEV",
+   "seed": 302000074,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "950630d7608311cb9f3e4b0931b70555448e414715abe98618d720fec9e78c4e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302000076",
+   "pool": "DEV",
+   "seed": 302000076,
+   "split": "DEV-validation"
+  },
+  {
+   "content_hash": "f8e837d4661674afb673dc38773d4a0dc1403f54333aa0b0a3a07b82f5a7974a",
+   "family": "spine_pods",
+   "id": "spine_pods-300500000",
+   "pool": "FINAL",
+   "seed": 300500000,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "db347ac48905d8f8048eae10a3844c50f58f3229ac997b75c19c5870da9d23f9",
+   "family": "spine_pods",
+   "id": "spine_pods-300500001",
+   "pool": "FINAL",
+   "seed": 300500001,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "e49236ae1405c5fe37397b1f1a4d7b84c9558ea83248190f6dfb355d0516c292",
+   "family": "spine_pods",
+   "id": "spine_pods-300500002",
+   "pool": "FINAL",
+   "seed": 300500002,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "f3f27d9d4a6fd9dca518c9f3ce8b641a092604df604edc037898c94fb418bea5",
+   "family": "spine_pods",
+   "id": "spine_pods-300500003",
+   "pool": "FINAL",
+   "seed": 300500003,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "549e5ea16b4eca38f83ddbc8996a6480cd355ad65483c7e2022912a6e700aaee",
+   "family": "spine_pods",
+   "id": "spine_pods-300500004",
+   "pool": "FINAL",
+   "seed": 300500004,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "997d19936b3505137a78b35d7bb7f2dfa2633951a5f3814809f9297b78200e71",
+   "family": "spine_pods",
+   "id": "spine_pods-300500005",
+   "pool": "FINAL",
+   "seed": 300500005,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "f274bff55deea52560c421b7bb6d05601579909880286707926c2fb98d2f2667",
+   "family": "spine_pods",
+   "id": "spine_pods-300500006",
+   "pool": "FINAL",
+   "seed": 300500006,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "f91352fc06454f51103db5fb6cc3545c49bd33f6634b913e19ef6636090a0317",
+   "family": "spine_pods",
+   "id": "spine_pods-300500007",
+   "pool": "FINAL",
+   "seed": 300500007,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "bcbcb31b7e36c9c0b909a4258ce57cb29b470ddb2d11ccc6cda4561f3e259c9b",
+   "family": "spine_pods",
+   "id": "spine_pods-300500008",
+   "pool": "FINAL",
+   "seed": 300500008,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "87c9f15d7d61ea0d00073aa0425491043ffc1d85e00b03d4cf864aa4a1ee0d21",
+   "family": "spine_pods",
+   "id": "spine_pods-300500009",
+   "pool": "FINAL",
+   "seed": 300500009,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "e97be604193b3ebd668cb5fd8474475c2307c95de5e44b75036cc66128429584",
+   "family": "spine_pods",
+   "id": "spine_pods-300500011",
+   "pool": "FINAL",
+   "seed": 300500011,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "48b9c8f86cca58dbc92dd1d6e59c2e2559e13576f9df0237b770d4cdf4989e42",
+   "family": "spine_pods",
+   "id": "spine_pods-300500012",
+   "pool": "FINAL",
+   "seed": 300500012,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "e2c51b0710f255d89fb2ab76559ae7a3c5805fb073c315ce6a017ad055d4ef66",
+   "family": "spine_pods",
+   "id": "spine_pods-300500013",
+   "pool": "FINAL",
+   "seed": 300500013,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "d920cd58b90d4d3c4f74782efc5cfcc47a6f59ab99c1c0c6f8f1b1ba197c46d3",
+   "family": "spine_pods",
+   "id": "spine_pods-300500014",
+   "pool": "FINAL",
+   "seed": 300500014,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "f64f6a17a2c87954b74cd4972e70176de9e8bbab523b2cd71a42118cf022fea7",
+   "family": "spine_pods",
+   "id": "spine_pods-300500015",
+   "pool": "FINAL",
+   "seed": 300500015,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "0c8cd4c37057f27c64dda4b93cbfb1c2d37a677d886babac87c0a48db5716bf8",
+   "family": "spine_pods",
+   "id": "spine_pods-300500016",
+   "pool": "FINAL",
+   "seed": 300500016,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "199a17955024af73c07ccbde8459f46e47d766a463080703a21cce584eb680f0",
+   "family": "spine_pods",
+   "id": "spine_pods-300500018",
+   "pool": "FINAL",
+   "seed": 300500018,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "54c8d6fd689811a607b0152992c553afd42cc97526df9497f354b238bf1caa1f",
+   "family": "spine_pods",
+   "id": "spine_pods-300500020",
+   "pool": "FINAL",
+   "seed": 300500020,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "c31c8832435e461a2ac513a1b3b09c81f49a6d973d10b5dfc2b03d2b57c9c6fa",
+   "family": "spine_pods",
+   "id": "spine_pods-300500021",
+   "pool": "FINAL",
+   "seed": 300500021,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "aca95278f581ff206b96e5057546483967d09108d853a3cee402db4ec7e30613",
+   "family": "spine_pods",
+   "id": "spine_pods-300500022",
+   "pool": "FINAL",
+   "seed": 300500022,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "a7de58a9c06e5a4954cb5666540cc9c27b905eb17504a8ca340fc3cd990b8f5d",
+   "family": "archipelago",
+   "id": "archipelago-301500007",
+   "pool": "FINAL",
+   "seed": 301500007,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "4236b9a51637951b793d1ae25cf13107d56ae09a53d480193157293c752898de",
+   "family": "archipelago",
+   "id": "archipelago-301500021",
+   "pool": "FINAL",
+   "seed": 301500021,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "8b567f81e2afa1a520b59ba7ebdf34957b1d695c8c578ddd7f994b61d9aa18a7",
+   "family": "archipelago",
+   "id": "archipelago-301500028",
+   "pool": "FINAL",
+   "seed": 301500028,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "c0dad34c9cc7705c59dc4e743beb156103fcca8f51223630e5a038d677a3662d",
+   "family": "archipelago",
+   "id": "archipelago-301500029",
+   "pool": "FINAL",
+   "seed": 301500029,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "5f7e1baaf9011b323cad43a629ac348342e5800de99c3b48fbf2441aeb8a9865",
+   "family": "archipelago",
+   "id": "archipelago-301500033",
+   "pool": "FINAL",
+   "seed": 301500033,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "7db1a2bc881e628ac6239b58b85611a75eb573d257a4ad916a21ae12cb87b5f2",
+   "family": "archipelago",
+   "id": "archipelago-301500035",
+   "pool": "FINAL",
+   "seed": 301500035,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "d753de52307af7faf8b85a2fd2b1f88d146f8985972d74600d3d458a618d4060",
+   "family": "archipelago",
+   "id": "archipelago-301500036",
+   "pool": "FINAL",
+   "seed": 301500036,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "9dfe01c4fbcca786954022c031c243debc9d8e97893078182180408e8efc40b3",
+   "family": "archipelago",
+   "id": "archipelago-301500039",
+   "pool": "FINAL",
+   "seed": 301500039,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "ae273d756b2b26ee2fdf2f372404c7bac0aca71b4274067ba4c9013b83bb2826",
+   "family": "archipelago",
+   "id": "archipelago-301500043",
+   "pool": "FINAL",
+   "seed": 301500043,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "2d90c8b0281bdd88782fea5dd378c3655686bc66623679e65ac5bb48e8d7add7",
+   "family": "archipelago",
+   "id": "archipelago-301500044",
+   "pool": "FINAL",
+   "seed": 301500044,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "6f4b89d17732e79e09fc4e7fedabb8edddebb163a6832902a3fb7d44448b8df2",
+   "family": "archipelago",
+   "id": "archipelago-301500045",
+   "pool": "FINAL",
+   "seed": 301500045,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "35fe9eca2361700debd6372924194896a95adfcc75532a768216c96d66a401c4",
+   "family": "archipelago",
+   "id": "archipelago-301500046",
+   "pool": "FINAL",
+   "seed": 301500046,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "3d792e621f48c0c4d8e8b74e7f8727c3f428d6e914418eba0b020db87f303c16",
+   "family": "archipelago",
+   "id": "archipelago-301500054",
+   "pool": "FINAL",
+   "seed": 301500054,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "a1f23d3179d49e3858a12f3178f5ad8e5fc8f4990beec72f0cbcc60e22aeceba",
+   "family": "archipelago",
+   "id": "archipelago-301500058",
+   "pool": "FINAL",
+   "seed": 301500058,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "5d240b57d22ba49b206bd9f8ce44831175061dbff3bba69995d2e05cd16c99d7",
+   "family": "archipelago",
+   "id": "archipelago-301500064",
+   "pool": "FINAL",
+   "seed": 301500064,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "ae28ac65791c7370668d5e4820fe813b48d98638cffe143695af28faacf8fa06",
+   "family": "archipelago",
+   "id": "archipelago-301500067",
+   "pool": "FINAL",
+   "seed": 301500067,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "cf3423ad14a7e3d4fd17d90602a5b3b03f6a0bdaee8f984ccec3417a22a6c950",
+   "family": "archipelago",
+   "id": "archipelago-301500069",
+   "pool": "FINAL",
+   "seed": 301500069,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "2b52e960a5761c6a087c24c43f567b34c65ba0b8d80bd9ffd16dd9017caaf7bf",
+   "family": "archipelago",
+   "id": "archipelago-301500070",
+   "pool": "FINAL",
+   "seed": 301500070,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "4db943125b4bce49c59d0d83032a67806ab9a7927369d7bf02e9ac8fde1792a0",
+   "family": "archipelago",
+   "id": "archipelago-301500071",
+   "pool": "FINAL",
+   "seed": 301500071,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "ad62e9da8cf4785cc74c89e8d47aee61560dccd1cd95b247805bbd7ac068c806",
+   "family": "archipelago",
+   "id": "archipelago-301500078",
+   "pool": "FINAL",
+   "seed": 301500078,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "6fa62119b8ca02d2c19efcbef3ee3d4eae134283936b569fecf696a834daa92e",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500000",
+   "pool": "FINAL",
+   "seed": 302500000,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "7bed4bddf0f25419b5b74cd5c923f7141dd59834e68c866c102c26edc73d2f08",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500001",
+   "pool": "FINAL",
+   "seed": 302500001,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "621f0cef75a896ef70c993358b84f29f9e7455142cae1daab3fa442f6687ec7a",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500002",
+   "pool": "FINAL",
+   "seed": 302500002,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "2203724790203c6f9765d5798c24a002977aebf0bcc7fedeadb55b4c44d1002c",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500003",
+   "pool": "FINAL",
+   "seed": 302500003,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "bade488b67838bf892e3eb29fe96742262ca34340cc9d265dd3328209832d50b",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500004",
+   "pool": "FINAL",
+   "seed": 302500004,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "2e32983566cd7517bb7919f8c84437d10803fbb38b2826b0c00420edc6a305fd",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500005",
+   "pool": "FINAL",
+   "seed": 302500005,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "60aba842f4af2f132145e6c14a0e8c0988dbea98fbab96208b3a4fe05a3fbbd5",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500007",
+   "pool": "FINAL",
+   "seed": 302500007,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "1c7aadc1aabb8cf3f064e02e1c452a931e839d6c25f5deb8044ca0d099000595",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500008",
+   "pool": "FINAL",
+   "seed": 302500008,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "a457fcdebfda7df6b54af056e948ad1487b68fece5a20455f2f1d653bf5618be",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500009",
+   "pool": "FINAL",
+   "seed": 302500009,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "fdf6e7d5b923d90f3a09745f54c4668f344b507fd0e12bb05136757e1d176ccd",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500010",
+   "pool": "FINAL",
+   "seed": 302500010,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "565dc493390756551a64a90db75f1bba7ab8a4e710882c8e23e52f6cbcecbe0f",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500011",
+   "pool": "FINAL",
+   "seed": 302500011,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "dedb9299eae380e371dedca997d37e7dca65e5fb1b305f0153d3bce3a57afe71",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500012",
+   "pool": "FINAL",
+   "seed": 302500012,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "19b0e6cf324e4d2f59a42ec75bf35354bc2f61e372c5bb80db83ccb2a74c60db",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500013",
+   "pool": "FINAL",
+   "seed": 302500013,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "2ce094ffe41bf5601d20cc5c36bdf88ac739babca00e86ec20b8abae6b990a15",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500014",
+   "pool": "FINAL",
+   "seed": 302500014,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "55e81f8e793a705418ec622f5dca319b0d7ec94fa945499b5d95602bfbeff5b5",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500015",
+   "pool": "FINAL",
+   "seed": 302500015,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "d813295f1172bc1f634a5acf2448db4aa08b0fdabaacdd3e95be8a69f5485032",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500016",
+   "pool": "FINAL",
+   "seed": 302500016,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "5da66747ebec1272bb4fa5e03f269fcd85dffdc2a2a8cfa52802a32e7dcef9bc",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500017",
+   "pool": "FINAL",
+   "seed": 302500017,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "4ad8394560cf8d4a853742c6153dc8fe3ce98856c90b50e33c405cde8ef4cccd",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500018",
+   "pool": "FINAL",
+   "seed": 302500018,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "4b772e153ceb4943b18b69ab9252a64ae5f32682bfae0b1b01c3379e7230d5f9",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500019",
+   "pool": "FINAL",
+   "seed": 302500019,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "a951ed14f934d8590398101b915a9cb0a6bd9af6e9835840eae065b90aa1c722",
+   "family": "bunker_nest",
+   "id": "bunker_nest-302500022",
+   "pool": "FINAL",
+   "seed": 302500022,
+   "split": "FINAL-familiar"
+  },
+  {
+   "content_hash": "1f893b67d7cbcd565eae646743b30df27f58f2bdf0961be622c88a3429bbacda",
+   "family": "labyrinth",
+   "id": "labyrinth-303500001",
+   "pool": "FINAL",
+   "seed": 303500001,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "837e829997950ba0a9fc14272b2dd7cb04d52fe3aa72500f41f81dc09bd3b8bc",
+   "family": "labyrinth",
+   "id": "labyrinth-303500003",
+   "pool": "FINAL",
+   "seed": 303500003,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "00557b330ffa33beb17bbf3c27e4f0c785ed9ed8acba857d9c6ee797e7256ebe",
+   "family": "labyrinth",
+   "id": "labyrinth-303500004",
+   "pool": "FINAL",
+   "seed": 303500004,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "5b57973ec35ba136ba2ee0479dfd44fca2c78545cecb89becc38d7b5f1a47bec",
+   "family": "labyrinth",
+   "id": "labyrinth-303500006",
+   "pool": "FINAL",
+   "seed": 303500006,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "a19122a48441ebfca26cc11276ed6ac7ca1e8430fc1c8b6d1fdeb6ec6d12f9c0",
+   "family": "labyrinth",
+   "id": "labyrinth-303500010",
+   "pool": "FINAL",
+   "seed": 303500010,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "ccbc17cc96273bf29d1685589c5170a30305f9b5749438ec7b0c87aed4f1ef27",
+   "family": "labyrinth",
+   "id": "labyrinth-303500012",
+   "pool": "FINAL",
+   "seed": 303500012,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "80d5449136bb5b865b42c66f05704f63a716c67195cb80bbef9a52cc923254ed",
+   "family": "labyrinth",
+   "id": "labyrinth-303500013",
+   "pool": "FINAL",
+   "seed": 303500013,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "5e1f613de27baf537897210f0589fb2025a3befc64aa281d30f3296f726747d9",
+   "family": "labyrinth",
+   "id": "labyrinth-303500015",
+   "pool": "FINAL",
+   "seed": 303500015,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "5d859d4a728e53cf947737479337022001ca1de344202952045b9578d7b8351d",
+   "family": "labyrinth",
+   "id": "labyrinth-303500017",
+   "pool": "FINAL",
+   "seed": 303500017,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "524e22c8b1c9018d5242ee099f6df0ee8f21ea31fde5cf0255aa5d60b009521a",
+   "family": "labyrinth",
+   "id": "labyrinth-303500018",
+   "pool": "FINAL",
+   "seed": 303500018,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "4540d835ae1cfbe1a9381d63e253edcd6c4a8e6d24816746225db97234609ed4",
+   "family": "labyrinth",
+   "id": "labyrinth-303500019",
+   "pool": "FINAL",
+   "seed": 303500019,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "a064d831b0c09761e93ffb9b14527f5cadd7e8b9f93d08eac00a42947c88ea63",
+   "family": "labyrinth",
+   "id": "labyrinth-303500021",
+   "pool": "FINAL",
+   "seed": 303500021,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "949eb416de58992808b105c346fd5de34c5453fb2484a6ad6683986f0123a0b2",
+   "family": "labyrinth",
+   "id": "labyrinth-303500023",
+   "pool": "FINAL",
+   "seed": 303500023,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "38d08b759334d0bc4a4e72aac183b00ad31c3eb1a25f005458f087a06c97c66e",
+   "family": "labyrinth",
+   "id": "labyrinth-303500025",
+   "pool": "FINAL",
+   "seed": 303500025,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "baa7100bc3f794000129c16cbb9e45b1bc7091a93760d64268caf5b73772d448",
+   "family": "labyrinth",
+   "id": "labyrinth-303500026",
+   "pool": "FINAL",
+   "seed": 303500026,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "c1de23589c11509e5ab9729f19933adb7ee4a8ecd9406d4ac67ebc63afd43fe8",
+   "family": "labyrinth",
+   "id": "labyrinth-303500028",
+   "pool": "FINAL",
+   "seed": 303500028,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "906a658d63ea8a530081708ca3ddbf8738517395eb54eec958df926bc3d399ce",
+   "family": "labyrinth",
+   "id": "labyrinth-303500029",
+   "pool": "FINAL",
+   "seed": 303500029,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "937f6c8f7c11272465f0cc0c1ea2e89dc26f887e6bad6d5ed8fa11916171e41c",
+   "family": "labyrinth",
+   "id": "labyrinth-303500031",
+   "pool": "FINAL",
+   "seed": 303500031,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "d2a4c0c2d2a3c70e9aee4a28826523954fd8149828d7b4a4cd94763ce8ed2aaa",
+   "family": "labyrinth",
+   "id": "labyrinth-303500032",
+   "pool": "FINAL",
+   "seed": 303500032,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "8c708dd8b06fc4fea3af11fcc91dddec556d662e26b854f07320d5a676d28239",
+   "family": "labyrinth",
+   "id": "labyrinth-303500033",
+   "pool": "FINAL",
+   "seed": 303500033,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "e3d77aa724add060011c29765541387dd359fb2cee202c62f648bc235663dfe0",
+   "family": "labyrinth",
+   "id": "labyrinth-303500036",
+   "pool": "FINAL",
+   "seed": 303500036,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "20c97bd319abab80e1e9592a98909ab3e962ec9d15520955aa9cdbdff2126db4",
+   "family": "labyrinth",
+   "id": "labyrinth-303500038",
+   "pool": "FINAL",
+   "seed": 303500038,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "f0d3641ab51cb0673ba94e65b888890fe625d3d4990ebfb9cdc86bb33fe845cd",
+   "family": "labyrinth",
+   "id": "labyrinth-303500040",
+   "pool": "FINAL",
+   "seed": 303500040,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "55d752b53ca77a80e785ed80336fa26ad97aba45511550a4d57aab9f075ff26d",
+   "family": "labyrinth",
+   "id": "labyrinth-303500041",
+   "pool": "FINAL",
+   "seed": 303500041,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "42f9c27efbcb8232923948ef655f8bd9414989a8059d882e23806b1b369dd8e7",
+   "family": "labyrinth",
+   "id": "labyrinth-303500042",
+   "pool": "FINAL",
+   "seed": 303500042,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "056bd81b4fb1386618715f59008c73d329ffd9923248e4a83a37947b965d9959",
+   "family": "labyrinth",
+   "id": "labyrinth-303500043",
+   "pool": "FINAL",
+   "seed": 303500043,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "933f4525bba9c7b13e3eac63418bd803c68e74ba7c38646edf4c35211a17e8f9",
+   "family": "labyrinth",
+   "id": "labyrinth-303500045",
+   "pool": "FINAL",
+   "seed": 303500045,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "4b778a34a5885e253ab6f51bd38b833026ae1cbe9cf9dcc3c3d0275f7406d4c0",
+   "family": "labyrinth",
+   "id": "labyrinth-303500046",
+   "pool": "FINAL",
+   "seed": 303500046,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "22c5d6ff95927ce1dac512d0f6d7d0fbe82beaff4619ac471c90b6becae663c0",
+   "family": "labyrinth",
+   "id": "labyrinth-303500047",
+   "pool": "FINAL",
+   "seed": 303500047,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "64b5be5c02b7b2a922c893d50bafb00046090b5d3b3ba7a9b929e8444e26c5de",
+   "family": "labyrinth",
+   "id": "labyrinth-303500048",
+   "pool": "FINAL",
+   "seed": 303500048,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "3b4d7d48241b0a46d4fd40007bd5907d90e1aae46d5c7071ba0e823dd4c5a11f",
+   "family": "labyrinth",
+   "id": "labyrinth-303500050",
+   "pool": "FINAL",
+   "seed": 303500050,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "9931c849b3c409f54ca2615ec25f0f7e35d2b9d30fec7c9c53377655a3b807c6",
+   "family": "labyrinth",
+   "id": "labyrinth-303500054",
+   "pool": "FINAL",
+   "seed": 303500054,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "92bb63cdebfc54f6fdcec606aebd7280ccd9313cf54a0c0215c84b2365bb8f33",
+   "family": "labyrinth",
+   "id": "labyrinth-303500055",
+   "pool": "FINAL",
+   "seed": 303500055,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "8819526d6122fa2962976bfa02e055a1e8839154032b1b51b159d205fb23d483",
+   "family": "labyrinth",
+   "id": "labyrinth-303500056",
+   "pool": "FINAL",
+   "seed": 303500056,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "5e4fd2fb39d1cdfae97ec0c4140b1e253cba31ab0c74039e508197b9877dcdda",
+   "family": "labyrinth",
+   "id": "labyrinth-303500057",
+   "pool": "FINAL",
+   "seed": 303500057,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "9edc46e335f78fc5aa3b19cf0deccf086145677a59578a39a9636d16944534f7",
+   "family": "labyrinth",
+   "id": "labyrinth-303500058",
+   "pool": "FINAL",
+   "seed": 303500058,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "95dfe15d0b1f7eb005cbf8e8738ebbf9bb7eb24b728a64c6c3d8593451ea6c7c",
+   "family": "labyrinth",
+   "id": "labyrinth-303500059",
+   "pool": "FINAL",
+   "seed": 303500059,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "d9284a7f80e403aedfded9644fbc6fcbae1b80cc8c1bf0fa4c7350b65c0a0fb8",
+   "family": "labyrinth",
+   "id": "labyrinth-303500061",
+   "pool": "FINAL",
+   "seed": 303500061,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "03982b88d9ec5f99b53dbf67da3a1dd7b27e40c2d0492b45244e25b86977b916",
+   "family": "labyrinth",
+   "id": "labyrinth-303500063",
+   "pool": "FINAL",
+   "seed": 303500063,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "f92dc38b4d3f7ab69bfd2767acffd2cbd84358e509aaf2fad130fe8ee7930340",
+   "family": "labyrinth",
+   "id": "labyrinth-303500067",
+   "pool": "FINAL",
+   "seed": 303500067,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "4dc2eca8203d26a864d864ae5c95840e98ecc4c8095be88cccc0a2be8850dbe8",
+   "family": "labyrinth",
+   "id": "labyrinth-303500068",
+   "pool": "FINAL",
+   "seed": 303500068,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "1a3f371a7e2fbfa402f7991553cf8b3b72c2332e926a385a0ae160a0e0af43e5",
+   "family": "labyrinth",
+   "id": "labyrinth-303500070",
+   "pool": "FINAL",
+   "seed": 303500070,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "a3abb549c30ede74ce592621505f9348b626f2d7f378f4be9783f7aba86eeca1",
+   "family": "labyrinth",
+   "id": "labyrinth-303500071",
+   "pool": "FINAL",
+   "seed": 303500071,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "778db1a7129201129c839c8e35ac89873313d59d564316ad665ac8ed1d3fd1b6",
+   "family": "labyrinth",
+   "id": "labyrinth-303500072",
+   "pool": "FINAL",
+   "seed": 303500072,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "00fd019349acf5d2d22695201c02681469e6ac778a2f27fd462e618ff1b97f76",
+   "family": "labyrinth",
+   "id": "labyrinth-303500073",
+   "pool": "FINAL",
+   "seed": 303500073,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "dc5aa91d1a7d334a915e7e9995d8ebe28de59b774f965c6d9ad3014ca2d2842b",
+   "family": "labyrinth",
+   "id": "labyrinth-303500074",
+   "pool": "FINAL",
+   "seed": 303500074,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "0c0ccc01f2e2514a155824fa92b6c218290e8435b867b2dcbae453f542773db5",
+   "family": "labyrinth",
+   "id": "labyrinth-303500076",
+   "pool": "FINAL",
+   "seed": 303500076,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "be9cf00bccf140483fe1aa22b0b4dd33b2438130f0c49967c21c9e9b961e8d1c",
+   "family": "labyrinth",
+   "id": "labyrinth-303500077",
+   "pool": "FINAL",
+   "seed": 303500077,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "e7f06dc475f1166bf402a0dc185783294a03ef6cd48c07295b6e9b8ab0b57c28",
+   "family": "labyrinth",
+   "id": "labyrinth-303500079",
+   "pool": "FINAL",
+   "seed": 303500079,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "07abd8486a99c1bda82286cfad58dbee431f4c0abec20cca15a309b698148b54",
+   "family": "labyrinth",
+   "id": "labyrinth-303500080",
+   "pool": "FINAL",
+   "seed": 303500080,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "8cae0c561f761b212859b3806d3abfe7a082419b432467d739db06235a56821e",
+   "family": "labyrinth",
+   "id": "labyrinth-303500081",
+   "pool": "FINAL",
+   "seed": 303500081,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "ab222e47fbdf5e23b82af4da0feab9c2db5fdf7e81df648608ac72dc9674cd4d",
+   "family": "labyrinth",
+   "id": "labyrinth-303500082",
+   "pool": "FINAL",
+   "seed": 303500082,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "456364654044168beb2079c4e38edd477d7ad7c00ac78e8568601c29b5aaa5f8",
+   "family": "labyrinth",
+   "id": "labyrinth-303500083",
+   "pool": "FINAL",
+   "seed": 303500083,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "398237917604b8b8597fa332d5d2f69b7c6af887c41197fe7f3ef42841e87b15",
+   "family": "labyrinth",
+   "id": "labyrinth-303500084",
+   "pool": "FINAL",
+   "seed": 303500084,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "c305c2599b28e2df7765f14b57534104193892e35471e17b0fc465611eda607e",
+   "family": "labyrinth",
+   "id": "labyrinth-303500086",
+   "pool": "FINAL",
+   "seed": 303500086,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "1451030d5596c3efc84a28c0eb857fb2f249b2afe509e9b033ccd54ca43c2b7e",
+   "family": "labyrinth",
+   "id": "labyrinth-303500088",
+   "pool": "FINAL",
+   "seed": 303500088,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "54a6b0c0011fd37a08c963971e5ed2fffd0e4c4631d9c690096dc2142d645fe0",
+   "family": "labyrinth",
+   "id": "labyrinth-303500089",
+   "pool": "FINAL",
+   "seed": 303500089,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "b9e158b3a2517bc99cfc3f852ba54b74ee967f0fb917dbe91cab5f11773e2ff7",
+   "family": "labyrinth",
+   "id": "labyrinth-303500090",
+   "pool": "FINAL",
+   "seed": 303500090,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "b8c610bddbd098787e7e27bbcd31ef888dc3974f14b26a8ee80d154c6c30b2e5",
+   "family": "labyrinth",
+   "id": "labyrinth-303500091",
+   "pool": "FINAL",
+   "seed": 303500091,
+   "split": "FINAL-transfer"
+  },
+  {
+   "content_hash": "3e202d23bab1879cdcb5d63d309669e37c08fab1722d775f56422005498a81ce",
+   "family": "labyrinth",
+   "id": "labyrinth-303500093",
+   "pool": "FINAL",
+   "seed": 303500093,
+   "split": "FINAL-transfer"
+  }
+ ],
+ "split_sizes": {
+  "DEV-train": 150,
+  "DEV-validation": 30,
+  "FINAL-familiar": 60,
+  "FINAL-transfer": 60
+ },
+ "stats_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338",
+ "streams": {
+  "F": {
+   "base": 300000000,
+   "dev_range": {
+    "archipelago": [
+     301000000,
+     301500000
+    ],
+    "bunker_nest": [
+     302000000,
+     302500000
+    ],
+    "labyrinth": [
+     303000000,
+     303500000
+    ],
+    "spine_pods": [
+     300000000,
+     300500000
+    ]
+   },
+   "final_offset": 500000,
+   "final_range": {
+    "archipelago": [
+     301500000,
+     302000000
+    ],
+    "bunker_nest": [
+     302500000,
+     303000000
+    ],
+    "labyrinth": [
+     303500000,
+     304000000
+    ],
+    "spine_pods": [
+     300500000,
+     301000000
+    ]
+   },
+   "stride_per_family": 1000000
+  }
+ },
+ "walk": {
+  "DEV/archipelago": {
+   "accepted": 60,
+   "candidate_bits": [
+    [
+     301000000,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000001,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000002,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000003,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000004,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000005,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000006,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000007,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000008,
+     0,
+     [
+      "count_buildings",
+      "count_defenders",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000009,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000010,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000011,
+     1,
+     []
+    ],
+    [
+     301000012,
+     1,
+     []
+    ],
+    [
+     301000013,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000014,
+     1,
+     []
+    ],
+    [
+     301000015,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000016,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000017,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000018,
+     1,
+     []
+    ],
+    [
+     301000019,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000020,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000021,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000022,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000023,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000024,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000025,
+     1,
+     []
+    ],
+    [
+     301000026,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000027,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000028,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000029,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000030,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000031,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000032,
+     1,
+     []
+    ],
+    [
+     301000033,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000034,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000035,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000036,
+     1,
+     []
+    ],
+    [
+     301000037,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000038,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000039,
+     1,
+     []
+    ],
+    [
+     301000040,
+     1,
+     []
+    ],
+    [
+     301000041,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000042,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000043,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000044,
+     1,
+     []
+    ],
+    [
+     301000045,
+     1,
+     []
+    ],
+    [
+     301000046,
+     1,
+     []
+    ],
+    [
+     301000047,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000048,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000049,
+     1,
+     []
+    ],
+    [
+     301000050,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000051,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000052,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000053,
+     1,
+     []
+    ],
+    [
+     301000054,
+     1,
+     []
+    ],
+    [
+     301000055,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000056,
+     1,
+     []
+    ],
+    [
+     301000057,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000058,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000059,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000060,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     301000061,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000062,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000063,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000064,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000065,
+     1,
+     []
+    ],
+    [
+     301000066,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000067,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000068,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000069,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000070,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000071,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000072,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000073,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000074,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000075,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000076,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000077,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000078,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000079,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000080,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000081,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000082,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000083,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000084,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000085,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000086,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000087,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000088,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000089,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000090,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000091,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000092,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000093,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000094,
+     1,
+     []
+    ],
+    [
+     301000095,
+     1,
+     []
+    ],
+    [
+     301000096,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000097,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000098,
+     1,
+     []
+    ],
+    [
+     301000099,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000100,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000101,
+     1,
+     []
+    ],
+    [
+     301000102,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000103,
+     1,
+     []
+    ],
+    [
+     301000104,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000105,
+     1,
+     []
+    ],
+    [
+     301000106,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000107,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000108,
+     1,
+     []
+    ],
+    [
+     301000109,
+     1,
+     []
+    ],
+    [
+     301000110,
+     0,
+     [
+      "count_buildings",
+      "count_defenders",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000111,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000112,
+     1,
+     []
+    ],
+    [
+     301000113,
+     1,
+     []
+    ],
+    [
+     301000114,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000115,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000116,
+     1,
+     []
+    ],
+    [
+     301000117,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000118,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000119,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000120,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000121,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000122,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000123,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000124,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000125,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000126,
+     1,
+     []
+    ],
+    [
+     301000127,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000128,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000129,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000130,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000131,
+     1,
+     []
+    ],
+    [
+     301000132,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000133,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000134,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000135,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000136,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000137,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000138,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000139,
+     1,
+     []
+    ],
+    [
+     301000140,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000141,
+     1,
+     []
+    ],
+    [
+     301000142,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000143,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000144,
+     1,
+     []
+    ],
+    [
+     301000145,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000146,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000147,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000148,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301000149,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000150,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000151,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000152,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000153,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000154,
+     1,
+     []
+    ],
+    [
+     301000155,
+     1,
+     []
+    ],
+    [
+     301000156,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000157,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000158,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000159,
+     1,
+     []
+    ],
+    [
+     301000160,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000161,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000162,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000163,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000164,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000165,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000166,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000167,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000168,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000169,
+     1,
+     []
+    ],
+    [
+     301000170,
+     1,
+     []
+    ],
+    [
+     301000171,
+     1,
+     []
+    ],
+    [
+     301000172,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000173,
+     1,
+     []
+    ],
+    [
+     301000174,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000175,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000176,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000177,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000178,
+     1,
+     []
+    ],
+    [
+     301000179,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     301000180,
+     1,
+     []
+    ],
+    [
+     301000181,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000182,
+     1,
+     []
+    ],
+    [
+     301000183,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000184,
+     1,
+     []
+    ],
+    [
+     301000185,
+     1,
+     []
+    ],
+    [
+     301000186,
+     1,
+     []
+    ],
+    [
+     301000187,
+     1,
+     []
+    ],
+    [
+     301000188,
+     1,
+     []
+    ],
+    [
+     301000189,
+     1,
+     []
+    ],
+    [
+     301000190,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000191,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000192,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000193,
+     1,
+     []
+    ],
+    [
+     301000194,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000195,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000196,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000197,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000198,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000199,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000200,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000201,
+     1,
+     []
+    ],
+    [
+     301000202,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000203,
+     1,
+     []
+    ],
+    [
+     301000204,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000205,
+     1,
+     []
+    ],
+    [
+     301000206,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     301000207,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000208,
+     1,
+     []
+    ],
+    [
+     301000209,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301000210,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000211,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301000212,
+     1,
+     []
+    ],
+    [
+     301000213,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000214,
+     1,
+     []
+    ],
+    [
+     301000215,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000216,
+     1,
+     []
+    ],
+    [
+     301000217,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000218,
+     1,
+     []
+    ],
+    [
+     301000219,
+     1,
+     []
+    ],
+    [
+     301000220,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000221,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301000222,
+     1,
+     []
+    ]
+   ],
+   "candidates": 223,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 301000000,
+   "seeds_consumed": 223,
+   "single_type_trivial": 113,
+   "stat_evaluated": 173,
+   "stat_rejected": 113,
+   "structural": {
+    "count_buildings": 15,
+    "count_defenders": 34,
+    "count_value_total": 12
+   },
+   "structural_rejected": 50,
+   "too_hard": 0
+  },
+  "DEV/bunker_nest": {
+   "accepted": 60,
+   "candidate_bits": [
+    [
+     302000000,
+     1,
+     []
+    ],
+    [
+     302000001,
+     1,
+     []
+    ],
+    [
+     302000002,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000003,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000004,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000005,
+     1,
+     []
+    ],
+    [
+     302000006,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000007,
+     1,
+     []
+    ],
+    [
+     302000008,
+     1,
+     []
+    ],
+    [
+     302000009,
+     1,
+     []
+    ],
+    [
+     302000010,
+     1,
+     []
+    ],
+    [
+     302000011,
+     1,
+     []
+    ],
+    [
+     302000012,
+     1,
+     []
+    ],
+    [
+     302000013,
+     1,
+     []
+    ],
+    [
+     302000014,
+     1,
+     []
+    ],
+    [
+     302000015,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000016,
+     1,
+     []
+    ],
+    [
+     302000017,
+     1,
+     []
+    ],
+    [
+     302000018,
+     1,
+     []
+    ],
+    [
+     302000019,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     302000020,
+     1,
+     []
+    ],
+    [
+     302000021,
+     1,
+     []
+    ],
+    [
+     302000022,
+     1,
+     []
+    ],
+    [
+     302000023,
+     1,
+     []
+    ],
+    [
+     302000024,
+     1,
+     []
+    ],
+    [
+     302000025,
+     1,
+     []
+    ],
+    [
+     302000026,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000027,
+     1,
+     []
+    ],
+    [
+     302000028,
+     1,
+     []
+    ],
+    [
+     302000029,
+     1,
+     []
+    ],
+    [
+     302000030,
+     1,
+     []
+    ],
+    [
+     302000031,
+     1,
+     []
+    ],
+    [
+     302000032,
+     1,
+     []
+    ],
+    [
+     302000033,
+     1,
+     []
+    ],
+    [
+     302000034,
+     1,
+     []
+    ],
+    [
+     302000035,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000036,
+     1,
+     []
+    ],
+    [
+     302000037,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000038,
+     1,
+     []
+    ],
+    [
+     302000039,
+     1,
+     []
+    ],
+    [
+     302000040,
+     1,
+     []
+    ],
+    [
+     302000041,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000042,
+     1,
+     []
+    ],
+    [
+     302000043,
+     1,
+     []
+    ],
+    [
+     302000044,
+     1,
+     []
+    ],
+    [
+     302000045,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000046,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000047,
+     1,
+     []
+    ],
+    [
+     302000048,
+     1,
+     []
+    ],
+    [
+     302000049,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000050,
+     1,
+     []
+    ],
+    [
+     302000051,
+     1,
+     []
+    ],
+    [
+     302000052,
+     1,
+     []
+    ],
+    [
+     302000053,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000054,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302000055,
+     1,
+     []
+    ],
+    [
+     302000056,
+     1,
+     []
+    ],
+    [
+     302000057,
+     1,
+     []
+    ],
+    [
+     302000058,
+     1,
+     []
+    ],
+    [
+     302000059,
+     1,
+     []
+    ],
+    [
+     302000060,
+     1,
+     []
+    ],
+    [
+     302000061,
+     1,
+     []
+    ],
+    [
+     302000062,
+     1,
+     []
+    ],
+    [
+     302000063,
+     1,
+     []
+    ],
+    [
+     302000064,
+     1,
+     []
+    ],
+    [
+     302000065,
+     1,
+     []
+    ],
+    [
+     302000066,
+     1,
+     []
+    ],
+    [
+     302000067,
+     1,
+     []
+    ],
+    [
+     302000068,
+     1,
+     []
+    ],
+    [
+     302000069,
+     1,
+     []
+    ],
+    [
+     302000070,
+     1,
+     []
+    ],
+    [
+     302000071,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     302000072,
+     1,
+     []
+    ],
+    [
+     302000073,
+     1,
+     []
+    ],
+    [
+     302000074,
+     1,
+     []
+    ],
+    [
+     302000075,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     302000076,
+     1,
+     []
+    ]
+   ],
+   "candidates": 77,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 302000000,
+   "seeds_consumed": 77,
+   "single_type_trivial": 7,
+   "stat_evaluated": 75,
+   "stat_rejected": 15,
+   "structural": {
+    "count_defenders": 2
+   },
+   "structural_rejected": 2,
+   "too_hard": 8
+  },
+  "DEV/spine_pods": {
+   "accepted": 60,
+   "candidate_bits": [
+    [
+     300000000,
+     1,
+     []
+    ],
+    [
+     300000001,
+     1,
+     []
+    ],
+    [
+     300000002,
+     1,
+     []
+    ],
+    [
+     300000003,
+     1,
+     []
+    ],
+    [
+     300000004,
+     1,
+     []
+    ],
+    [
+     300000005,
+     1,
+     []
+    ],
+    [
+     300000006,
+     1,
+     []
+    ],
+    [
+     300000007,
+     1,
+     []
+    ],
+    [
+     300000008,
+     1,
+     []
+    ],
+    [
+     300000009,
+     1,
+     []
+    ],
+    [
+     300000010,
+     1,
+     []
+    ],
+    [
+     300000011,
+     1,
+     []
+    ],
+    [
+     300000012,
+     0,
+     [
+      "too_hard"
+     ]
+    ],
+    [
+     300000013,
+     1,
+     []
+    ],
+    [
+     300000014,
+     1,
+     []
+    ],
+    [
+     300000015,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     300000016,
+     1,
+     []
+    ],
+    [
+     300000017,
+     1,
+     []
+    ],
+    [
+     300000018,
+     1,
+     []
+    ],
+    [
+     300000019,
+     1,
+     []
+    ],
+    [
+     300000020,
+     1,
+     []
+    ],
+    [
+     300000021,
+     1,
+     []
+    ],
+    [
+     300000022,
+     1,
+     []
+    ],
+    [
+     300000023,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     300000024,
+     1,
+     []
+    ],
+    [
+     300000025,
+     1,
+     []
+    ],
+    [
+     300000026,
+     1,
+     []
+    ],
+    [
+     300000027,
+     1,
+     []
+    ],
+    [
+     300000028,
+     1,
+     []
+    ],
+    [
+     300000029,
+     1,
+     []
+    ],
+    [
+     300000030,
+     1,
+     []
+    ],
+    [
+     300000031,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     300000032,
+     1,
+     []
+    ],
+    [
+     300000033,
+     1,
+     []
+    ],
+    [
+     300000034,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     300000035,
+     1,
+     []
+    ],
+    [
+     300000036,
+     1,
+     []
+    ],
+    [
+     300000037,
+     1,
+     []
+    ],
+    [
+     300000038,
+     1,
+     []
+    ],
+    [
+     300000039,
+     1,
+     []
+    ],
+    [
+     300000040,
+     1,
+     []
+    ],
+    [
+     300000041,
+     1,
+     []
+    ],
+    [
+     300000042,
+     1,
+     []
+    ],
+    [
+     300000043,
+     1,
+     []
+    ],
+    [
+     300000044,
+     1,
+     []
+    ],
+    [
+     300000045,
+     1,
+     []
+    ],
+    [
+     300000046,
+     1,
+     []
+    ],
+    [
+     300000047,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     300000048,
+     1,
+     []
+    ],
+    [
+     300000049,
+     1,
+     []
+    ],
+    [
+     300000050,
+     1,
+     []
+    ],
+    [
+     300000051,
+     1,
+     []
+    ],
+    [
+     300000052,
+     1,
+     []
+    ],
+    [
+     300000053,
+     1,
+     []
+    ],
+    [
+     300000054,
+     1,
+     []
+    ],
+    [
+     300000055,
+     1,
+     []
+    ],
+    [
+     300000056,
+     1,
+     []
+    ],
+    [
+     300000057,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     300000058,
+     1,
+     []
+    ],
+    [
+     300000059,
+     1,
+     []
+    ],
+    [
+     300000060,
+     1,
+     []
+    ],
+    [
+     300000061,
+     1,
+     []
+    ],
+    [
+     300000062,
+     1,
+     []
+    ],
+    [
+     300000063,
+     1,
+     []
+    ],
+    [
+     300000064,
+     1,
+     []
+    ],
+    [
+     300000065,
+     1,
+     []
+    ],
+    [
+     300000066,
+     1,
+     []
+    ]
+   ],
+   "candidates": 67,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 300000000,
+   "seeds_consumed": 67,
+   "single_type_trivial": 4,
+   "stat_evaluated": 65,
+   "stat_rejected": 5,
+   "structural": {
+    "count_buildings": 2
+   },
+   "structural_rejected": 2,
+   "too_hard": 1
+  },
+  "FINAL/archipelago": {
+   "accepted": 20,
+   "candidate_bits": [
+    [
+     301500000,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500001,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500002,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301500003,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500004,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500005,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301500006,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301500007,
+     1,
+     []
+    ],
+    [
+     301500008,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500009,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500010,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500011,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500012,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301500013,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500014,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500015,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500016,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     301500017,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500018,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500019,
+     0,
+     [
+      "count_buildings",
+      "count_defenders"
+     ]
+    ],
+    [
+     301500020,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301500021,
+     1,
+     []
+    ],
+    [
+     301500022,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500023,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500024,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500025,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500026,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500027,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500028,
+     1,
+     []
+    ],
+    [
+     301500029,
+     1,
+     []
+    ],
+    [
+     301500030,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500031,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301500032,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301500033,
+     1,
+     []
+    ],
+    [
+     301500034,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500035,
+     1,
+     []
+    ],
+    [
+     301500036,
+     1,
+     []
+    ],
+    [
+     301500037,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500038,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500039,
+     1,
+     []
+    ],
+    [
+     301500040,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500041,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500042,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500043,
+     1,
+     []
+    ],
+    [
+     301500044,
+     1,
+     []
+    ],
+    [
+     301500045,
+     1,
+     []
+    ],
+    [
+     301500046,
+     1,
+     []
+    ],
+    [
+     301500047,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500048,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     301500049,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500050,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500051,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500052,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500053,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500054,
+     1,
+     []
+    ],
+    [
+     301500055,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500056,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     301500057,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500058,
+     1,
+     []
+    ],
+    [
+     301500059,
+     0,
+     [
+      "count_buildings",
+      "count_value_total"
+     ]
+    ],
+    [
+     301500060,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500061,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500062,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500063,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500064,
+     1,
+     []
+    ],
+    [
+     301500065,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500066,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     301500067,
+     1,
+     []
+    ],
+    [
+     301500068,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500069,
+     1,
+     []
+    ],
+    [
+     301500070,
+     1,
+     []
+    ],
+    [
+     301500071,
+     1,
+     []
+    ],
+    [
+     301500072,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500073,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500074,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500075,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500076,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500077,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     301500078,
+     1,
+     []
+    ]
+   ],
+   "candidates": 79,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 301500000,
+   "seeds_consumed": 79,
+   "single_type_trivial": 35,
+   "stat_evaluated": 55,
+   "stat_rejected": 35,
+   "structural": {
+    "count_buildings": 10,
+    "count_defenders": 13,
+    "count_value_total": 7
+   },
+   "structural_rejected": 24,
+   "too_hard": 0
+  },
+  "FINAL/bunker_nest": {
+   "accepted": 20,
+   "candidate_bits": [
+    [
+     302500000,
+     1,
+     []
+    ],
+    [
+     302500001,
+     1,
+     []
+    ],
+    [
+     302500002,
+     1,
+     []
+    ],
+    [
+     302500003,
+     1,
+     []
+    ],
+    [
+     302500004,
+     1,
+     []
+    ],
+    [
+     302500005,
+     1,
+     []
+    ],
+    [
+     302500006,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302500007,
+     1,
+     []
+    ],
+    [
+     302500008,
+     1,
+     []
+    ],
+    [
+     302500009,
+     1,
+     []
+    ],
+    [
+     302500010,
+     1,
+     []
+    ],
+    [
+     302500011,
+     1,
+     []
+    ],
+    [
+     302500012,
+     1,
+     []
+    ],
+    [
+     302500013,
+     1,
+     []
+    ],
+    [
+     302500014,
+     1,
+     []
+    ],
+    [
+     302500015,
+     1,
+     []
+    ],
+    [
+     302500016,
+     1,
+     []
+    ],
+    [
+     302500017,
+     1,
+     []
+    ],
+    [
+     302500018,
+     1,
+     []
+    ],
+    [
+     302500019,
+     1,
+     []
+    ],
+    [
+     302500020,
+     0,
+     [
+      "count_defenders"
+     ]
+    ],
+    [
+     302500021,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     302500022,
+     1,
+     []
+    ]
+   ],
+   "candidates": 23,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 302500000,
+   "seeds_consumed": 23,
+   "single_type_trivial": 2,
+   "stat_evaluated": 22,
+   "stat_rejected": 2,
+   "structural": {
+    "count_defenders": 1
+   },
+   "structural_rejected": 1,
+   "too_hard": 0
+  },
+  "FINAL/labyrinth": {
+   "accepted": 60,
+   "candidate_bits": [
+    [
+     303500000,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500001,
+     1,
+     []
+    ],
+    [
+     303500002,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500003,
+     1,
+     []
+    ],
+    [
+     303500004,
+     1,
+     []
+    ],
+    [
+     303500005,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500006,
+     1,
+     []
+    ],
+    [
+     303500007,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500008,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500009,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500010,
+     1,
+     []
+    ],
+    [
+     303500011,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500012,
+     1,
+     []
+    ],
+    [
+     303500013,
+     1,
+     []
+    ],
+    [
+     303500014,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500015,
+     1,
+     []
+    ],
+    [
+     303500016,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500017,
+     1,
+     []
+    ],
+    [
+     303500018,
+     1,
+     []
+    ],
+    [
+     303500019,
+     1,
+     []
+    ],
+    [
+     303500020,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500021,
+     1,
+     []
+    ],
+    [
+     303500022,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500023,
+     1,
+     []
+    ],
+    [
+     303500024,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500025,
+     1,
+     []
+    ],
+    [
+     303500026,
+     1,
+     []
+    ],
+    [
+     303500027,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500028,
+     1,
+     []
+    ],
+    [
+     303500029,
+     1,
+     []
+    ],
+    [
+     303500030,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500031,
+     1,
+     []
+    ],
+    [
+     303500032,
+     1,
+     []
+    ],
+    [
+     303500033,
+     1,
+     []
+    ],
+    [
+     303500034,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500035,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500036,
+     1,
+     []
+    ],
+    [
+     303500037,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500038,
+     1,
+     []
+    ],
+    [
+     303500039,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500040,
+     1,
+     []
+    ],
+    [
+     303500041,
+     1,
+     []
+    ],
+    [
+     303500042,
+     1,
+     []
+    ],
+    [
+     303500043,
+     1,
+     []
+    ],
+    [
+     303500044,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500045,
+     1,
+     []
+    ],
+    [
+     303500046,
+     1,
+     []
+    ],
+    [
+     303500047,
+     1,
+     []
+    ],
+    [
+     303500048,
+     1,
+     []
+    ],
+    [
+     303500049,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500050,
+     1,
+     []
+    ],
+    [
+     303500051,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500052,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500053,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500054,
+     1,
+     []
+    ],
+    [
+     303500055,
+     1,
+     []
+    ],
+    [
+     303500056,
+     1,
+     []
+    ],
+    [
+     303500057,
+     1,
+     []
+    ],
+    [
+     303500058,
+     1,
+     []
+    ],
+    [
+     303500059,
+     1,
+     []
+    ],
+    [
+     303500060,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500061,
+     1,
+     []
+    ],
+    [
+     303500062,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500063,
+     1,
+     []
+    ],
+    [
+     303500064,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500065,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500066,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500067,
+     1,
+     []
+    ],
+    [
+     303500068,
+     1,
+     []
+    ],
+    [
+     303500069,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500070,
+     1,
+     []
+    ],
+    [
+     303500071,
+     1,
+     []
+    ],
+    [
+     303500072,
+     1,
+     []
+    ],
+    [
+     303500073,
+     1,
+     []
+    ],
+    [
+     303500074,
+     1,
+     []
+    ],
+    [
+     303500075,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500076,
+     1,
+     []
+    ],
+    [
+     303500077,
+     1,
+     []
+    ],
+    [
+     303500078,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500079,
+     1,
+     []
+    ],
+    [
+     303500080,
+     1,
+     []
+    ],
+    [
+     303500081,
+     1,
+     []
+    ],
+    [
+     303500082,
+     1,
+     []
+    ],
+    [
+     303500083,
+     1,
+     []
+    ],
+    [
+     303500084,
+     1,
+     []
+    ],
+    [
+     303500085,
+     0,
+     [
+      "count_value_total"
+     ]
+    ],
+    [
+     303500086,
+     1,
+     []
+    ],
+    [
+     303500087,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500088,
+     1,
+     []
+    ],
+    [
+     303500089,
+     1,
+     []
+    ],
+    [
+     303500090,
+     1,
+     []
+    ],
+    [
+     303500091,
+     1,
+     []
+    ],
+    [
+     303500092,
+     0,
+     [
+      "single_type_trivial"
+     ]
+    ],
+    [
+     303500093,
+     1,
+     []
+    ]
+   ],
+   "candidates": 94,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 303500000,
+   "seeds_consumed": 94,
+   "single_type_trivial": 28,
+   "stat_evaluated": 88,
+   "stat_rejected": 28,
+   "structural": {
+    "count_value_total": 6
+   },
+   "structural_rejected": 6,
+   "too_hard": 0
+  },
+  "FINAL/spine_pods": {
+   "accepted": 20,
+   "candidate_bits": [
+    [
+     300500000,
+     1,
+     []
+    ],
+    [
+     300500001,
+     1,
+     []
+    ],
+    [
+     300500002,
+     1,
+     []
+    ],
+    [
+     300500003,
+     1,
+     []
+    ],
+    [
+     300500004,
+     1,
+     []
+    ],
+    [
+     300500005,
+     1,
+     []
+    ],
+    [
+     300500006,
+     1,
+     []
+    ],
+    [
+     300500007,
+     1,
+     []
+    ],
+    [
+     300500008,
+     1,
+     []
+    ],
+    [
+     300500009,
+     1,
+     []
+    ],
+    [
+     300500010,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     300500011,
+     1,
+     []
+    ],
+    [
+     300500012,
+     1,
+     []
+    ],
+    [
+     300500013,
+     1,
+     []
+    ],
+    [
+     300500014,
+     1,
+     []
+    ],
+    [
+     300500015,
+     1,
+     []
+    ],
+    [
+     300500016,
+     1,
+     []
+    ],
+    [
+     300500017,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     300500018,
+     1,
+     []
+    ],
+    [
+     300500019,
+     0,
+     [
+      "count_buildings"
+     ]
+    ],
+    [
+     300500020,
+     1,
+     []
+    ],
+    [
+     300500021,
+     1,
+     []
+    ],
+    [
+     300500022,
+     1,
+     []
+    ]
+   ],
+   "candidates": 23,
+   "redraws_d4_duplicate": 0,
+   "seed_lo": 300500000,
+   "seeds_consumed": 23,
+   "single_type_trivial": 0,
+   "stat_evaluated": 20,
+   "stat_rejected": 0,
+   "structural": {
+    "count_buildings": 3
+   },
+   "structural_rejected": 3,
+   "too_hard": 0
+  }
+ }
+}

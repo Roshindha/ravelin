@@ -23,3 +23,13 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - Models stop at rollout granularity (about 1.0015M steps for a 1M budget).
 - Config C (lr 1e-4, 5 epochs) collapsed to one troop type per seed (val 0.23 vs 0.33).
 - The prototype transfer family had BestSingle = 0.000, so BestSingle is uninformative there; v2 reports transfer against Oracle / Greedy / Random.
+
+## Pool (B6, `data/v2/pool_v1.json`, sha256 1346536dea209eb7953eb00eb0d69f24bed930a2a81d89daea7ec1b705f834e4)
+- 300 layouts: DEV-train 150, DEV-validation 30, FINAL-familiar 60, FINAL-transfer (labyrinth) 60; 50 / 10 / 20 per familiar family.
+- Candidates walked (accepted / candidates): DEV spine_pods 60/67, archipelago 60/223, bunker_nest 60/77; FINAL spine_pods 20/23, archipelago 20/79, bunker_nest 20/23, labyrinth 60/94.
+- Rejections by rule (a candidate can fire several): DEV spine_pods count_buildings 2, single_type_trivial 4, too_hard 1; DEV archipelago count_defenders 34, count_buildings 15, count_value_total 12, single_type_trivial 113; DEV bunker_nest count_defenders 2, single_type_trivial 7, too_hard 8.
+- FINAL rejections by rule: spine_pods count_buildings 3; archipelago count_defenders 13, count_buildings 10, count_value_total 7, single_type_trivial 35; bunker_nest count_defenders 1, single_type_trivial 2; labyrinth count_value_total 6, single_type_trivial 28. Zero too_hard in FINAL.
+- Archipelago candidate rejection: DEV 163 of 223 (73.1 %), FINAL 59 of 79 (74.7 %); the 50 % flag (item 5) applies to the stat rules: stat rejection 113 of 173 stat-evaluated in DEV (65.3 %, above the 50 % flag), 35 of 55 in FINAL (63.6 %); the B5 TUNE walk rate was 60.4 %.
+- D4 duplicate redraws against all other sets: 0 in every walk. Zero overlaps with TUNE-train, TUNE-val, LAB-DESIGN.
+- DEV defender mix (DEV only): Gun share 0.59 / 0.54 / 0.59, Lancer 0.38 / 0.34 / 0.39 (spine_pods / archipelago / bunker_nest); sealed-core share 0.42 / 0.65 / 0.50.
+- FINAL scores, baselines and Oracle results are not stored anywhere; the pool carries accept bits and rule ids only. Pool statistics of FINAL cannot be reported before the final eval.
