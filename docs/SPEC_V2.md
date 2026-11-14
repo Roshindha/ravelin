@@ -171,6 +171,18 @@ All gates use only DEV-style data: the TUNE sets and LAB-DESIGN of §3.5 (and, f
 - **FINAL-access ledger.** Every load of FINAL or transfer layouts goes through one loader that appends `{time, git commit, entry point, purpose ∈ build | eval}` to `data/v2/final_access.log`. *Build* = generation, acceptance, hashing; *eval* = any rollout of any agent, baseline, Oracle, planner or control on a FINAL layout. Pool regeneration is permitted only while the ledger has zero *eval* entries. Required pytest: **no agent evaluation of FINAL exists before the final eval** (see B6/B13/B15 rows).
 - **G7 failing means redesign, not launching the grid** (after the one-time 600k extension if its slope condition holds; §7.4 defines the single allowed shaped-reward ablation before a post-G7 revision is spent).
 
+### 3.6 B5-CLOSE decision: B5 is closed at revision 1
+
+**Decision (owner, after the B5-R3 sweep found no qualifying arm).** B5 is closed at **revision 1** (R2a, commit 21f71ff). 2 of the 3 B5 revisions remain unspent: 1 is held for after G7 (§3.5), 1 is spare. No further B5 sweep or revision is run. Reason: the balance gates are proxies; G7 (does PPO beat a fixed army on TUNE-val) decides learnability. Failing gates are **known limitations**, not waived and not re-defined; they are listed with numbers in `docs/LIMITATIONS.md` and in the `generator_hash` record. Stats and generators are frozen at revision 1 (`generator_hash` recorded with `--record-hash`). Known limitations at close, with numbers (revision-1 gate run, `data/v2/b5_report.md`; G4 under changelog (g)):
+
+- **G2 / G3, Blaster:** rarely worth buying: monotone ban-loss <= 0.015 in every family, niche share 1.1 %.
+- **G3, Scout:** niche share 7.9 % vs threshold 8 % (marginal); G2 passes for Scout only in spine_pods.
+- **G8, bunker_nest:** army-search better than best single on 56 % of layouts vs 60 % threshold; all mean gains >= +0.20.
+- **Wall-attack share:** 0.50-0.62 of attacker time on bunker_nest and labyrinth.
+- **G6 diagnostic:** Oracle armies never use more than 12 units, so the cap of 20 never binds.
+- **Archipelago rejection:** 60.4 % (122/202), disclosed, below the 65 % limit of item 9 (iii) but above the 50 % flag.
+- **R3 sweep finding:** Blaster buffs (R3a-d) make Blaster the best single unit and push labyrinth best-single (0.688-0.705) and Oracle (0.976-0.993) above the bands, while Scout's niche falls to 1-2.5 %: Blaster and Scout compete for the same role. Nothing applied.
+
 ---
 
 ## 4. Interface

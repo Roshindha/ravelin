@@ -274,13 +274,14 @@ def test_report_is_reproducible_from_raw_and_matches_the_files():
     assert a4["part_a_pass"] == any(v["pass"] for v in a4["mender_gain"].values())
 
 
-def test_generator_hash_is_recorded_only_if_all_gates_pass():
+def test_generator_hash_record_matches_gates():
+    """B5-CLOSE: the hash is recorded only on --record-hash; if present it carries the revision and the documented-failing gate list of gates.json."""
     gj = json.loads((DATA / "gates.json").read_text())
     f = DATA / "generator_hash.json"
-    if gj["all_pass"]:
-        assert f.exists() and json.loads(f.read_text())["generator_hash"] == G.generator_hash()
-    else:
-        assert not f.exists()
+    if f.exists():
+        r = json.loads(f.read_text())
+        assert r["generator_hash"] == G.generator_hash()
+        assert r["revision"] == gj["revision"] and r["documented_failing_gates"] == gj["failed"] and r["all_gates_pass"] == gj["all_pass"]
 
 
 # ------------------------------------------------------------------ B5-R1: per-layout niche G3 on synthetic data

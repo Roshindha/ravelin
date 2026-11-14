@@ -4,7 +4,7 @@
   python scripts_gates.py --report   # regenerate gates.json / b5_report.{json,md} from data/v2/b5_raw.json (no simulation)
 
 Outputs: data/v2/b5_raw.json, data/v2/gates.json, data/v2/b5_report.json, data/v2/b5_report.md.
-`generator_hash` is recorded to data/v2/generator_hash.json ONLY if every gate passes. Never touches stream F / FINAL.
+`generator_hash` is recorded to data/v2/generator_hash.json only with the explicit --record-hash flag (with the failing-gate list and revision). Never touches stream F / FINAL.
 """
 import json
 import sys
@@ -143,9 +143,11 @@ def build_report(raw, record_hash=False, git=None):   # B5-R2b: generator_hash i
         "stat_acceptance": meta_sets["stat_acceptance"],
         "ban_loss_all": {"families": list(Y.FAMILIAR) + ["LAB-DESIGN"], "table": G.ban_loss_all_families(raw, th)},
     }
-    if gates["all_pass"] and record_hash:
+    if record_hash:   # B5-CLOSE: recorded on explicit --record-hash even when gates fail; the documented-failing list and the revision go in the record
         (G.DATA / "generator_hash.json").write_text(json.dumps({"generator_hash": rep["meta"]["generator_hash"], "source": "breachlens/layouts.py (sha256)",
-                                                                  "commit": rep["meta"]["git"]["commit"], "revision": REVISION}, indent=1) + "\n")
+                                                                  "commit": rep["meta"]["git"]["commit"], "revision": REVISION,
+                                                                  "all_gates_pass": gates["all_pass"], "documented_failing_gates": list(gates["failed"]),
+                                                                  "note": "B5 closed at revision 1 (docs/SPEC_V2.md 3.5 B5-CLOSE); failing gates are known limitations (docs/LIMITATIONS.md)"}, indent=1) + "\n")
         rep["meta"]["generator_hash_recorded"] = True
     return rep
 
