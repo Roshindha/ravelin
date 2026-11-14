@@ -40,14 +40,14 @@ def markdown(rep) -> str:
     k["G3"] = "niche-layout share (need >= 8%, lo95 > 0): " + "; ".join(f"{u} {v['mean']:.1%} [{v['lo95']:.1%}]" for u, v in g["G3"]["niche_share"].items())
     k["G4"] = (f"Mender gain bunker_nest {fmt_ci(g['G4']['mender_gain']['bunker_nest'])}, LAB {fmt_ci(g['G4']['mender_gain']['LAB-DESIGN'])}; "
                f"Mender-only TUNE {g['G4']['mender_only']['TUNE']['mean']:.3f} / LAB {g['G4']['mender_only']['LAB-DESIGN']['mean']:.3f}")
-    k["G5"] = "; ".join(f"{f}: best-single {v['best_single_type']} {v['best_single_mean']:.3f}, Oracle breach {v['oracle_breach_rate']:.2f}" for f, v in g["G5"]["by_family"].items())
-    k["G6"] = (f"Oracle >12 units on {g['G6']['share_oracle_over_12_units']:.2f} of layouts (need >=0.30); layouts with 20 Scouts >= Oracle: "
+    k["G5"] = "; ".join(f"{f}: best-single {v['best_single_type']} {v['best_single_mean']:.3f}, Oracle {v['oracle_score']:.3f} / breach {v['oracle_breach_rate']:.2f}" for f, v in g["G5"]["by_family"].items())
+    k["G6"] = (f"Oracle >12 units on {g['G6']['share_oracle_over_12_units']:.2f} of layouts (diagnostic, was >=0.30); layouts with 20 Scouts >= Oracle: "
                f"{len(g['G6']['layouts_where_20_scouts_scores_ge_oracle'])}")
     k["G8"] = "; ".join(f"{f}: army-search +{v['army_search_gain']['mean']:.3f} ({v['army_search_better_share']:.0%} layouts), Oracle +{v['oracle_gain']['mean']:.3f}" for f, v in g["G8"]["by_family"].items())
     k["G9"] = (f"Oracle {fmt_ci(g['G9']['oracle_mean'])}, breach {g['G9']['oracle_breach_rate']:.2f}; Greedy {fmt_ci(g['G9']['greedy_mean'])}, "
                f"{g['G9']['greedy_share_ge_min_score']:.0%} of layouts >= 0.05; stalemate with core alive: {g['G9']['stalemate_with_core_alive']}")
     for name in ("G1", "G2", "G3", "G4", "G5", "G6", "G8", "G9"):
-        L.append(f"| {name} | **{'PASS' if g[name]['pass'] else 'FAIL'}** | {k[name]} |")
+        L.append(f"| {name}{' (diagnostic)' if not g[name].get('blocking', True) else ''} | **{'PASS' if g[name]['pass'] else 'FAIL'}** | {k[name]} |")
     L.append("\nG7 is not evaluated at B5 (pilot, B13).\n")
     L.append("## 2. Gate details\n")
     L.append("### G1\nbest-single-unit share per layout (ties split), pooled TUNE: " + ", ".join(f"{u} {v:.2f}" for u, v in g["G1"]["best_single_share_pooled"].items()) + "\n")

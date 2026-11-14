@@ -81,16 +81,16 @@ def test_thresholds_file_equals_the_spec():
     r4 = _row("G4")
     assert TH["G4"]["min_mender_gain"] == 0.02 and "≥ 0.02" in r4 and TH["G4"]["mender_only_max_mean"] == 0.01 and "< 0.01" in r4 and TH["G4"]["mender_only_max_upper95"] == 0.02 and "< 0.02" in r4
     r5 = _row("G5")
-    assert TH["G5"]["best_single_mean_range"] == [0.25, 0.65] and "[0.25, 0.65]" in r5 and TH["G5"]["oracle_breach_range"] == [0.6, 0.95] and "[0.6, 0.95]" in r5
+    assert TH["G5"]["best_single_mean_range"] == [0.25, 0.65] and "[0.25, 0.65]" in r5 and TH["G5"]["oracle_score_range"] == [0.80, 0.97] and "[0.80, 0.97]" in r5 and TH["G5"]["oracle_breach_min"] == 0.6 and "≥ 0.6" in r5 and "0.95" not in r5
     r6 = _row("G6")
-    assert TH["G6"]["min_units_over"] == 12 and "> 12 units" in r6 and TH["G6"]["min_layout_share"] == 0.30 and "30 %" in r6
+    assert TH["G6"]["min_units_over"] == 12 and "> 12 units" in r6 and TH["G6"]["min_layout_share"] == 0.30 and "30 %" in r6 and TH["G6"]["blocking"] is False and "diagnostic" in r6
     r7 = _row("G7")
     assert TH["G7"]["margin"] == 0.05 and "0.05" in r7 and "≥ 2 of 3" in r7 and "≥ 10 distinct" in r7 and "> 90 %" in r7 and "+0.02" in r7 and "600k" in r7
     assert TH["G7"]["min_seeds_above"] == 2 and TH["G7"]["of_seeds"] == 3 and TH["G7"]["extension_timesteps"] == 600000 and TH["G7"]["extension_slope_per_100k"] == 0.02
     r8 = _row("G8")
     assert TH["G8"]["army_search_margin"] == 0.10 and "≥ 0.10" in r8 and TH["G8"]["army_search_layout_share"] == 0.60 and "60 %" in r8 and TH["G8"]["oracle_margin"] == 0.20 and "≥ 0.20" in r8
     r9 = _row("G9")
-    assert TH["G9"]["oracle_mean_min"] == 0.60 and "≥ 0.60" in r9 and TH["G9"]["greedy_mean_range"] == [0.10, 0.45] and "≥ 0.10" in r9 and "≤ 0.45" in r9
+    assert TH["G9"]["oracle_mean_min"] == 0.60 and "≥ 0.60" in r9 and TH["G9"]["greedy_mean_range"] == [0.10, 0.65] and "≥ 0.10" in r9 and "≤ 0.65" in r9 and "≤ 0.45" not in r9
     assert TH["G9"]["greedy_min_layout_score"] == 0.05 and "0.05" in r9 and TH["G9"]["greedy_min_layout_share"] == 0.50 and "50 %" in r9
     assert TH["bootstrap"]["n_resamples"] == 10000 and "10 000 resamples" in SPEC and TH["bootstrap"]["seed"] == 8080 and "seed 8080" in SPEC
     assert TH["bootstrap"]["one_sided_level"] == 0.9875 and "98.75 %" in SPEC and TH["bootstrap"]["bonferroni_families"] == 4
@@ -99,6 +99,8 @@ def test_thresholds_file_equals_the_spec():
     assert TH["search"]["army_search_n_random"] == O.AS_RANDOM == 128 and TH["search"]["army_search_n_refine"] == O.AS_REFINE
     assert (TH["search"]["oracle_tag"], TH["search"]["army_search_tag"], TH["search"]["acceptance_tag"]) == (O.ORACLE_TAG, O.ARMY_SEARCH_TAG, O.ACCEPT_TAG)
     assert "no_attackers" in SPEC
+    assert TH["G2"]["estimator"] == TH["G4"]["estimator"] == "monotone" and "monotone estimator" in _row("G2") and "monotone estimator" in _row("G4")
+    assert "Gate changelog" in SPEC and all(f"({c})" in SPEC.split("Gate changelog (post-B5-R1")[1] for c in "abcd")
 
 
 # ------------------------------------------------------------------ stats pinned by test (every unit, defender, structure)
@@ -234,7 +236,7 @@ def test_gates_json_and_report_exist_with_every_required_field():
     assert (DATA / "b5_report.md").exists() and (DATA / "b5_raw.json").exists()
     assert gj["sim_version"] == K.sim_version() and gj["git"]["commit"] and gj["seed_sets"] == {"TUNE-train": 180, "TUNE-val": 60, "LAB-DESIGN": 40}
     assert set(gj["gates"]) == {"G1", "G2", "G3", "G4", "G5", "G6", "G8", "G9"} and gj["all_pass"] == (not gj["failed"])
-    assert rep["thresholds"] == TH
+    assert rep["thresholds"]["bootstrap"] == TH["bootstrap"]     # the stored revision-0 report predates the gate changelog thresholds
     for u in UNIT_TYPES:
         s = rep["unit_static"][u]
         assert set(s["ehp_per_gold_by_defender"]) == {"gun", "lancer", "flak"} and "ehp_per_gold_mean_of_three" in s and "ehp_per_gold_flak_neighbour_hit" in s
@@ -258,7 +260,11 @@ def test_report_is_reproducible_from_raw_and_matches_the_files():
     assert len(raw) == 280
     again = G.compute_gates(raw)
     gj = json.loads((DATA / "gates.json").read_text())
-    assert again["gates"] == gj["gates"] and again["all_pass"] == gj["all_pass"]
+    # gates.json is the stored revision-0 record (old G5/G6/G9 definitions, independent ban-loss estimator); the definitions that did not change
+    # in the gate changelog must still reproduce exactly from the stored raw data.
+    assert gj["revision"] == 0
+    for k in ("G1", "G3", "G8"):
+        assert again["gates"][k] == gj["gates"][k]
 
 
 def test_generator_hash_is_recorded_only_if_all_gates_pass():

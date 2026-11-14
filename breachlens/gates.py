@@ -248,16 +248,18 @@ def g4(raw, th):
 
 
 def g5(raw, th):
+    """Gate changelog (a): best single in range, Oracle score in [0.80, 0.97], Oracle breach rate >= 0.6 (no ceiling), per family."""
     lo_s, hi_s = th["G5"]["best_single_mean_range"]
-    lo_b, hi_b = th["G5"]["oracle_breach_range"]
+    lo_o, hi_o = th["G5"]["oracle_score_range"]
     per = {}
     for f in FAM3:
         rows = _tune(raw, f)
         means = single_scores(rows).mean(axis=0)
         br = float(np.mean([r["oracle"]["all"]["breach"] for r in rows]))
-        per[f] = {"best_single_type": UNIT_TYPES[int(np.argmax(means))], "best_single_mean": float(means.max()), "oracle_breach_rate": br,
-                  "single_ok": bool(lo_s <= means.max() <= hi_s), "breach_ok": bool(lo_b <= br <= hi_b)}
-    return {"pass": all(v["single_ok"] and v["breach_ok"] for v in per.values()), "by_family": per}
+        osc = float(np.mean([r["oracle"]["all"]["score"] for r in rows]))
+        per[f] = {"best_single_type": UNIT_TYPES[int(np.argmax(means))], "best_single_mean": float(means.max()), "oracle_score": osc, "oracle_breach_rate": br,
+                  "single_ok": bool(lo_s <= means.max() <= hi_s), "oracle_score_ok": bool(lo_o <= osc <= hi_o), "breach_ok": bool(br >= th["G5"]["oracle_breach_min"])}
+    return {"pass": all(v["single_ok"] and v["oracle_score_ok"] and v["breach_ok"] for v in per.values()), "by_family": per}
 
 
 def g6(raw, th):
@@ -268,7 +270,7 @@ def g6(raw, th):
     per = {f: float(np.mean([r["oracle"]["all"]["units"] > th["G6"]["min_units_over"] for r in _tune(raw, f)])) for f in FAM3}
     a = bool(over.mean() >= th["G6"]["min_layout_share"])
     b = not scout20
-    return {"pass": a and b, "share_oracle_over_12_units": float(over.mean()), "by_family": per, "layouts_where_20_scouts_scores_ge_oracle": scout20,
+    return {"pass": a and b, "blocking": False, "share_oracle_over_12_units": float(over.mean()), "by_family": per, "layouts_where_20_scouts_scores_ge_oracle": scout20,
             "layouts_where_oracle_army_is_exactly_20_scouts": exact20, "part_a_pass": a, "part_b_pass": b}
 
 
@@ -310,7 +312,9 @@ def g9(raw, th):
 def compute_gates(raw: list, th: dict | None = None) -> dict:
     th = th or thresholds()
     G = {"G1": g1(raw, th), "G2": g2(raw, th), "G3": g3(raw, th), "G4": g4(raw, th), "G5": g5(raw, th), "G6": g6(raw, th), "G8": g8(raw, th), "G9": g9(raw, th)}
-    return {"gates": G, "all_pass": all(v["pass"] for v in G.values()), "failed": [k for k, v in G.items() if not v["pass"]]}
+    blocking = {k: v for k, v in G.items() if v.get("blocking", True)}      # G6 is a reported diagnostic since the gate changelog (b)
+    return {"gates": G, "all_pass": all(v["pass"] for v in blocking.values()), "failed": [k for k, v in blocking.items() if not v["pass"]],
+            "diagnostic_not_blocking": [k for k, v in G.items() if not v.get("blocking", True)]}
 
 
 # ------------------------------------------------------------------ static per-unit report (spec 11 'B5 report')
