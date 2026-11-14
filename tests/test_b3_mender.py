@@ -16,7 +16,15 @@ from breachlens import config as K
 from breachlens import sim
 from breachlens._bench_layouts import FAMILIES, make_layout, random_army
 from breachlens.constants import GRID
-from breachlens.sim import Prepared, simulate
+from breachlens.sim import Prepared
+from breachlens.sim import simulate as _simulate
+
+
+def simulate(*a, **k):
+    """B2/B3 fixtures use damage-0 dummy units and Mender-only armies; they test pre-B5 mechanics, so the B5
+    no_attackers early exit is switched off here (it is tested in tests/test_b5_*.py)."""
+    k.setdefault("_no_attackers_exit", False)
+    return _simulate(*a, **k)
 
 CFG = K.CFG
 S = CFG.S
@@ -71,7 +79,7 @@ def test_raw_coordinate_stopgap_is_gone():
 
 
 def test_sim_version_changed_with_the_b3_code():
-    assert K.SIM_CODE_VERSION.endswith("b3.0")
+    assert K.SIM_CODE_VERSION != "breachlens-sim-b2.0" and K.SIM_CODE_VERSION.startswith("breachlens-sim-b")   # b5 bump: tests/test_b5_sim.py
 
 
 # =============================================================== heal rules

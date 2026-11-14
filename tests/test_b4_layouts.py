@@ -45,7 +45,11 @@ def test_design_set_sizes_and_family_mix():
 
 
 def test_design_sets_file_matches_regeneration():
-    assert Y.build_design_sets() == META   # the committed file is exactly what the generators produce
+    """B5: the committed sets are the structural stream walk minus the stat-dependent rejections (tests/test_b5_gates.py checks that
+    difference exactly); every record regenerates from (family, seed) with the recorded content hash."""
+    for name, rec, L in ALL:
+        assert Y.candidate(rec["family"], rec["seed"]) == L and Y.content_hash(L) == rec["content_hash"]
+    assert META["note"].startswith("B5")
 
 
 def test_no_labyrinth_in_tune_and_no_familiar_in_lab_design():
@@ -163,8 +167,9 @@ def test_acceptance_does_not_change_when_stats_change():
     raw = json.loads(config.STATS_PATH.read_text())
     for u in raw["units"].values():
         u["hp"] *= 3
-    config._build(raw)                      # a different stat set exists; the generators never look at it
-    assert Y.build_design_sets() == META
+    before = Y.build_design_sets()
+    config._build(raw)                      # a different stat set exists; the structural generators never look at it
+    assert Y.build_design_sets() == before
 
 
 # ------------------------------------------------------------------ seed streams, FINAL separation

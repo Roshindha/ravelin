@@ -52,3 +52,79 @@ def scripted_army(layout: dict) -> list:
     start = min(tiles, key=lambda i: (d2(i), i))  # exact-distance ties broken by index (scripted; not part of any D4 claim)
     k0 = tiles.index(start)
     return [(t, tiles[(k0 + j) % len(tiles)]) for j, t in enumerate(types)]
+
+
+# ------------------------------------------------------------------ B5: scripted deployer, single-unit armies, Greedy, random buys
+def _cfg():
+    from .config import CFG
+    return CFG
+
+
+def default_start(layout: dict) -> int:
+    """Default start tile of the scripted deployer: the border tile nearest the core (squared Euclidean; exact ties -> lowest
+    index; scripted, not part of any D4 claim)."""
+    core = layout["core"]["cell"]
+    tiles = free_tiles(layout)
+    return min(tiles, key=lambda i: ((BORDER[i][0] - core[0]) ** 2 + (BORDER[i][1] - core[1]) ** 2, i))
+
+
+def place_on_border(layout: dict, types, start: int | None = None) -> list:
+    """Scripted deployment: units in the given order on consecutive free border tiles (clockwise) from `start`.
+
+    `start` is a border index; if that tile is not free the next free tile clockwise is used. Default: `default_start`."""
+    tiles = free_tiles(layout)
+    s = default_start(layout) if start is None else int(start) % len(BORDER)
+    k0 = next((j for j, t in enumerate(tiles) if t >= s), 0)
+    return [(int(t), tiles[(k0 + j) % len(tiles)]) for j, t in enumerate(types)]
+
+
+def unit_cost(t: int) -> int:
+    return _cfg().units[t].cost
+
+
+def army_cost(types) -> int:
+    return sum(unit_cost(t) for t in types)
+
+
+def single_unit_types(t: int, budget: int = 240, cap: int = 20) -> list:
+    """'Best fixed single-unit army' composition (spec 3.4): as many units of one type as fit in min(budget, cap)."""
+    return [t] * min(cap, budget // unit_cost(t))
+
+
+def greedy_rank() -> tuple:
+    """Unit types ordered by Lanchester value hp*damage/cost^2 (descending; ties by type index). A Mender (damage 0) ranks last.
+    This is the 'Greedy ranking order' used for scripted deployment and by `greedy_types`."""
+    c = _cfg()
+    return tuple(sorted(range(len(c.units)), key=lambda t: (-(c.units[t].hp * c.units[t].damage) / c.units[t].cost ** 2, t)))
+
+
+def sort_by_rank(types) -> list:
+    rank = {t: i for i, t in enumerate(greedy_rank())}
+    return sorted(types, key=lambda t: (rank[t], t))
+
+
+def greedy_types(budget: int = 240, cap: int = 20) -> list:
+    """Greedy army: walk the Lanchester ranking, buy as many of each as fit (cap respected), no Mender pairing in B5
+    (B8 may refine the rule; any change is a G9 input change)."""
+    types, gold = [], budget
+    for t in greedy_rank():
+        k = min(gold // unit_cost(t), cap - len(types))
+        types += [t] * k
+        gold -= k * unit_cost(t)
+    return types
+
+
+def random_types(rng, allowed=None, stop_p: float = 0.1, budget: int = 240, cap: int = 20) -> list:
+    """Phase-A style random legal army (spec section 6): random affordable (allowed) types, stop w.p. `stop_p` after each buy, <= cap units."""
+    pool = list(range(len(_cfg().units))) if allowed is None else list(allowed)
+    types, gold = [], budget
+    while len(types) < cap:
+        opts = [t for t in pool if unit_cost(t) <= gold]
+        if not opts:
+            break
+        t = int(opts[int(rng.integers(len(opts)))])
+        types.append(t)
+        gold -= unit_cost(t)
+        if rng.random() < stop_p:
+            break
+    return types

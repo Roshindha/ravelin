@@ -383,6 +383,23 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   (full-scale D4 run + battle-length table); `scripts_b4_contact_sheets.py` -> `results/design/contact_sheet_<family>.png`; `scripts_speed.py` now benchmarks the real layouts.
 - Tests: `tests/test_b4_layouts.py` (32). Full-scale D4 on real layouts: 4,100 battles x 8 (2,000 labyrinth, Mender in 85 %) + 810 with adversarial id/list shuffles: 0 mismatches, 0 per-tick-position mismatches.
 
+### STEP B5 (v2): gate script, acceptance rules, B5 report (done, branch v2-redesign) -- **7 of 8 evaluated gates FAIL; no stat/generator/rule changed; generator_hash NOT recorded**
+- Simulator: new exit `no_attackers` (no live unit with damage > 0; ends the battle immediately, counted separately from stalemate, cannot change structures or score -- tested on 300 real battles with the exit on/off).
+  `SIM_CODE_VERSION` = `breachlens-sim-b5.0`; extra read-only counters (attack / wall-attack ticks, distinct walls hit, ticks with any wall attack). B2/B3 fixtures that use damage-0 dummies run with the exit switched off (`_no_attackers_exit=False`).
+  Re-run after the change: D4 smoke 200 battles x 8 = 0 mismatches; real-layout D4 4,100 x 8 plain + 810 x 8 adversarial shuffles = 0 mismatches, 0 trace mismatches (`data/v2/b4_report.json`); speed gate still passed (`speed.json`).
+- `breachlens/oracle.py` (the only search implementation; B8 reuses it): full Oracle (200 random + 200 hill-climb, army + start tile, warm starts = 5 single-unit armies + Bulwark/Mender template + Greedy) and army search (128 + 128, scripted deployment).
+  `armies.py` gained `place_on_border`, `default_start`, `single_unit_types`, `greedy_types`/`greedy_rank`, `random_types`. `acceptance.py`: `too_hard` (acceptance Oracle, rng tag 5151, finds no breach) and `single_type_trivial` (best single-unit army > 0.99) + builder
+  that draws further seeds from streams T / L. `gates.py` + `scripts_gates.py`: raw per-layout evaluation, paired bootstrap (10k, seed 8080, one-sided 98.75 % bound for G2/G3), G1-G6/G8/G9, B5 report.
+- SPEC_V2 amended (pre-registered, written before the gate run): rule 8 `no_attackers`; G2/G3 one-sided 98.75 % bound (Bonferroni over 4 families); Oracle / army-search / Greedy / template / G6 / G9-stalemate / acceptance definitions; extra wall metrics. `data/v2/gate_thresholds.json` created (the spec said it existed; it did not) and pinned by `tests/test_b5_gates.py`.
+- **Stat-dependent acceptance rejection rates (design sets rebuilt, 1142 s):** spine_pods 91.2 % (832/912), archipelago 99.4 % (13,254/13,334), bunker_nest 60.0 % (120/200), labyrinth 74.2 % (115/155). **All four families flagged > 50 %.** Every rejection was `single_type_trivial`; `too_hard` fired 0 times.
+  Streams used: T consumed 912 / 13,334 / 200 seeds of 1,000,000 per family; L 155. FINAL / stream F never generated or loaded; ledger `data/v2/final_access.log` does not exist (zero entries).
+- **Gate results (revision 0; `data/v2/gates.json`, `b5_report.md/json`, raw per-layout `b5_raw.json`; run on the working tree on top of 67ae8b1):**
+  G1 FAIL (Sniper is the best single-unit army on 75 % of layouts, limit 60 %) | G2 FAIL (no unit has paired Oracle ban-loss >= 0.02 in any family; max 0.009) | G3 FAIL (Sniper's template wins all 3 families; pigeonhole: 5 units, 3 tested families)
+  | G4 FAIL (Mender gain -0.001 on bunker_nest, +0.008 on LAB-DESIGN; Mender-only = 0.000 passes) | G5 FAIL (best single 0.69 / 0.73 / 0.53; Oracle breach 1.00 in every family, limit 0.95) | G6 FAIL (Oracle uses > 12 units on 1 % of layouts, need 30 %; 20-Scout army never >= Oracle)
+  | **G8 PASS** (army search +0.23 / +0.24 / +0.37, Oracle +0.27 / +0.30 / +0.47) | G9 FAIL (Oracle 1.000 ok, breach 1.00 ok, 0 stalemates ok, but Greedy mean 0.636 > 0.45).
+  Dominant cause: Oracle saturation (mean 0.997-1.000, breach 100 %) -> ban-losses ~0 and nothing is "needed"; Sniper outranges the Gun majority. Proposals (at most 3) are in the B5 report message; the owner decides, none applied.
+- Not recorded (gates failed): `data/v2/generator_hash.json`. Tests: `tests/test_b5_sim.py` (8), `test_b5_oracle.py` (8), `test_b5_gates.py` (17); full suite 316 passed.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -421,7 +438,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1-B4 done; B5 (gate script G1-G6/G8/G9, revisions, B5 report, generator_hash) starts only when told.
+- v2: B1-B5 done (B5 gates FAIL, revision decision pending with the owner, generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

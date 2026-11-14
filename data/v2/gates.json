@@ -1,0 +1,518 @@
+{
+ "revision": 0,
+ "git": {
+  "commit": "67ae8b17259d3865a6e8cba19ad6b57484c918b2",
+  "dirty": true
+ },
+ "sim_version": "5962b969fe445f4bc4a4fa140822dfa97e865e3a71a7f6ddfd00c8f40596c64e",
+ "seed_sets": {
+  "TUNE-train": 180,
+  "TUNE-val": 60,
+  "LAB-DESIGN": 40
+ },
+ "all_pass": false,
+ "failed": [
+  "G1",
+  "G2",
+  "G3",
+  "G4",
+  "G5",
+  "G6",
+  "G9"
+ ],
+ "gates": {
+  "G1": {
+   "pass": false,
+   "best_single_share_pooled": {
+    "scout": 0.041666666666666664,
+    "sniper": 0.7465277777777779,
+    "bulwark": 0.14027777777777778,
+    "blaster": 0.07152777777777779,
+    "mender": 0.0
+   },
+   "best_single_share_by_family": {
+    "spine_pods": [
+     0.0,
+     0.8520833333333332,
+     0.03333333333333333,
+     0.11458333333333333,
+     0.0
+    ],
+    "archipelago": [
+     0.0,
+     0.6333333333333333,
+     0.33958333333333335,
+     0.02708333333333333,
+     0.0
+    ],
+    "bunker_nest": [
+     0.125,
+     0.7541666666666667,
+     0.04791666666666667,
+     0.07291666666666667,
+     0.0
+    ]
+   },
+   "ban_loss_mean": {
+    "spine_pods": {
+     "scout": 0.0015,
+     "sniper": 0.0051290322580645155,
+     "bulwark": 0.008855921052631579,
+     "blaster": 0.0002684210526315789,
+     "mender": 0.00104516129032258
+    },
+    "archipelago": {
+     "scout": -0.0010714285714285704,
+     "sniper": 0.0065589285714285715,
+     "bulwark": 0.000285714285714285,
+     "blaster": -0.0028571428571428567,
+     "mender": -0.0028571428571428567
+    },
+    "bunker_nest": {
+     "scout": -0.0015,
+     "sniper": 0.0074285714285714285,
+     "bulwark": 0.0,
+     "blaster": -0.0015,
+     "mender": -0.0008749999999999994
+    }
+   },
+   "units_with_ban_loss_over_limit_everywhere": [],
+   "part_a_pass": false,
+   "part_b_pass": true
+  },
+  "G2": {
+   "pass": false,
+   "units_passing_in_families": {
+    "scout": [],
+    "sniper": [],
+    "bulwark": [],
+    "blaster": [],
+    "mender": []
+   },
+   "paired_ban_loss": {
+    "scout/spine_pods": {
+     "n": 80,
+     "mean": 0.0015,
+     "lo95": 0.0,
+     "hi95": 0.0045,
+     "lo_1s": 0.0,
+     "hi_1s": 0.006,
+     "pass": false
+    },
+    "scout/archipelago": {
+     "n": 80,
+     "mean": -0.0010714285714285704,
+     "lo95": -0.003214285714285711,
+     "hi95": 0.0,
+     "lo_1s": -0.004285714285714282,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "scout/bunker_nest": {
+     "n": 80,
+     "mean": -0.0015,
+     "lo95": -0.0045,
+     "hi95": 0.0,
+     "lo_1s": -0.006,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "sniper/spine_pods": {
+     "n": 80,
+     "mean": 0.0051290322580645155,
+     "lo95": 0.0,
+     "hi95": 0.013887096774193548,
+     "lo_1s": 0.0,
+     "hi_1s": 0.016016129032258065,
+     "pass": false
+    },
+    "sniper/archipelago": {
+     "n": 80,
+     "mean": 0.0065589285714285715,
+     "lo95": 0.0007142857142857145,
+     "hi95": 0.015075,
+     "lo_1s": 0.0,
+     "hi_1s": 0.016458928571428572,
+     "pass": false
+    },
+    "sniper/bunker_nest": {
+     "n": 80,
+     "mean": 0.0074285714285714285,
+     "lo95": -0.0017517857142856988,
+     "hi95": 0.02035714285714286,
+     "lo_1s": -0.003,
+     "hi_1s": 0.022678571428571426,
+     "pass": false
+    },
+    "bulwark/spine_pods": {
+     "n": 80,
+     "mean": 0.008855921052631579,
+     "lo95": 0.0,
+     "hi95": 0.02074342105263158,
+     "lo_1s": 0.0,
+     "hi_1s": 0.02291842105263158,
+     "pass": false
+    },
+    "bulwark/archipelago": {
+     "n": 80,
+     "mean": 0.000285714285714285,
+     "lo95": -0.0021428571428571434,
+     "hi95": 0.0029999999999999983,
+     "lo_1s": -0.0021428571428571434,
+     "hi_1s": 0.0032857142857142833,
+     "pass": false
+    },
+    "bulwark/bunker_nest": {
+     "n": 80,
+     "mean": 0.0,
+     "lo95": 0.0,
+     "hi95": 0.0,
+     "lo_1s": 0.0,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "blaster/spine_pods": {
+     "n": 80,
+     "mean": 0.0002684210526315789,
+     "lo95": -0.006300000000000002,
+     "hi95": 0.007105263157894738,
+     "lo_1s": -0.006300000000000002,
+     "hi_1s": 0.007373684210526317,
+     "pass": false
+    },
+    "blaster/archipelago": {
+     "n": 80,
+     "mean": -0.0028571428571428567,
+     "lo95": -0.00857142857142857,
+     "hi95": 0.0,
+     "lo_1s": -0.011428571428571427,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "blaster/bunker_nest": {
+     "n": 80,
+     "mean": -0.0015,
+     "lo95": -0.0045,
+     "hi95": 0.0,
+     "lo_1s": -0.006,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "mender/spine_pods": {
+     "n": 80,
+     "mean": 0.00104516129032258,
+     "lo95": -0.006300000000000002,
+     "hi95": 0.00943548387096774,
+     "lo_1s": -0.006300000000000002,
+     "hi_1s": 0.010480645161290322,
+     "pass": false
+    },
+    "mender/archipelago": {
+     "n": 80,
+     "mean": -0.0028571428571428567,
+     "lo95": -0.00857142857142857,
+     "hi95": 0.0,
+     "lo_1s": -0.011428571428571427,
+     "hi_1s": 0.0,
+     "pass": false
+    },
+    "mender/bunker_nest": {
+     "n": 80,
+     "mean": -0.0008749999999999994,
+     "lo95": -0.0045,
+     "hi95": 0.0018750000000000017,
+     "lo_1s": -0.005375,
+     "hi_1s": 0.0018750000000000017,
+     "pass": false
+    }
+   },
+   "families_tested": 3,
+   "one_sided_level": 0.9875
+  },
+  "G3": {
+   "pass": false,
+   "units_winning_a_family": {
+    "scout": [],
+    "sniper": [
+     "spine_pods",
+     "archipelago",
+     "bunker_nest"
+    ],
+    "bulwark": [],
+    "blaster": [],
+    "mender": []
+   },
+   "by_family": {
+    "spine_pods": {
+     "template_means": {
+      "scout": 0.13596418906442825,
+      "sniper": 0.6939660828808105,
+      "bulwark": 0.43793835581692014,
+      "blaster": 0.5210717623249758,
+      "bulwark_mender": 0.5189369682042091
+     },
+     "winner": "sniper",
+     "runner_up": "blaster",
+     "margin": {
+      "n": 80,
+      "mean": 0.1728943205558345,
+      "lo95": 0.14271168010682594,
+      "hi95": 0.20299187653720682,
+      "lo_1s": 0.13878582758341737,
+      "hi_1s": 0.20814714244630794
+     },
+     "pass": true
+    },
+    "archipelago": {
+     "template_means": {
+      "scout": 0.14024940931914362,
+      "sniper": 0.7267119353223284,
+      "bulwark": 0.6380632274823486,
+      "blaster": 0.5317229727142335,
+      "bulwark_mender": 0.6177680905464955
+     },
+     "winner": "sniper",
+     "runner_up": "bulwark",
+     "margin": {
+      "n": 80,
+      "mean": 0.08864870783997938,
+      "lo95": 0.04746917722009112,
+      "hi95": 0.13152048227252147,
+      "lo_1s": 0.04253755200131868,
+      "hi_1s": 0.13807654432110422
+     },
+     "pass": true
+    },
+    "bunker_nest": {
+     "template_means": {
+      "scout": 0.16859517849281785,
+      "sniper": 0.5255539979241604,
+      "bulwark": 0.10888646318851428,
+      "blaster": 0.17198329025205955,
+      "bulwark_mender": 0.398433346677832
+     },
+     "winner": "sniper",
+     "runner_up": "bulwark_mender",
+     "margin": {
+      "n": 80,
+      "mean": 0.1271206512463285,
+      "lo95": 0.02421329272185506,
+      "hi95": 0.22792796121899256,
+      "lo_1s": 0.009041729026504314,
+      "hi_1s": 0.24377982674776563
+     },
+     "pass": true
+    }
+   },
+   "pigeonhole_note": "5 units but only 3 tested families: under this reading at most 3 units can win a family; 1 did.",
+   "exploratory_layout_share_template_beats_all_others_by_margin": {
+    "scout/spine_pods": 0.0,
+    "sniper/spine_pods": 0.625,
+    "bulwark/spine_pods": 0.0,
+    "blaster/spine_pods": 0.0125,
+    "mender/spine_pods": 0.1875,
+    "scout/archipelago": 0.0,
+    "sniper/archipelago": 0.475,
+    "bulwark/archipelago": 0.175,
+    "blaster/archipelago": 0.0,
+    "mender/archipelago": 0.1625,
+    "scout/bunker_nest": 0.1,
+    "sniper/bunker_nest": 0.425,
+    "bulwark/bunker_nest": 0.0125,
+    "blaster/bunker_nest": 0.025,
+    "mender/bunker_nest": 0.35
+   },
+   "families_tested": 3
+  },
+  "G4": {
+   "pass": false,
+   "mender_gain": {
+    "bunker_nest": {
+     "n": 80,
+     "mean": -0.0008749999999999994,
+     "lo95": -0.0045,
+     "hi95": 0.0018750000000000017,
+     "lo_1s": -0.005375,
+     "hi_1s": 0.0018750000000000017,
+     "pass": false
+    },
+    "LAB-DESIGN": {
+     "n": 40,
+     "mean": 0.0075000000000000015,
+     "lo95": 0.0,
+     "hi95": 0.022500000000000003,
+     "lo_1s": 0.0,
+     "hi_1s": 0.030000000000000006,
+     "pass": false
+    }
+   },
+   "mender_only": {
+    "TUNE": {
+     "n": 240,
+     "mean": 0.0,
+     "lo95": 0.0,
+     "hi95": 0.0,
+     "lo_1s": 0.0,
+     "hi_1s": 0.0,
+     "pass": true
+    },
+    "LAB-DESIGN": {
+     "n": 40,
+     "mean": 0.0,
+     "lo95": 0.0,
+     "hi95": 0.0,
+     "lo_1s": 0.0,
+     "hi_1s": 0.0,
+     "pass": true
+    }
+   },
+   "part_a_pass": false,
+   "part_b_pass": true
+  },
+  "G5": {
+   "pass": false,
+   "by_family": {
+    "spine_pods": {
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6939660828808105,
+     "oracle_breach_rate": 1.0,
+     "single_ok": false,
+     "breach_ok": false
+    },
+    "archipelago": {
+     "best_single_type": "sniper",
+     "best_single_mean": 0.7267119353223284,
+     "oracle_breach_rate": 1.0,
+     "single_ok": false,
+     "breach_ok": false
+    },
+    "bunker_nest": {
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5255539979241604,
+     "oracle_breach_rate": 1.0,
+     "single_ok": true,
+     "breach_ok": false
+    }
+   }
+  },
+  "G6": {
+   "pass": false,
+   "share_oracle_over_12_units": 0.008333333333333333,
+   "by_family": {
+    "spine_pods": 0.0,
+    "archipelago": 0.025,
+    "bunker_nest": 0.0
+   },
+   "layouts_where_20_scouts_scores_ge_oracle": [],
+   "layouts_where_oracle_army_is_exactly_20_scouts": [],
+   "part_a_pass": false,
+   "part_b_pass": true
+  },
+  "G8": {
+   "pass": true,
+   "by_family": {
+    "spine_pods": {
+     "best_single_type": "sniper",
+     "army_search_gain": {
+      "n": 80,
+      "mean": 0.23701871480172088,
+      "lo95": 0.19809451700472194,
+      "hi95": 0.2759925455064836,
+      "lo_1s": 0.1917945387159897,
+      "hi_1s": 0.28141718579506647
+     },
+     "army_search_better_share": 0.8375,
+     "oracle_gain": {
+      "n": 80,
+      "mean": 0.30393391711919,
+      "lo95": 0.2777850035128656,
+      "hi95": 0.33045084311671796,
+      "lo_1s": 0.2738828285336529,
+      "hi_1s": 0.3348532608411706
+     },
+     "army_search_ok": true,
+     "oracle_ok": true
+    },
+    "archipelago": {
+     "best_single_type": "sniper",
+     "army_search_gain": {
+      "n": 80,
+      "mean": 0.2299778235362811,
+      "lo95": 0.19846380634476632,
+      "hi95": 0.2597949944017288,
+      "lo_1s": 0.1945004476500113,
+      "hi_1s": 0.26493863913262755
+     },
+     "army_search_better_share": 0.9,
+     "oracle_gain": {
+      "n": 80,
+      "mean": 0.2704309218205293,
+      "lo95": 0.24335179291005576,
+      "hi95": 0.2969812891447895,
+      "lo_1s": 0.23962908306928896,
+      "hi_1s": 0.3006098997197473
+     },
+     "army_search_ok": true,
+     "oracle_ok": true
+    },
+    "bunker_nest": {
+     "best_single_type": "sniper",
+     "army_search_gain": {
+      "n": 80,
+      "mean": 0.3714353997395793,
+      "lo95": 0.31040340011269046,
+      "hi95": 0.43436982611042213,
+      "lo_1s": 0.30245711180106005,
+      "hi_1s": 0.4435389073017411
+     },
+     "army_search_better_share": 0.825,
+     "oracle_gain": {
+      "n": 80,
+      "mean": 0.47294600207583953,
+      "lo95": 0.4205751738795905,
+      "hi95": 0.5277972632356679,
+      "lo_1s": 0.4121648356927997,
+      "hi_1s": 0.5363230008289086
+     },
+     "army_search_ok": true,
+     "oracle_ok": true
+    }
+   }
+  },
+  "G9": {
+   "pass": false,
+   "checks": {
+    "oracle_mean": true,
+    "oracle_breach": true,
+    "greedy_mean_in_range": false,
+    "greedy_layout_share": true,
+    "no_stalemate_core_alive": true
+   },
+   "oracle_mean": {
+    "n": 40,
+    "mean": 1.0,
+    "lo95": 1.0,
+    "hi95": 1.0,
+    "lo_1s": 1.0,
+    "hi_1s": 1.0
+   },
+   "oracle_breach_rate": 1.0,
+   "greedy_mean": {
+    "n": 40,
+    "mean": 0.6362965367965369,
+    "lo95": 0.5814452380952382,
+    "hi95": 0.689728896103896,
+    "lo_1s": 0.5743453869047619,
+    "hi_1s": 0.6991004734848484
+   },
+   "greedy_share_ge_min_score": 1.0,
+   "stalemate_with_core_alive": 0,
+   "battle_exit_reasons_21_armies_per_layout": {
+    "all_dead": 584,
+    "no_attackers": 216,
+    "cleared": 36,
+    "horizon": 4
+   }
+  }
+ }
+}

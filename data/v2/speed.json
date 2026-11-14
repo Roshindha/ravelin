@@ -1,5 +1,5 @@
 {
-  "sim_version": "2f13f1390bbbcc9a4f99f0d902f03e16ac6164debc7439849daa8c9dd82d5447",
+  "sim_version": "5962b969fe445f4bc4a4fa140822dfa97e865e3a71a7f6ddfd00c8f40596c64e",
   "gate": {
     "mean_ms_max": 60.0,
     "p95_ms_max": 150.0,
@@ -8,103 +8,103 @@
   "python": "3.11.14",
   "machine": "macOS-26.2-arm64-arm-64bit",
   "cpu_count": 8,
-  "git_commit": "eeb530f",
+  "git_commit": "67ae8b1",
   "layouts": "B4 real design layouts (25/family: TUNE-train x3 + LAB-DESIGN)",
   "mender": "included (5 unit types in random armies)",
   "battle_warm": {
-    "mean_ms": 1.0737939549744624,
-    "p95_ms": 2.5760836501831363,
-    "max_ms": 4.33654199969169,
-    "mean_ticks": 64.995,
+    "mean_ms": 0.9554658100387314,
+    "p95_ms": 2.2984663490206003,
+    "max_ms": 4.52404200041201,
+    "mean_ticks": 51.155,
     "mean_units": 10.875,
     "n": 200
   },
   "battle_warm_4types_no_mender_B2_workload": {
-    "mean_ms": 0.657393934961874,
-    "p95_ms": 1.380416050278654,
-    "max_ms": 2.1356249999371357,
-    "mean_ticks": 61.945,
+    "mean_ms": 0.6738654800392396,
+    "p95_ms": 1.5351669995652624,
+    "max_ms": 2.2852500005683396,
+    "mean_ticks": 57.565,
     "mean_units": 10.935,
     "n": 200
   },
   "battle_cold": {
-    "mean_ms": 2.0967498450454514,
-    "p95_ms": 4.049195850120668,
-    "max_ms": 6.986750000578468,
-    "mean_ticks": 64.995,
+    "mean_ms": 1.8553291999432986,
+    "p95_ms": 3.5663693501192024,
+    "max_ms": 6.691750000754837,
+    "mean_ticks": 51.155,
     "mean_units": 10.875,
     "n": 200
   },
   "battle_stress_hp20x_warm": {
-    "mean_ms": 2.115844194981946,
-    "p95_ms": 4.718338950669928,
-    "max_ms": 9.045249999871885,
-    "mean_ticks": 32.95,
+    "mean_ms": 2.404774364977129,
+    "p95_ms": 5.089572250653869,
+    "max_ms": 15.852000000450062,
+    "mean_ticks": 36.295,
     "mean_units": 10.875,
     "n": 200
   },
   "env_1proc": {
-    "steps_per_s": 15223.283329910682,
-    "episodes_per_s": 1004.6593029093243,
-    "steps_per_episode": 15.152682392754055
+    "steps_per_s": 17643.909088031636,
+    "episodes_per_s": 1165.6882857385003,
+    "steps_per_episode": 15.136043918339338
   },
   "env_6proc": {
     "procs": 6,
-    "steps_per_s": 66108.73626416722,
-    "episodes_per_s": 4370.018152183232,
+    "steps_per_s": 71003.87785265045,
+    "episodes_per_s": 4691.925402293759,
     "per_proc_steps_per_s": [
-      11071.405962279172,
-      10980.260893819646,
-      11120.48277556693,
-      10982.937566746765,
-      10860.315522023835,
-      11095.75353605319
+      11787.899482525983,
+      11914.233059605962,
+      11839.744116827822,
+      11941.877104952533,
+      11814.438264092933,
+      11713.171740769696
     ]
   },
   "top3_hotspots": [
     {
-      "func": "sim.py:273:simulate",
-      "tottime_s": 0.21085926400000002,
-      "cumtime_s": 0.501298679,
+      "func": "sim.py:279:simulate",
+      "tottime_s": 0.18772564700000002,
+      "cumtime_s": 0.43504404500000005,
       "calls": 200,
-      "pct_of_total": 42.0690905483793
+      "pct_of_total": 43.301833750046356
     },
     {
-      "func": "sim.py:412:mender_field",
-      "tottime_s": 0.102765401,
-      "cumtime_s": 0.10786442900000001,
-      "calls": 1748,
-      "pct_of_total": 20.50299748703243
+      "func": "sim.py:425:mender_field",
+      "tottime_s": 0.086430436,
+      "cumtime_s": 0.09059328400000001,
+      "calls": 1371,
+      "pct_of_total": 19.936521356701043
     },
     {
-      "func": "sim.py:392:mender_sources",
-      "tottime_s": 0.033922523,
-      "cumtime_s": 0.035469048,
-      "calls": 2319,
-      "pct_of_total": 6.767972460135683
+      "func": "sim.py:354:<genexpr>",
+      "tottime_s": 0.022540449,
+      "cumtime_s": 0.022540449,
+      "calls": 150080,
+      "pct_of_total": 5.199304361696505
     }
   ],
   "top3_hotspots_stress": [
     {
-      "func": "sim.py:273:simulate",
-      "tottime_s": 0.38327062300000003,
-      "cumtime_s": 0.961904179,
+      "func": "sim.py:279:simulate",
+      "tottime_s": 0.45386866600000003,
+      "cumtime_s": 1.0682849700000001,
       "calls": 200,
-      "pct_of_total": 39.84518322533466
+      "pct_of_total": 42.537350768350656
     },
     {
-      "func": "sim.py:412:mender_field",
-      "tottime_s": 0.22175576000000002,
-      "cumtime_s": 0.23297409200000002,
-      "calls": 4952,
-      "pct_of_total": 23.053942457972678
+      "func": "sim.py:425:mender_field",
+      "tottime_s": 0.223302364,
+      "cumtime_s": 0.234562085,
+      "calls": 5195,
+      "pct_of_total": 20.928281012617685
     },
     {
-      "func": "sim.py:392:mender_sources",
-      "tottime_s": 0.091636935,
-      "cumtime_s": 0.095586291,
-      "calls": 5921,
-      "pct_of_total": 9.526664049290003
+      "func": "sim.py:405:mender_sources",
+      "tottime_s": 0.1007727,
+      "cumtime_s": 0.10495715900000001,
+      "calls": 6448,
+      "pct_of_total": 9.444590492558413
     }
   ],
   "passed": true

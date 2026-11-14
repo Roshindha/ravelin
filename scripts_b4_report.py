@@ -43,7 +43,7 @@ def lengths():
         pool = D.real_layouts(fam)
         prep = [(rec, L, Prepared(L)) for rec, L in pool]
         for pol in ("random", "scripted"):
-            ticks, reasons, units = [], {"horizon": 0, "stalemate": 0, "cleared": 0, "all_dead": 0}, []
+            ticks, reasons, units = [], {"horizon": 0, "stalemate": 0, "cleared": 0, "all_dead": 0, "no_attackers": 0}, []
             n = 500 if pol == "random" else len(prep)
             for i in range(n):
                 rec, L, P = prep[int(rng.integers(len(prep)))] if pol == "random" else prep[i]

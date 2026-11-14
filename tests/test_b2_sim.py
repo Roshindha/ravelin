@@ -16,7 +16,15 @@ from breachlens import sim
 from breachlens._bench_layouts import FAMILIES, make_layout, random_army
 from breachlens.actions import BORDER
 from breachlens.constants import GRID, MAX_BATTLE_TICKS
-from breachlens.sim import Prepared, simulate
+from breachlens.sim import Prepared
+from breachlens.sim import simulate as _simulate
+
+
+def simulate(*a, **k):
+    """B2/B3 fixtures use damage-0 dummy units and Mender-only armies; they test pre-B5 mechanics, so the B5
+    no_attackers early exit is switched off here (it is tested in tests/test_b5_*.py)."""
+    k.setdefault("_no_attackers_exit", False)
+    return _simulate(*a, **k)
 
 CFG = K.CFG
 S = CFG.S

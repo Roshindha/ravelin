@@ -108,7 +108,7 @@ def cell_of(rc) -> int:
 @dataclass
 class BattleResult:
     ticks: int
-    reason: str                 # cleared | all_dead | stalemate | horizon
+    reason: str                 # cleared | all_dead | no_attackers | stalemate | horizon
     core_destroyed: bool
     d_num: int                  # value-weighted destroyed (ints)
     d_den: int
@@ -123,6 +123,12 @@ class BattleResult:
     unit_hp: tuple = ()         # final fixed-point hp per unit (army order)
     trace: list = field(default_factory=list)  # record mode: per tick [(cell, hp, status)] per unit
     canon_equal_picks: int = 0  # canonical-form calls whose best candidates had EQUAL strings (symmetric pick)
+    # B5 instrumentation (does not influence any decision): per unit type (5) counters
+    attack_ticks: tuple = ()        # unit-ticks on which a unit of the type attacked (primary target chosen)
+    wall_attack_ticks: tuple = ()   # ... of which the primary target was a wall
+    alive_ticks: tuple = ()         # unit-ticks alive at the start of a tick
+    walls_hit: tuple = ()           # distinct walls that were a primary target of a unit of the type
+    wall_attack_any_ticks: int = 0  # ticks on which at least one unit attacked a wall
 
     @property
     def d(self) -> float:
@@ -270,7 +276,8 @@ def _hpfrac(hp: int, mx: int) -> int:
     return hp * 1_000_000 // mx
 
 
-def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TICKS) -> BattleResult:
+def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TICKS,
+             _no_attackers_exit: bool = True) -> BattleResult:
     P = layout if isinstance(layout, Prepared) else Prepared(layout)
     cfg = P.cfg
     S = cfg.S
@@ -296,6 +303,12 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
     has_mender = MENDER in u_type
     u_alive = [True] * nu
     alive_units = list(range(nu))
+    n_ut = len(units_cfg)
+    c_att, c_wall, c_alive = [0] * n_ut, [0] * n_ut, [0] * n_ut
+    c_walls_hit = [set() for _ in range(n_ut)]
+    wall_any = 0
+    attackers = [units_cfg[t].damage > 0 for t in u_type]
+    n_attackers = sum(1 for i in alive_units if attackers[i])
     u_idle = [0] * nu
     max_idle = 0
 
@@ -433,6 +446,9 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
             frontier = nxt
         return None
 
+    if _no_attackers_exit and nu and not n_attackers:
+        reason = "no_attackers"    # nothing in this army can ever damage a structure; ends before tick 1
+        max_ticks = 0
     while tick < max_ticks:
         # ---------------- (a)/(b)/(c): intents, damage and heals from the start-of-tick snapshot
         dmg_s: dict = {}
@@ -441,8 +457,10 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
         acted = set()
         moving = []
         pend.clear()
+        wall_this_tick = False
         for i in alive_units:
             ut = u_type[i]
+            c_alive[ut] += 1
             cands = P.cand(ut, u_cell[i])
             first = -1
             for k, (rk, d2, s) in enumerate(cands):
@@ -485,7 +503,15 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                 hit = u.damage // len(tied)
                 for s in tied:
                     dmg_s[s] = dmg_s.get(s, 0) + hit
+            # B5 counters (read-only): the primary target class of this volley, after any splash-centre resolution
+            c_att[ut] += 1
+            if rk0 == u.class_rank[CLASS_WALL]:
+                c_wall[ut] += 1
+                wall_this_tick = True
+                for s_ in tied:
+                    c_walls_hit[ut].add(s_)
 
+        wall_any += wall_this_tick
         # Menders: heal the nearest damaged ally in range (key chain), ties split exactly
         for m in (alive_units if has_mender else ()):
             if u_type[m] != MENDER:
@@ -619,6 +645,7 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                     changed = True
         if died_units:
             alive_units = [i for i in alive_units if u_alive[i]]
+            n_attackers = sum(1 for i in alive_units if attackers[i])
         # ---------------- (f): movement of survivors that did not attack (snapshot positions)
         status = {} if record else None
         for i in alive_units:
@@ -790,6 +817,9 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
         if not live_value:
             reason = "cleared"
             break
+        if _no_attackers_exit and not n_attackers:
+            reason = "no_attackers"   # only Menders remain: no structure can lose hp any more; score and structures are final
+            break
         if changed:
             idle_ticks = 0
         else:
@@ -808,4 +838,6 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
         destroyed=tuple(destroyed_order), units_alive=len(alive_units), fallback_calls=fallback_calls,
         walls_destroyed=sum(1 for w in range(P.n_walls) if not s_alive[wall_base + w]),
         defenders_destroyed=sum(1 for d in d_alive if not d), max_idle_run=max_idle,
-        struct_hp=tuple(s_hp), unit_hp=tuple(u_hp), trace=trace, canon_equal_picks=equal_picks)
+        struct_hp=tuple(s_hp), unit_hp=tuple(u_hp), trace=trace, canon_equal_picks=equal_picks,
+        attack_ticks=tuple(c_att), wall_attack_ticks=tuple(c_wall), alive_ticks=tuple(c_alive),
+        walls_hit=tuple(len(x) for x in c_walls_hit), wall_attack_any_ticks=wall_any)
