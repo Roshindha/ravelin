@@ -1,0 +1,85 @@
+{
+ "wall_seconds_per_baseline": {
+  "Single-scout": 0.83,
+  "Single-sniper": 0.84,
+  "Single-bulwark": 0.88,
+  "Single-blaster": 0.74,
+  "Single-mender": 0.69,
+  "BestSingle": 0.85,
+  "BestSingle-hindsight": 0.82,
+  "BestSingle-perlayout": 1.16,
+  "Greedy": 1.17,
+  "Random": 1.32,
+  "Oracle": 49.66
+ },
+ "wall_seconds_per_baseline_and_set": {
+  "Single-scout": {
+   "DEV-train": 0.25,
+   "DEV-validation": 0.16,
+   "TUNE-train": 0.24,
+   "TUNE-val": 0.18
+  },
+  "Single-sniper": {
+   "DEV-train": 0.23,
+   "DEV-validation": 0.18,
+   "TUNE-train": 0.24,
+   "TUNE-val": 0.19
+  },
+  "Single-bulwark": {
+   "DEV-train": 0.25,
+   "DEV-validation": 0.17,
+   "TUNE-train": 0.27,
+   "TUNE-val": 0.19
+  },
+  "Single-blaster": {
+   "DEV-train": 0.2,
+   "DEV-validation": 0.15,
+   "TUNE-train": 0.22,
+   "TUNE-val": 0.17
+  },
+  "Single-mender": {
+   "DEV-train": 0.19,
+   "DEV-validation": 0.15,
+   "TUNE-train": 0.19,
+   "TUNE-val": 0.16
+  },
+  "BestSingle": {
+   "DEV-train": 0.23,
+   "DEV-validation": 0.17,
+   "TUNE-train": 0.27,
+   "TUNE-val": 0.18
+  },
+  "BestSingle-hindsight": {
+   "DEV-train": 0.22,
+   "DEV-validation": 0.16,
+   "TUNE-train": 0.26,
+   "TUNE-val": 0.18
+  },
+  "BestSingle-perlayout": {
+   "DEV-train": 0.35,
+   "DEV-validation": 0.19,
+   "TUNE-train": 0.39,
+   "TUNE-val": 0.23
+  },
+  "Greedy": {
+   "DEV-train": 0.25,
+   "DEV-validation": 0.25,
+   "TUNE-train": 0.44,
+   "TUNE-val": 0.23
+  },
+  "Random": {
+   "DEV-train": 0.39,
+   "DEV-validation": 0.25,
+   "TUNE-train": 0.41,
+   "TUNE-val": 0.27
+  },
+  "Oracle": {
+   "DEV-train": 16.96,
+   "DEV-validation": 4.05,
+   "TUNE-train": 21.21,
+   "TUNE-val": 7.44
+  }
+ },
+ "procs": 7,
+ "oracle_cache_used_entries": 0
+}

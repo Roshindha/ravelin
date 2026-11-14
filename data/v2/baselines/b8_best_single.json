@@ -1,0 +1,110 @@
+{
+ "rule": "highest mean score per family on the matching training split; ties -> lowest type index",
+ "types": [
+  "scout",
+  "sniper",
+  "bulwark",
+  "blaster",
+  "mender"
+ ],
+ "train_chosen_for_set": {
+  "DEV-train": {
+   "archipelago": 1,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "DEV-validation": {
+   "archipelago": 1,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "TUNE-train": {
+   "archipelago": 2,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "TUNE-val": {
+   "archipelago": 2,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  }
+ },
+ "hindsight_for_set": {
+  "DEV-train": {
+   "archipelago": 1,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "DEV-validation": {
+   "archipelago": 1,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "TUNE-train": {
+   "archipelago": 2,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  },
+  "TUNE-val": {
+   "archipelago": 2,
+   "bunker_nest": 1,
+   "spine_pods": 1
+  }
+ },
+ "means_on_training_split": {
+  "DEV-train": {
+   "archipelago": [
+    0.08449028646231499,
+    0.5460618394958117,
+    0.5311961906514537,
+    0.2643849654370397,
+    0.0
+   ],
+   "bunker_nest": [
+    0.0962831168831169,
+    0.29237088891500657,
+    0.10398364282776047,
+    0.08451189790601556,
+    0.0
+   ],
+   "spine_pods": [
+    0.05489573863238129,
+    0.4920592609347026,
+    0.3894870629370629,
+    0.21237651917048475,
+    0.0
+   ]
+  },
+  "TUNE-train": {
+   "archipelago": [
+    0.09141354422151635,
+    0.4791101037705358,
+    0.49800847315141294,
+    0.24715417711616394,
+    0.0
+   ],
+   "bunker_nest": [
+    0.13866125249019987,
+    0.30700683453972927,
+    0.07855383505383506,
+    0.07710945852393221,
+    0.0
+   ],
+   "spine_pods": [
+    0.054168303041581586,
+    0.4611999367541547,
+    0.40578635719734085,
+    0.2562245398442343,
+    0.0
+   ]
+  }
+ },
+ "pooled_dev_train_type_for_labyrinth_transfer_B15": 1,
+ "pooled_means_dev_train": [
+  0.07855638065927105,
+  0.4434973297818403,
+  0.34155563213875906,
+  0.18709112750451332,
+  0.0
+ ]
+}

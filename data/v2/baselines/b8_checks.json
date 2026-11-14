@@ -1,0 +1,174 @@
+{
+ "date": "2026-11-15",
+ "git_commit": "1d0b924613c41ea6de5ae40f2b7accc700d1b4e9",
+ "b5_consistency": {
+  "b5_raw_sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338",
+  "per_set": {
+   "TUNE-train/Oracle": {
+    "n": 180,
+    "max_abs_score_diff": 0.0,
+    "n_exact_equal": 180,
+    "breach_flag_mismatches": 0,
+    "family_mean_b5": {
+     "spine_pods": 0.8905056602436665,
+     "archipelago": 0.9204343084167892,
+     "bunker_nest": 0.8278705439297543
+    },
+    "family_mean_b8": {
+     "spine_pods": 0.8905056602436665,
+     "archipelago": 0.9204343084167892,
+     "bunker_nest": 0.8278705439297543
+    }
+   },
+   "TUNE-train/Greedy": {
+    "n": 180,
+    "max_abs_score_diff": 1.1102230246251565e-16,
+    "n_exact_equal": 164,
+    "breach_flag_mismatches": 0,
+    "family_mean_b5": {
+     "spine_pods": 0.4057863571973411,
+     "archipelago": 0.49800847315141294,
+     "bunker_nest": 0.07855383505383505
+    },
+    "family_mean_b8": {
+     "spine_pods": 0.4057863571973411,
+     "archipelago": 0.49800847315141294,
+     "bunker_nest": 0.07855383505383505
+    }
+   },
+   "TUNE-val/Oracle": {
+    "n": 60,
+    "max_abs_score_diff": 0.0,
+    "n_exact_equal": 60,
+    "breach_flag_mismatches": 0,
+    "family_mean_b5": {
+     "spine_pods": 0.8686404870872835,
+     "archipelago": 0.9498633540372671,
+     "bunker_nest": 0.856804279054279
+    },
+    "family_mean_b8": {
+     "spine_pods": 0.8686404870872835,
+     "archipelago": 0.9498633540372671,
+     "bunker_nest": 0.856804279054279
+    }
+   },
+   "TUNE-val/Greedy": {
+    "n": 60,
+    "max_abs_score_diff": 1.1102230246251565e-16,
+    "n_exact_equal": 54,
+    "breach_flag_mismatches": 0,
+    "family_mean_b5": {
+     "spine_pods": 0.38000000000000006,
+     "archipelago": 0.5160104011930099,
+     "bunker_nest": 0.08510119047619047
+    },
+    "family_mean_b8": {
+     "spine_pods": 0.38000000000000006,
+     "archipelago": 0.5160104011930099,
+     "bunker_nest": 0.08510119047619047
+    }
+   }
+  }
+ },
+ "oracle_dominance": {
+  "layouts": 420,
+  "violations_by_policy": {},
+  "violation_examples": {}
+ },
+ "boundary_dev_acceptance": {
+  "per_family": {
+   "spine_pods": {
+    "candidates": 67,
+    "recomputed": 67,
+    "mismatches": 0,
+    "rejected_stat_rules": 5,
+    "accepted": 60,
+    "mismatch_examples": [],
+    "records_identical": true
+   },
+   "archipelago": {
+    "candidates": 223,
+    "recomputed": 223,
+    "mismatches": 0,
+    "rejected_stat_rules": 113,
+    "accepted": 60,
+    "mismatch_examples": [],
+    "records_identical": true
+   },
+   "bunker_nest": {
+    "candidates": 77,
+    "recomputed": 77,
+    "mismatches": 0,
+    "rejected_stat_rules": 15,
+    "accepted": 60,
+    "mismatch_examples": [],
+    "records_identical": true
+   }
+  },
+  "bits_compared": 367,
+  "bit_mismatches": 0
+ },
+ "exact_99_over_100": {
+  "per_group": {
+   "DEV/spine_pods": {
+    "evaluated": 65,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "DEV/archipelago": {
+    "evaluated": 173,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "DEV/bunker_nest": {
+    "evaluated": 75,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "TUNE/spine_pods": {
+    "evaluated": 86,
+    "accepted_in_sets": 80,
+    "stat_rejected": 6,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "TUNE/archipelago": {
+    "evaluated": 202,
+    "accepted_in_sets": 80,
+    "stat_rejected": 122,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "TUNE/bunker_nest": {
+    "evaluated": 96,
+    "accepted_in_sets": 80,
+    "stat_rejected": 16,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   },
+   "LAB-DESIGN/labyrinth": {
+    "evaluated": 58,
+    "accepted_in_sets": 40,
+    "stat_rejected": 18,
+    "n_99_100": 0,
+    "of_which_accepted": 0,
+    "seeds": []
+   }
+  },
+  "total": 0,
+  "total_evaluated": 755,
+  "note": "exact ratio test: 100 * num == 99 * den for the best of the 5 single-unit armies (scripted deployment); candidates failing structural rules or D4-duplicates are not simulated and not counted"
+ },
+ "ledger_after": {
+  "entries": 5,
+  "build": 5,
+  "eval": 0,
+  "unchanged": true
+ }
+}

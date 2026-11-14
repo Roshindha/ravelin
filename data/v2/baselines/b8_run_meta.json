@@ -1,0 +1,11 @@
+{
+ "score_version": "b7-single-rounding",
+ "sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338",
+ "generator_hash": "49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095",
+ "pool_sha256": "1346536dea209eb7953eb00eb0d69f24bed930a2a81d89daea7ec1b705f834e4",
+ "git_commit": "1d0b924613c41ea6de5ae40f2b7accc700d1b4e9",
+ "git_dirty": true,
+ "seed": 8080,
+ "role": "mixed (train / validation per set)",
+ "set": "DEV-train, DEV-validation, TUNE-train, TUNE-val"
+}
