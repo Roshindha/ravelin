@@ -1,0 +1,135 @@
+{
+ "_comment": "Single source of truth for all unit, defender and structure stats (docs/SPEC_V2.md 3.1, 3.1b). Human units: hp/damage/armor in hit points; *_x10 fields are integer tenths (range 1.2 -> 12, speed 0.7 -> 7) so no float ever decides an outcome. The simulator scales hp-like values by `fixed_point_scale`.",
+ "_revision1": "Revision 1 of 3 (B5-R2b, SPEC_V2 3.4 Gate changelog (f)) = R2a: building/core/defender hp x1.4, core hp x3 more, Sniper 40% vs building/wall/core (the core counts as a building), Sniper cost 28. Revision-0 values: data/v2/b5r1_sweep/stats_rev0.json.",
+ "stats_version": "v2-rev1",
+ "fixed_point_scale": 840,
+ "units": {
+  "scout": {
+   "cost": 8,
+   "hp": 16,
+   "damage": 6,
+   "range_x10": 12,
+   "speed_x10": 15,
+   "armor": 0,
+   "pref": [
+    "building",
+    "turret",
+    "wall"
+   ],
+   "splash_r_x10": 0,
+   "splash_pct": 0,
+   "heal": 0,
+   "heal_range_x10": 0
+  },
+  "sniper": {
+   "cost": 28,
+   "hp": 28,
+   "damage": 12,
+   "range_x10": 50,
+   "speed_x10": 10,
+   "armor": 0,
+   "pref": [
+    "turret",
+    "building",
+    "wall"
+   ],
+   "splash_r_x10": 0,
+   "splash_pct": 0,
+   "heal": 0,
+   "heal_range_x10": 0,
+   "class_damage_pct": {
+    "building": 40,
+    "wall": 40,
+    "turret": 100
+   }
+  },
+  "bulwark": {
+   "cost": 30,
+   "hp": 170,
+   "damage": 16,
+   "range_x10": 14,
+   "speed_x10": 7,
+   "armor": 4,
+   "pref": [
+    "wall",
+    "turret",
+    "building"
+   ],
+   "splash_r_x10": 0,
+   "splash_pct": 0,
+   "heal": 0,
+   "heal_range_x10": 0
+  },
+  "blaster": {
+   "cost": 30,
+   "hp": 75,
+   "damage": 26,
+   "range_x10": 25,
+   "speed_x10": 7,
+   "armor": 0,
+   "pref": [
+    "building",
+    "wall",
+    "turret"
+   ],
+   "splash_r_x10": 15,
+   "splash_pct": 70,
+   "heal": 0,
+   "heal_range_x10": 0
+  },
+  "mender": {
+   "cost": 28,
+   "hp": 40,
+   "damage": 0,
+   "range_x10": 0,
+   "speed_x10": 10,
+   "armor": 0,
+   "pref": [],
+   "splash_r_x10": 0,
+   "splash_pct": 0,
+   "heal": 8,
+   "heal_range_x10": 20
+  }
+ },
+ "defenders": {
+  "gun": {
+   "hp": 126,
+   "damage": 12,
+   "damage_neighbour": 0,
+   "min_range_x10": 0,
+   "max_range_x10": 40,
+   "period": 1,
+   "area": false,
+   "splash_r_x10": 0
+  },
+  "lancer": {
+   "hp": 98,
+   "damage": 18,
+   "damage_neighbour": 0,
+   "min_range_x10": 20,
+   "max_range_x10": 60,
+   "period": 1,
+   "area": false,
+   "splash_r_x10": 0
+  },
+  "flak": {
+   "hp": 140,
+   "damage": 14,
+   "damage_neighbour": 7,
+   "min_range_x10": 20,
+   "max_range_x10": 50,
+   "period": 2,
+   "area": true,
+   "splash_r_x10": 15
+  }
+ },
+ "structures": {
+  "wall_hp": 80,
+  "core_hp": 840,
+  "building_hp_default": 84
+ },
+ "rules": {
+  "stalemate_ticks": 12,
+  "min_hit_hp": 1
+ }
+}
