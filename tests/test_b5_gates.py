@@ -260,13 +260,12 @@ def test_report_is_reproducible_from_raw_and_matches_the_files():
     raw = json.loads((DATA / "b5_raw.json").read_text())["layouts"]
     assert len(raw) == 280
     th = json.loads((DATA / "gate_thresholds.json").read_text())
-    again = {"gates": {"G1": G.g1(raw, th), "G3": G.g3(raw, th), "G8": G.g8(raw, th)}}   # G2/G4/G5/G6/G9 changed definitions; stored raw has no monotone fields
     gj = json.loads((DATA / "gates.json").read_text())
-    # gates.json is the stored revision-0 record (old G5/G6/G9 definitions, independent ban-loss estimator); the definitions that did not change
-    # in the gate changelog must still reproduce exactly from the stored raw data.
-    assert gj["revision"] == 0
-    for k in ("G1", "G3", "G8"):
-        assert again["gates"][k] == gj["gates"][k]
+    # gates.json is the stored revision-1 record (R2a, B5-R2b): every gate reproduces exactly from the stored raw data (which has the monotone fields)
+    assert gj["revision"] == 1
+    again = G.compute_gates(raw, th)
+    for k in ("G1", "G2", "G3", "G4", "G5", "G6", "G8", "G9"):
+        assert again["gates"][k] == gj["gates"][k], k
 
 
 def test_generator_hash_is_recorded_only_if_all_gates_pass():

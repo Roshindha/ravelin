@@ -418,6 +418,13 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Sweep (`scripts_b5r2_sweep.py`, `data/v2/b5r2_sweep/`; new hook `GEN_PARAMS.island_gap`, default 4 = bit-identical; interpreted as island-center Chebyshev spacing): R2a 4/5, R2d 4/5, R2b 3/5, R2c 1/5. Best arm R2a fails (ii): labyrinth best single = Sniper 0.669 (> 0.65); bunker_nest 0.288. R2c: archipelago rejection 89.8 %, Oracle 1.00. Sniper cost 28 vs 30 gives identical best-single numbers.
 - Full suite: 343 tests, all pass, exit 0 (pytest.ini addopts -q plus -q suppresses the summary line). FINAL never generated/loaded; ledger empty; generator_hash not recorded. 3 revisions unspent.
 
+### STEP B5-R2b (v2): R2a applied as design revision 1 of 3 -- **gates G1 G5 G9 PASS; G2 G3 G4 G8 FAIL (G6 diagnostic); nothing fixed; generator_hash NOT recorded**
+- Gate changelog (f), commit 85bb792, written BEFORE applying: one-time waiver of item 9 criterion (ii) for R2a (labyrinth best single 0.669 vs 0.65 on n = 20, sampling error > margin); a deliberate post-hoc exception by the rule's owner; no threshold changed.
+- Revision 1 = R2a (commit 21f71ff): `data/v2/unit_stats.json` (building/core/defender hp x1.4 -> Gun 126 / Lancer 98 / Flak 140, building 84, core 840 = x1.4 x3, Sniper cost 28, Sniper 40 % vs building/wall/core, Mender unchanged heal 8 / hp 40, cap 20); generator defaults `lancer_share` 0.4, `sealed_fraction` 0.5, `island_gap` 4 (hook kept, NOT applied). Versions: `SIM_CODE_VERSION` = `breachlens-sim-b5.1-rev1`, `stats_version` = `v2-rev1`, `layouts.GENERATOR_VERSION` = `v2-rev1`. `SCRIPTED_COMPOSITION` Scouts 4 -> 3 (Sniper 28 made the 4-Scout army cost 248 > 240).
+- Design sets regenerated from the same streams T / L: rejection spine_pods 7.0 % (6/86), archipelago 60.4 % (122/202, flagged > 50 %), bunker_nest 16.7 % (16/96), labyrinth 31.0 % (18/58); every rejection single_type_trivial except 3 too_hard in bunker_nest. Sealed cores in TUNE-train: 27/60, 40/60, 30/60; LAB-DESIGN 24/40. Contact sheets (3 sealed examples each, tagged) in `results/design/` (git-ignored). Streams F / FINAL never generated or loaded; ledger empty.
+- Gate run ONCE from clean commit 21f71ff (`scripts_gates.py`, 409 s; now needs `--record-hash` to record generator_hash). Report `data/v2/b5_report.md` (adds monotone ban-loss for every unit x 4 families, Oracle gold shares). **G1 PASS** (max best-single share 0.54, Sniper) | **G2 FAIL** (Blaster passes in no family; Scout only spine_pods; Mender fails bunker_nest 0.017) | **G3 FAIL** (Scout 7.9 % < 8 %, Blaster 1.1 %; Sniper 33.6 %, Bulwark 9.3 %, Mender 15.0 % pass) | **G4 FAIL** (Mender gain bunker_nest 0.017 < 0.02, LAB-DESIGN 0.000; Mender-only 0.000 ok) | **G5 PASS** (best single 0.456 / 0.503 / 0.277, Oracle 0.885 / 0.928 / 0.835, breach 1.00 / 1.00 / 0.96) | G6 diagnostic (Oracle > 12 units 0 %) | **G8 FAIL** (only bunker_nest army-search better on 56 % < 60 %; all gains >= +0.20) | **G9 PASS** (Oracle 0.956, Greedy 0.603).
+- Tests updated for revision 1 (stat pins, sealed-core waivers, Gun-hp-pinned turret scenario, float tolerance for sim-vs-integer-key scores, gates reproducibility now all gates at revision 1); `data/v2/b4_report.json` + `speed.json` regenerated (D4: 0 mismatches). Full plain `pytest`: see final report. 2 revisions of 3 remain.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -456,7 +463,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1-B5 done (B5 gates FAIL at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
+- v2: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G4/G8 still FAIL, awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
