@@ -406,6 +406,13 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Result by the fixed rule: criteria met A 0, B 0, C 1, D 0, E 1 (of 5). Oracle still saturated (breach 1.00 everywhere, score 0.87-1.00), Sniper is best single in every family in every arm, stat rejection > 40 % in archipelago/labyrinth for all arms, Greedy on labyrinth 0.58-0.64 (> 0.45). Only C fixes the Sniper share (0.53); only E puts best-single in range (0.32-0.64 in all families, hp x1.8).
 - Budget: 3 revisions in B5 still unspent; owner decides the next design (see report message).
 
+### STEP B5-R1b (v2): gate changelog, monotone ban-loss estimator, R1b sweep -- **no arm meets >= 4 of 5 (best R1b 3/5); NOTHING APPLIED, no revision spent, gate script NOT re-run**
+- Gate changelog (SPEC 3.4, commit 5d901cb, before any sweep): G5 = Oracle score in [0.80, 0.97] + Oracle breach >= 0.6 (ceiling removed); G6 = reported diagnostic (not in all_pass); G9 Greedy band 0.10-0.65; G2/G4 use the monotone ban-loss estimator. `gate_thresholds.json` + tests updated. The stored revision-0 `gates.json`/report are historical (old definitions); the reproducibility test only re-checks G1/G3/G8 against them.
+- `oracle.monotone_ban_pair` (single Oracle module): full search warm-started with the ablated best; unit-free armies seen by the full search also count for the ablated side; loss >= 0 by construction. On R0 reference data (80 layouts) old vs new differ little (no negative independent losses occurred; max diff 0.003, e.g. labyrinth sniper 0.012 -> 0.009), because R0 is saturated.
+- Sweep parameters (override hooks only, asserted unset in gate runs/tests, defaults bit-identical): `class_damage_pct` per unit, `GEN_PARAMS.sealed_fraction` (separate rng, ring of 8 walls, displaced objects, waiver only for sealed layouts, +8 wall max), `rules.unit_cap` (used by armies + Oracle), core hp / Mender stats via stats file. Sweep: `scripts_b5r1b_sweep.py`, outputs `data/v2/b5r1b_sweep/`. Selection rule pre-registered as SPEC 3.4 item 8 (committed d42de0f before the sweep).
+- Result: criteria met R0 0, R1a 1, R1b 3, R1c 3, R1d 2 (of 5). Sniper stays best single in every family and arm (pooled share 0.6-0.8); rejection > 40 % in archipelago and labyrinth in all arms; R1c == R1b (cap 14 never binds: Oracle uses <= 12 units); R1d pushes Oracle score above 0.97 (Mender buff). See `sweep_summary.md`.
+- 3 revisions remain unspent; FINAL never generated or loaded, ledger empty; generator_hash not recorded.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -444,7 +451,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1-B5 done (B5 gates FAIL at revision 0; B5-R1 sweep found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
+- v2: B1-B5 done (B5 gates FAIL at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
