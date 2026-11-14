@@ -138,3 +138,89 @@ def run_parallel(total: int, seed: int, shuffle: bool, procs: int = 6, chunk: in
             "fallback_calls": sum(p["fallback_calls"] for p in parts),
             "canon_equal_picks": sum(p["canon_equal_picks"] for p in parts),
             "bad": [c for p in parts for c in p["bad"]], "extra": sum(p["extra"] for p in parts)}
+
+
+# ---------------------------------------------------------------- B4: the same check on the REAL design layouts
+def trace_key(res, k: int):
+    """Per-tick sorted multiset of (cell mapped back to the original frame, hp, status) over all units."""
+    N2 = N
+    back = {}
+    out = []
+    for frame in res.trace:
+        row = []
+        for cell, hp, st in frame:
+            if cell not in back:
+                back[cell] = tr_inv(k, (cell // N2, cell % N2))
+            row.append((back[cell], hp, st))
+        out.append(tuple(sorted(row)))
+    return tuple(out)
+
+
+def real_layouts(family: str):
+    from . import layouts as Y
+    names = ("LAB-DESIGN",) if family == "labyrinth" else ("TUNE-train", "TUNE-val")
+    return [(rec, L) for n in names for rec, L in Y.load_design_set(n, family if family != "labyrinth" else None)]
+
+
+def equivariance_chunk_real(args):
+    """args = (seed, n, shuffle, family, with_trace). n random (real layout x random army x random start tiles) battles x 8
+    symmetries; Menders appear in >= 50 % of the armies (forced when the random draw has none for every other battle)."""
+    import numpy as np
+
+    from .armies import random_army
+    from .sim import Prepared, simulate
+
+    seed, n, shuffle, family, with_trace = args
+    rng = np.random.default_rng(seed)
+    pool = real_layouts(family)
+    bad, tbad, extra, menders, fb, eq, ncase = [], [], 0, 0, 0, 0, 0
+    for b in range(n):
+        rec, L = pool[int(rng.integers(len(pool)))]
+        army = random_army(rng, L, min_units=1, max_units=20, n_types=5)
+        if b % 2 == 0 and not any(t == 4 for t, _ in army):      # keep Menders in well over half of the armies
+            army = army[:-1] + [(4, army[-1][1])] if army else army
+        menders += any(t == 4 for t, _ in army)
+        base = tbase = None
+        fb_b = eq_b = 0
+        for k in range(8):
+            Lk = transform_layout(L, k)
+            ak = transform_army(army, k)
+            if shuffle:
+                Lk["buildings"] = [Lk["buildings"][i] for i in rng.permutation(len(Lk["buildings"]))]
+                Lk["walls"] = [Lk["walls"][i] for i in rng.permutation(len(Lk["walls"]))]
+                Lk["defenders"] = [Lk["defenders"][i] for i in rng.permutation(len(Lk["defenders"]))]
+                ak = [ak[i] for i in rng.permutation(len(ak))]
+            r = simulate(Prepared(Lk), ak, record=with_trace)
+            fb_b += r.fallback_calls
+            eq_b += r.canon_equal_picks
+            s = summary(r, Lk, k)
+            tk = trace_key(r, k) if with_trace else None
+            ncase += 1
+            if base is None:
+                base, tbase = s, tk
+                continue
+            f = diff(base, s, PRIMARY)
+            if f:
+                bad.append({"battle": b, "layout": rec["id"], "sym": k, "fields": f, "base": {x: base[x] for x in f},
+                            "got": {x: s[x] for x in f}, "stabilizer": stabilizer(L, army), "army": army})
+            elif diff(base, s, ("struct_hp_by_cell",)):
+                extra += 1
+            if with_trace and tk != tbase:
+                first = next(i for i, (x, y) in enumerate(zip(tbase, tk)) if x != y) if len(tbase) == len(tk) else -1
+                tbad.append({"battle": b, "layout": rec["id"], "sym": k, "first_diff_tick": first,
+                             "stabilizer": stabilizer(L, army), "army": army})
+        fb += fb_b
+        eq += eq_b
+    return {"n": n, "menders": menders, "fallback_calls": fb, "canon_equal_picks": eq, "bad": bad, "trace_bad": tbad,
+            "extra": extra, "sims": ncase, "family": family}
+
+
+def run_parallel_real(family: str, total: int, seed: int, shuffle: bool, with_trace: bool = False, procs: int = 6, chunk: int = 100):
+    import multiprocessing as mp
+    jobs = [(seed * 10_000 + j, min(chunk, total - j * chunk), shuffle, family, with_trace) for j in range((total + chunk - 1) // chunk)]
+    with mp.get_context("spawn").Pool(procs) as pool:
+        parts = pool.map(equivariance_chunk_real, jobs)
+    agg = {k: sum(p[k] for p in parts) for k in ("n", "menders", "fallback_calls", "canon_equal_picks", "extra", "sims")}
+    agg.update(family=family, shuffle=shuffle, with_trace=with_trace, bad=[c for p in parts for c in p["bad"]],
+               trace_bad=[c for p in parts for c in p["trace_bad"]])
+    return agg

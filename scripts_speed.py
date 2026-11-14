@@ -2,7 +2,7 @@
 
 (a) battle time: 200 random legal armies (>= 10 units) across the 4 provisional families, single core.
 (b) random-masked-agent env loop (simulator included, no network, no observation building) in 1 process,
-    then 6 parallel processes. Writes data/v2/speed.json. Layouts are PROVISIONAL (B4 replaces them).
+    then 6 parallel processes. Writes data/v2/speed.json. Layouts: the B4 real design layouts.
 """
 from __future__ import annotations
 
@@ -19,7 +19,8 @@ from pathlib import Path
 import numpy as np
 
 from breachlens import config
-from breachlens._bench_layouts import FAMILIES, free_tiles, make_layout, random_army
+from breachlens import layouts as Y
+from breachlens.armies import free_tiles, random_army
 from breachlens.actions import decode_action, encode_buy, encode_deploy
 from breachlens.constants import BUDGET, END_BUY, MAX_UNITS, N_UNIT_TYPES
 from breachlens.sim import Prepared, simulate
@@ -31,7 +32,12 @@ N_LAYOUTS_PER_FAMILY = 25
 
 
 def build_layouts():
-    return [(f, s, make_layout(f, s)) for f in FAMILIES for s in range(N_LAYOUTS_PER_FAMILY)]
+    """B4: the REAL design layouts (first 25 of TUNE-train per familiar family + first 25 of LAB-DESIGN)."""
+    out = []
+    for f in Y.FAMILIES:
+        pool = Y.load_design_set("LAB-DESIGN" if f == "labyrinth" else "TUNE-train", None if f == "labyrinth" else f)
+        out += [(f, rec["seed"], L) for rec, L in pool[:N_LAYOUTS_PER_FAMILY]]
+    return out
 
 
 def stress_cfg(hp_mult=20):
@@ -99,8 +105,8 @@ def env_loop(seed: int, seconds: float):
     rng = np.random.default_rng(seed)
     lays = build_layouts()
     prepared = {(f, s): Prepared(L) for f, s, L in lays}
-    for k in list(prepared)[:20]:  # warm-up
-        episode(rng, prepared[k], make_layout(*k))
+    for f, s, L in lays[:20]:  # warm-up
+        episode(rng, prepared[(f, s)], L)
     steps = eps = 0
     t0 = time.perf_counter()
     while time.perf_counter() - t0 < seconds:
@@ -154,7 +160,7 @@ def main(seconds=20.0):
     out = {"sim_version": config.sim_version(), "gate": GATE, "python": sys.version.split()[0],
            "machine": platform.platform(), "cpu_count": mp.cpu_count(),
            "git_commit": subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip(),
-           "layouts": f"PROVISIONAL bench layouts ({N_LAYOUTS_PER_FAMILY}/family), B4 replaces", "mender": "included (5 unit types in random armies)"}
+           "layouts": f"B4 real design layouts ({N_LAYOUTS_PER_FAMILY}/family: TUNE-train x3 + LAB-DESIGN)", "mender": "included (5 unit types in random armies)"}
     out["battle_warm"] = battle_times(True)
     out["battle_warm_4types_no_mender_B2_workload"] = battle_times(True, n_types=4)   # same workload as the B2 numbers
     out["battle_cold"] = battle_times(False)

@@ -367,6 +367,22 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   same 4-type workload as B2: 0.441 -> 0.634 ms (+44%); env 1 proc 26,971 -> 17,775 steps/s (-34%), 6 procs 107,986 -> 74,955 (-31%). Slowdown > 30% is
   flagged: canonical fallback (~2 calls/battle) and the Mender BFS (~25% of time with Menders). Not optimised further (gate is 60 ms / 300 steps/s).
 
+### STEP B4 (v2): layout generators, structural acceptance, TUNE / LAB-DESIGN sets (done, branch v2-redesign)
+- `breachlens/layouts.py`: 4 generators (`spine_pods`, `archipelago`, `bunker_nest`, `labyrinth`), each a pure function of `(family, seed)` (`candidate`), plus
+  `check()` = the structural acceptance rules (empty, no value building, overlap, interior-only, per-family building/defender/wall/value-total ranges, value weights in 1..3,
+  Gun majority >= 50 % in familiar families, labyrinth uses gun+lancer+flak, **core and every building reachable without breaking walls**). A rejected seed is skipped, the next seed of the
+  stream is tried. Layout module never imports config/sim (test) => acceptance is stat-independent. Each candidate is built in a canonical frame then put in a random D4 frame.
+  Content hash is D4-canonical (a mirrored duplicate counts as the same layout).
+- Seed streams (disjoint, all above the prototype's max seed 25,000,516): `T` base 100,000,000 (TUNE), `L` 200,000,000 (LAB-DESIGN), `F` 300,000,000 (reserved for the pool, **never generated or loaded in B4**);
+  per-family stride 1,000,000. `build_design_sets()` / `load_design_set()` refuse any seed outside T/L.
+- `data/v2/design_sets.json` (written by `scripts_b4_design_sets.py`): TUNE-train 180 (60/family), TUNE-val 60 (20/family), LAB-DESIGN 40, with ids, seeds, content hashes, stream ranges, rejection counts.
+  `generator_hash` NOT recorded (end of B5). FINAL-access ledger (`data/v2/final_access.log`) does not exist: zero entries.
+- NOT done in B4 (needs the Oracle/baselines): the stat-dependent acceptance rules too_hard / single-type-trivial; they are applied when the pool is built (B6). TUNE/LAB-DESIGN are therefore structurally accepted only.
+- `breachlens/armies.py`: `random_army`, `free_tiles` (moved out of `_bench_layouts.py`, which is now only the B2/B3 simulator-test fixture) and `scripted_army` (2 Bulwark, 2 Sniper, 2 Blaster, 1 Mender, 4 Scout, clustered from the border tile nearest the core).
+- `breachlens/_d4check.py` gained the real-layout D4 runner (`equivariance_chunk_real`, `run_parallel_real`) incl. per-tick position equivalence (up to the transform). `scripts_b4_report.py` -> `data/v2/b4_report.json`
+  (full-scale D4 run + battle-length table); `scripts_b4_contact_sheets.py` -> `results/design/contact_sheet_<family>.png`; `scripts_speed.py` now benchmarks the real layouts.
+- Tests: `tests/test_b4_layouts.py` (32). Full-scale D4 on real layouts: 4,100 battles x 8 (2,000 labyrinth, Mender in 85 %) + 810 with adversarial id/list shuffles: 0 mismatches, 0 per-tick-position mismatches.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -405,7 +421,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1, B2, B3 done; B4 (layout generators, TUNE / LAB-DESIGN sets) starts only when told.
+- v2: B1-B4 done; B5 (gate script G1-G6/G8/G9, revisions, B5 report, generator_hash) starts only when told.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

@@ -8,103 +8,103 @@
   "python": "3.11.14",
   "machine": "macOS-26.2-arm64-arm-64bit",
   "cpu_count": 8,
-  "git_commit": "e8ffb52",
-  "layouts": "PROVISIONAL bench layouts (25/family), B4 replaces",
+  "git_commit": "eeb530f",
+  "layouts": "B4 real design layouts (25/family: TUNE-train x3 + LAB-DESIGN)",
   "mender": "included (5 unit types in random armies)",
   "battle_warm": {
-    "mean_ms": 0.9988154500115343,
-    "p95_ms": 2.0290110500809533,
-    "max_ms": 2.8650419999394217,
-    "mean_ticks": 57.235,
+    "mean_ms": 1.0737939549744624,
+    "p95_ms": 2.5760836501831363,
+    "max_ms": 4.33654199969169,
+    "mean_ticks": 64.995,
     "mean_units": 10.875,
     "n": 200
   },
   "battle_warm_4types_no_mender_B2_workload": {
-    "mean_ms": 0.6339777899938781,
-    "p95_ms": 1.3703732496196608,
-    "max_ms": 2.1037089991295943,
-    "mean_ticks": 56.4,
+    "mean_ms": 0.657393934961874,
+    "p95_ms": 1.380416050278654,
+    "max_ms": 2.1356249999371357,
+    "mean_ticks": 61.945,
     "mean_units": 10.935,
     "n": 200
   },
   "battle_cold": {
-    "mean_ms": 2.0144085699894276,
-    "p95_ms": 3.4168312493875397,
-    "max_ms": 5.098958999951719,
-    "mean_ticks": 57.235,
+    "mean_ms": 2.0967498450454514,
+    "p95_ms": 4.049195850120668,
+    "max_ms": 6.986750000578468,
+    "mean_ticks": 64.995,
     "mean_units": 10.875,
     "n": 200
   },
   "battle_stress_hp20x_warm": {
-    "mean_ms": 1.9579517049760398,
-    "p95_ms": 4.4560273997831175,
-    "max_ms": 7.144041999708861,
-    "mean_ticks": 31.115,
+    "mean_ms": 2.115844194981946,
+    "p95_ms": 4.718338950669928,
+    "max_ms": 9.045249999871885,
+    "mean_ticks": 32.95,
     "mean_units": 10.875,
     "n": 200
   },
   "env_1proc": {
-    "steps_per_s": 17775.41665709171,
-    "episodes_per_s": 1174.718057477736,
-    "steps_per_episode": 15.13164503085763
+    "steps_per_s": 15223.283329910682,
+    "episodes_per_s": 1004.6593029093243,
+    "steps_per_episode": 15.152682392754055
   },
   "env_6proc": {
     "procs": 6,
-    "steps_per_s": 74954.76303768468,
-    "episodes_per_s": 4951.245331065604,
+    "steps_per_s": 66108.73626416722,
+    "episodes_per_s": 4370.018152183232,
     "per_proc_steps_per_s": [
-      12534.043689802327,
-      12793.626869422495,
-      12546.943877540105,
-      12304.139722434824,
-      12315.279381757799,
-      12470.36588204095
+      11071.405962279172,
+      10980.260893819646,
+      11120.48277556693,
+      10982.937566746765,
+      10860.315522023835,
+      11095.75353605319
     ]
   },
   "top3_hotspots": [
     {
       "func": "sim.py:273:simulate",
-      "tottime_s": 0.21004080900000002,
-      "cumtime_s": 0.475142206,
+      "tottime_s": 0.21085926400000002,
+      "cumtime_s": 0.501298679,
       "calls": 200,
-      "pct_of_total": 44.21275318857941
+      "pct_of_total": 42.0690905483793
     },
     {
       "func": "sim.py:412:mender_field",
-      "tottime_s": 0.093893453,
-      "cumtime_s": 0.098627608,
-      "calls": 1673,
-      "pct_of_total": 19.764197649383846
+      "tottime_s": 0.102765401,
+      "cumtime_s": 0.10786442900000001,
+      "calls": 1748,
+      "pct_of_total": 20.50299748703243
     },
     {
       "func": "sim.py:392:mender_sources",
-      "tottime_s": 0.028425073000000002,
-      "cumtime_s": 0.029736284,
-      "calls": 1951,
-      "pct_of_total": 5.983364579958139
+      "tottime_s": 0.033922523,
+      "cumtime_s": 0.035469048,
+      "calls": 2319,
+      "pct_of_total": 6.767972460135683
     }
   ],
   "top3_hotspots_stress": [
     {
       "func": "sim.py:273:simulate",
-      "tottime_s": 0.366311469,
-      "cumtime_s": 0.8892031760000001,
+      "tottime_s": 0.38327062300000003,
+      "cumtime_s": 0.961904179,
       "calls": 200,
-      "pct_of_total": 41.195638890228004
+      "pct_of_total": 39.84518322533466
     },
     {
       "func": "sim.py:412:mender_field",
-      "tottime_s": 0.191444895,
-      "cumtime_s": 0.201252546,
-      "calls": 4603,
-      "pct_of_total": 21.530024116710408
+      "tottime_s": 0.22175576000000002,
+      "cumtime_s": 0.23297409200000002,
+      "calls": 4952,
+      "pct_of_total": 23.053942457972678
     },
     {
       "func": "sim.py:392:mender_sources",
-      "tottime_s": 0.08327904,
-      "cumtime_s": 0.08673979700000001,
-      "calls": 5465,
-      "pct_of_total": 9.365617921629568
+      "tottime_s": 0.091636935,
+      "cumtime_s": 0.095586291,
+      "calls": 5921,
+      "pct_of_total": 9.526664049290003
     }
   ],
   "passed": true

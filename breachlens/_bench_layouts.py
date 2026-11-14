@@ -114,27 +114,4 @@ def make_layout(family: str, seed: int) -> dict:
     return L
 
 
-def free_tiles(layout: dict) -> list[int]:
-    walls = set(map(tuple, layout["walls"]))
-    return [i for i, rc in enumerate(BORDER) if rc not in walls]
-
-
-def random_army(rng, layout: dict, min_units: int = 10, max_units: int = 20, budget: int = 240,
-                n_types: int = 4) -> list:
-    """Random legal army (no Menders in B2): random buys within budget/cap, each on a distinct free border tile."""
-    from .config import CFG
-    costs = [CFG.units[t].cost for t in range(n_types)]
-    for _ in range(100):
-        types, gold = [], budget
-        while len(types) < max_units:
-            opts = [t for t in range(n_types) if costs[t] <= gold]
-            if not opts or (len(types) >= min_units and rng.random() < 0.1):
-                break
-            t = int(rng.choice(opts))
-            types.append(t)
-            gold -= costs[t]
-        if len(types) >= min_units:
-            break
-    tiles = free_tiles(layout)
-    pick = rng.choice(len(tiles), size=len(types), replace=False)
-    return [(t, tiles[int(k)]) for t, k in zip(types, pick)]
+from .armies import free_tiles, random_army  # noqa: E402,F401  (moved in B4; kept importable for the B2/B3 fixtures)
