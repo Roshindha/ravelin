@@ -44,6 +44,10 @@ TRANSFER_N = 60                                                              # l
 FINAL_SPLITS = ("FINAL-familiar", "FINAL-transfer")
 ROLES = ("train", "validation", "tuning", "build", "eval")
 ROLE_SPLITS = {"train": ("DEV-train",), "validation": ("DEV-validation",), "tuning": ("DEV-train", "DEV-validation")}
+# Design sets (streams T / L, B7): never FINAL. The pilot trains on TUNE-train and validates on TUNE-val.
+DESIGN_SETS = ("TUNE-train", "TUNE-val", "LAB-DESIGN")
+DESIGN_ROLE_SPLITS = {"train": ("TUNE-train",), "validation": ("TUNE-val",), "tuning": DESIGN_SETS}
+LAYOUT_ROLE_SPLITS = {r: ROLE_SPLITS[r] + DESIGN_ROLE_SPLITS[r] for r in ROLE_SPLITS}   # what load_layout lets each DEV-side role load
 
 
 # ---------------------------------------------------------------- stream geometry
@@ -158,7 +162,7 @@ def load_layout(rec: dict, role: str, purpose: str | None = None, unlock: bool =
         if not ok:
             raise PermissionError(f"role {role!r} / purpose {purpose!r} may not load FINAL layout {rec['id']}")
         log_final_access(purpose, entry_point, {"id": rec["id"]})
-    elif role in ROLE_SPLITS and rec["split"] not in ROLE_SPLITS[role]:
+    elif role in ROLE_SPLITS and rec["split"] not in LAYOUT_ROLE_SPLITS[role]:
         raise PermissionError(f"role {role!r} may not load {rec['split']}")
     L = Y.generate(rec["family"], rec["seed"])
     assert Y.content_hash(L) == rec["content_hash"], f"layout content changed for {rec['id']}"
@@ -185,6 +189,16 @@ def verify_final_acceptance(entry_point: str = "scripts_b6_verify_final.py") -> 
         for b in bad:
             rules[b] = rules.get(b, 0) + 1
     return {"per_family": fam, "rejections_per_rule": rules}
+
+
+def design_records(split: str, role: str) -> list[dict]:
+    """Records of TUNE-train / TUNE-val / LAB-DESIGN (design streams T / L, never FINAL), each with a 'split' field, for a DEV-side role."""
+    _check_role(role)
+    if role not in DESIGN_ROLE_SPLITS or split not in DESIGN_ROLE_SPLITS[role]:
+        raise PermissionError(f"role {role!r} may not load {split}")
+    out = [dict(r, split=split) for r in Y.load_design_sets_meta()["sets"][split]]
+    assert_dev_only([r["id"] for r in out], role)
+    return out
 
 
 def dev_records(role: str, path: Path = POOL_PATH) -> list[dict]:

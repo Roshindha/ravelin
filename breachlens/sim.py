@@ -28,6 +28,7 @@ for interior start cells.
 from __future__ import annotations
 
 from bisect import bisect_left, insort
+from collections import OrderedDict
 from dataclasses import dataclass, field
 
 from .actions import BORDER
@@ -35,6 +36,7 @@ from .config import CFG, CLASS_BUILDING, CLASS_TURRET, CLASS_WALL
 
 _FULL = (100, 100, 100)
 from .constants import GRID, MAX_BATTLE_TICKS
+from .score import score_value
 
 N = GRID
 NCELL = N * N
@@ -137,10 +139,50 @@ class BattleResult:
         return self.d_num / self.d_den if self.d_den else 0.0
 
 
-class Prepared:
-    """Static, battle-independent view of a layout plus caches shared across battles on it."""
+class LRU:
+    """Bounded least-recently-used mapping (get / setitem only). `maxsize` = 0 disables caching (nothing is stored); None = unbounded.
+    A cache is a pure speed-up: every cached value is a deterministic function of its key, so size never changes a result."""
 
-    def __init__(self, layout: dict, cfg=CFG):
+    def __init__(self, maxsize):
+        self.maxsize = maxsize
+        self._d: OrderedDict = OrderedDict()
+        self.hits = self.misses = self.evictions = 0
+
+    def get(self, key, default=None):
+        v = self._d.get(key)
+        if v is None:
+            self.misses += 1
+            return default
+        self.hits += 1
+        self._d.move_to_end(key)
+        return v
+
+    def __setitem__(self, key, value):
+        if self.maxsize == 0:
+            return
+        self._d[key] = value
+        self._d.move_to_end(key)
+        if self.maxsize is not None and len(self._d) > self.maxsize:
+            self._d.popitem(last=False)
+            self.evictions += 1
+
+    def __len__(self):
+        return len(self._d)
+
+    def clear(self):
+        self._d.clear()
+
+
+# Per-Prepared cache bounds (entries). The movement-field cache (BFS distance fields, one 196-entry list each, ~1.7 KB) is the large one:
+# 2048 entries ~ 3.5 MB per layout. The other four caches hold small tuples and are bounded for the same reason.
+FIELD_CACHE_SIZE = 2048
+SMALL_CACHE_SIZE = 4096
+
+
+class Prepared:
+    """Static, battle-independent view of a layout plus caches shared across battles on it (bounded LRU, sizes above)."""
+
+    def __init__(self, layout: dict, cfg=CFG, field_cache: int | None = FIELD_CACHE_SIZE, small_cache: int | None = SMALL_CACHE_SIZE):
         self.cfg = cfg
         cell, cls, hp, val, dtype = [], [], [], [], []
         self.n_buildings = len(layout["buildings"])
@@ -185,11 +227,11 @@ class Prepared:
         self.cover = tuple(tuple(x) for x in cover)
         self.cover_ids = tuple(tuple(d for d, _ in x) for x in cover)
         # caches
-        self._cand: dict = {}
-        self._fields: dict = {}
-        self._region: dict = {}
-        self._blocked: dict = {}
-        self._splash_nb: dict = {}
+        self._cand = LRU(small_cache)
+        self._fields = LRU(field_cache)
+        self._region = LRU(small_cache)
+        self._blocked = LRU(small_cache)
+        self._splash_nb = LRU(small_cache)
 
     # candidate structures in attack range of a unit of type `ut` standing on `cell`, best-first
     def cand(self, ut: int, cell: int) -> tuple:
@@ -833,8 +875,7 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
     core_dead = not s_alive[P.core_sid]
     d_num = sum(s_value[s] for s in range(P.n_buildings) if not s_alive[s])
     den = P.d_den
-    # score = 0.6 D + 0.4 C, reported from exact integers
-    score = ((6 * d_num * 1) / (10 * den) if den else 0.0) + (0.4 if core_dead else 0.0)
+    score = score_value(d_num, den, core_dead)   # breachlens.score: the one canonical formula (exact integer ratio, one float conversion)
     return BattleResult(
         ticks=tick, reason=reason, core_destroyed=core_dead, d_num=d_num, d_den=den, score=score,
         destroyed=tuple(destroyed_order), units_alive=len(alive_units), fallback_calls=fallback_calls,

@@ -1,0 +1,55 @@
+{
+ "field_cache_size": 2048,
+ "machine": "arm64",
+ "max_rss_mb": 48.3,
+ "python": "3.11.14",
+ "runs": {
+  "DEV-train, buy-until-broke random (large armies), layout_cache=64": {
+   "cached_layouts": 64,
+   "episodes_per_s": 414.89,
+   "field_cache_entries_max": 44,
+   "field_cache_entries_mean": 11.7,
+   "seconds": 30.0,
+   "steps_per_episode": 20.92,
+   "steps_per_s": 8678.6
+  },
+  "DEV-train, full game (BUY->DEPLOY), layout_cache=64": {
+   "cached_layouts": 64,
+   "episodes_per_s": 591.87,
+   "field_cache_entries_max": 31,
+   "field_cache_entries_mean": 6.7,
+   "seconds": 30.0,
+   "steps_per_episode": 10.67,
+   "steps_per_s": 6312.5
+  },
+  "DEV-train, full game, layout_cache=0 (Prepared rebuilt every episode)": {
+   "cached_layouts": 0,
+   "episodes_per_s": 439.46,
+   "field_cache_entries_max": 0,
+   "field_cache_entries_mean": 0,
+   "seconds": 30.0,
+   "steps_per_episode": 10.66,
+   "steps_per_s": 4685.6
+  },
+  "DEV-train, prebought=random (phase A), layout_cache=64": {
+   "cached_layouts": 64,
+   "episodes_per_s": 547.94,
+   "field_cache_entries_max": 25,
+   "field_cache_entries_mean": 5.3,
+   "seconds": 30.0,
+   "steps_per_episode": 6.34,
+   "steps_per_s": 3475.6
+  },
+  "TUNE-train, full game, layout_cache=64": {
+   "cached_layouts": 64,
+   "episodes_per_s": 573.91,
+   "field_cache_entries_max": 19,
+   "field_cache_entries_mean": 5.1,
+   "seconds": 30.0,
+   "steps_per_episode": 10.65,
+   "steps_per_s": 6113.2
+  }
+ },
+ "seconds_per_config": 30.0,
+ "small_cache_size": 4096
+}

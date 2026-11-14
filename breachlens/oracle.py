@@ -17,6 +17,7 @@ import numpy as np
 from .armies import army_cost, place_on_border, random_types, sort_by_rank, default_start
 from .config import CFG
 from .constants import BUDGET, N_BORDER, N_UNIT_TYPES
+from .score import ratio_to_float, result_key
 from .sim import Prepared, simulate
 
 ORACLE_TAG = 4242          # spec 3.4: per-layout seed stream [layout_id, 4242]
@@ -47,9 +48,8 @@ class SearchResult:
 
 
 def score_key(r) -> tuple:
-    """Exact integer ranking key within one layout: score = key / (10 * den)."""
-    den = max(r.d_den, 1)
-    return 6 * r.d_num + 4 * den * (1 if r.core_destroyed else 0), 10 * den
+    """Exact integer ranking key within one layout: score = key / den (breachlens.score is the one formula)."""
+    return result_key(r)
 
 
 class _Eval:
@@ -77,7 +77,7 @@ class _Eval:
     def _result(self, best) -> SearchResult:
         k, types, start, r = best
         key, den10 = score_key(r)
-        return SearchResult(score=key / den10, key=key, d=r.d, breach=r.core_destroyed, types=types, start=start,
+        return SearchResult(score=ratio_to_float(key, den10), key=key, d=r.d, breach=r.core_destroyed, types=types, start=start,
                             army=tuple(place_on_border(self.L, types, start)), sims=self.sims, units=len(types),
                             gold=army_cost(types), result=r)
 
