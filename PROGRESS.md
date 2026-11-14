@@ -337,10 +337,35 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 ### STEP B2 (v2): units/defenders/walls/core combat + simulator speed gate (done, branch v2-redesign)
 - `data/v2/unit_stats.json` is the only place unit/defender/structure stats live; `breachlens/config.py` loads it once (`CFG`), scales hp-like values by S=840, ranges/speeds are integer tenths, and exposes `sim_version()` = sha256(stats file bytes + NUL + `SIM_CODE_VERSION`). Bump `SIM_CODE_VERSION` on any behaviour change.
 - `breachlens/sim.py`: Scout/Sniper/Bulwark/Blaster, Gun/Lancer/Flak, walls, buildings, core. Integer-only outcomes; tick order per spec 3.3; nearest-in-preference targeting (equal keys -> exact damage split); BFS movement with rule-7 keys 1-3; blocked units pick the wall on the cheapest ghost path; early exit (cleared / all_dead / stalemate / horizon). `Prepared` caches fields per layout (hold one per layout in the env).
-- Mender is rejected (B3). Rule-7 key 4 is NOT implemented: exhausted ties use a raw-coordinate STOPGAP counted in `fallback_calls`; B3 replaces it.
+- (B2 history) Mender was rejected and key 4 stubbed with a raw-coordinate stopgap; both replaced in B3 below.
 - `breachlens/_bench_layouts.py`: PROVISIONAL crude layouts of the 4 families, used only by speed benchmark and tests; B4 replaces them (not balanced, not for gates).
 - Speed gate (`scripts_speed.py` -> `data/v2/speed.json`): PASSED by a wide margin, see numbers in the B2 report; tests `tests/test_b2_sim.py`, `tests/test_b2_speed.py`.
 - Spec-silent interpretations (see report): speed via integer accumulator (steps = acc//10 per tick); stalemate = no hp change anywhere and no movement for 12 ticks; in-range walls are attacked per rule 6 (so a passing Scout stops to chew an adjacent wall).
+
+### STEP B3 (v2): Mender, rule-7 key 4 (canonical-form fallback), D4 equivariance (done, branch v2-redesign)
+- `breachlens/sim.py`: Mender (heal key chain `(dist^2, hp fraction, -cost)`, exact split among ties, heals add, no overheal / revive,
+  nothing for units killed this tick, heals computed from the start-of-tick snapshot and applied after damage; follows the centroid of living
+  non-Mender allies, stops within 1.5, holds with no allies or when walled off, never chews walls). Rule-7 key 4 = `canon_pick`: tied candidates
+  get the world serialized (all alive structures + units, candidate decision marked) and the lexicographically smallest string over the 8 D4
+  transforms wins. **The raw-coordinate stopgap is deleted** (test greps the source); no id or raw coordinate decides an outcome.
+  `fallback_calls` now counts only genuine canonical-form calls; new `canon_equal_picks` counts calls whose best candidates had EQUAL strings.
+- Sites that use key 4: movement step, movement target, blocked-wall choice, Blaster splash centre, Flak burst centre. Attack/heal ties split
+  (floor of fixed-point hp; exact for k <= 8 since S = 840). Flak: units in the burst cell with equal (hp fraction, cost) share centre+neighbour damage.
+- Interpretations the spec leaves open (see B3 report): (1) every tied decision reads the start-of-movement-phase snapshot (positions, speed accumulators,
+  pending step counts) plus the deciding unit's own steps, so no processing order exists to matter (stronger than the spec's sequential working copy);
+  (2) when canonical strings are EQUAL the first candidate in iteration order is taken (worlds are D4 images, outcome-equivalent up to a symmetry of the
+  world; this is the only place iteration order is consulted); (3) Menders heal AND move in the same tick; (4) a Mender is never counted idle when it has no
+  route/no allies (it has no target); (5) tick-1 tied movement targets are recomputed every tick (only untied targets are cached).
+- Bug found by the adversarial id-shuffle test and fixed before commit: speed accumulators were advanced inside the movement loop, so a canonical
+  decision saw a half-updated world (order dependent). Now all accumulators advance before any decision. `SIM_CODE_VERSION` = `breachlens-sim-b3.0`.
+- Tests: `tests/test_b3_mender.py` (55) + updated `tests/test_b2_sim.py` (stopgap assertions replaced; determinism / idle tests now include Menders). Helpers:
+  `breachlens/_d4check.py` (independent D4 tables, transform/summary/stabilizer, parallel equivariance runner), `scripts_b3_smoke_d4.py`.
+  D4 equivariance: 10,000 random battles x 8 symmetries (Menders in >= 50% of armies), 0 mismatches; 2,000 x 8 with independent shuffles of army order and
+  building/wall/defender lists per frame, 0 mismatches. Full suite 251 passing.
+- Smoke D4 (200 battles x 8, provisional layouts, seed 3030): 0 mismatches (mutation check: disabling the canonical key gives 24).
+- Speed (`scripts_speed.py`, gate still passed by a wide margin): battle warm mean 0.441 -> 0.999 ms (5 unit types incl. Mender), p95 0.79 -> 2.03 ms;
+  same 4-type workload as B2: 0.441 -> 0.634 ms (+44%); env 1 proc 26,971 -> 17,775 steps/s (-34%), 6 procs 107,986 -> 74,955 (-31%). Slowdown > 30% is
+  flagged: canonical fallback (~2 calls/battle) and the Mender BFS (~25% of time with Menders). Not optimised further (gate is 60 ms / 300 steps/s).
 
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
@@ -380,7 +405,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1, B2 done; B3 (Mender, canonical-form fallback, D4 equivariance) starts only when told.
+- v2: B1, B2, B3 done; B4 (layout generators, TUNE / LAB-DESIGN sets) starts only when told.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

@@ -235,9 +235,8 @@ def test_empty_army_ends_immediately():
     assert simulate(layout(buildings=[((6, 6), 1)]), []).reason == "all_dead"
 
 
-def test_mender_not_in_b2_scope_and_wall_start_rejected():
-    with pytest.raises(NotImplementedError):
-        simulate(layout(buildings=[((6, 6), 1)]), [(MENDER, 3)])
+def test_wall_start_rejected_and_mender_is_accepted_since_b3():
+    simulate(layout(buildings=[((6, 6), 1)]), [(MENDER, 3)])   # B3: no longer rejected
     with pytest.raises(ValueError):
         simulate(layout(buildings=[((6, 6), 1)], walls=[(0, 3)]), [(SCOUT, 3)])
 
@@ -255,7 +254,7 @@ def test_determinism_over_100_seeds_and_cache_independence():
     for seed in range(100):
         fam = FAMILIES[seed % 4]
         L = make_layout(fam, seed)
-        a = random_army(rng, L)
+        a = random_army(rng, L, n_types=5)   # B3: Menders included
         P = Prepared(L)
         r1 = simulate(P, a, record=True)
         r2 = simulate(P, a, record=True)               # warm caches
@@ -353,7 +352,7 @@ def test_symmetric_gaps_tie_is_resolved_not_deadlocked():
     L = layout(core=(7, 7), walls=walls)
     r = simulate(L, [(SCOUT, (1, 1))], record=True, max_ticks=40)
     assert r.max_idle_run <= 2
-    assert r.fallback_calls >= 0  # B3 will assert > 0 once the canonical fallback exists
+    assert r.fallback_calls > 0          # B3: the canonical-form fallback (rule 7 key 4) decides the mirror gap
 
 
 @pytest.mark.parametrize("n_battles", [2000])
@@ -366,9 +365,9 @@ def test_random_battles_never_idle_more_than_two_ticks(n_battles):
         f, s = keys[int(rng.integers(len(keys)))]
         P = prepared[(f, s)]
         L = make_layout(f, s)
-        a = random_army(rng, L, min_units=1, max_units=20)
+        a = random_army(rng, L, min_units=1, max_units=20, n_types=5)   # B3: Menders included
         r = simulate(P, a)
         worst = max(worst, r.max_idle_run)
         fb += r.fallback_calls
     assert worst <= 2
-    assert fb > 0  # ties genuinely occur in the random suite (stopgap path exercised)
+    assert fb > 0  # ties genuinely occur in the random suite (genuine canonical-form fallbacks)

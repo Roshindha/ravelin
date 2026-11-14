@@ -1,10 +1,21 @@
-"""BreachLens battle simulator, B2 scope (docs/SPEC_V2.md 3.1, 3.1b, 3.3, 3.4 rule 7 keys 1-3).
+"""BreachLens battle simulator, B3 scope (docs/SPEC_V2.md 3.1, 3.1b, 3.3, 3.4 rule 7 keys 1-4).
 
-In scope: Scout / Sniper / Bulwark / Blaster, Gun / Lancer / Flak defenders, walls, buildings, core,
-fixed-point hp (scale S), tick order, nearest-in-preference targeting, BFS movement with the rule-7
-key chain (keys 1-3), early exit. NOT in scope (B3): Mender (rejected), rule-7 key 4 canonical-form
-fallback. Where keys are exhausted a deterministic STOPGAP (smallest raw (row, col)) is used and
-`fallback_calls` is counted; B3 replaces it. All outcome-deciding arithmetic is integer.
+Scout / Sniper / Bulwark / Blaster / Mender, Gun / Lancer / Flak defenders, walls, buildings, core,
+fixed-point hp (scale S), tick order, nearest-in-preference targeting, BFS movement with the full rule-7
+key chain, early exit. All outcome-deciding arithmetic is integer.
+
+Tie handling (D4 equivariance). Object ids and raw coordinates never decide an outcome:
+  * attacks and heals that tie on D4-invariant keys SPLIT exactly (floor division of fixed-point hp);
+  * decisions that cannot be split (movement step, movement target, splash centre, flak centre, wall
+    to chew) go through `canon` (rule 7 key 4): each tied candidate gets the start-of-phase world
+    serialized with the candidate decision marked; the lexicographically smallest serialization over the
+    8 D4 transforms wins. `fallback_calls` counts these genuine canonical-form invocations.
+  * If two candidates have EQUAL canonical strings their post-decision worlds are D4 images of one
+    another (a symmetry of the world swaps them), so any pick gives D4-equivalent outcomes; the first
+    in iteration order is taken and `canon_equal_picks` is counted. That pick is the only place where
+    iteration order is consulted, and it is outcome-equivalent up to a symmetry of the world.
+  * Every tied decision reads the start-of-movement-phase snapshot (plus the deciding unit's own steps
+    this tick), never other units' decisions of the same tick, so processing order cannot matter.
 
 Layout dict (cells are (row, col)):
   {"buildings": [{"cell": (r, c), "value": 1..3, "hp": human_hp (optional)}],
@@ -16,6 +27,7 @@ for interior start cells.
 """
 from __future__ import annotations
 
+from bisect import bisect_left, insort
 from dataclasses import dataclass, field
 
 from .actions import BORDER
@@ -28,6 +40,21 @@ ROW = tuple(c // N for c in range(NCELL))
 COL = tuple(c % N for c in range(NCELL))
 D2 = tuple(tuple((ROW[a] - ROW[b]) ** 2 + (COL[a] - COL[b]) ** 2 for b in range(NCELL)) for a in range(NCELL))
 MENDER = 4
+
+
+def _build_d4():
+    rot = [ (c % N) * N + (N - 1 - c // N) for c in range(NCELL)]   # (r, c) -> (c, N-1-r)
+    flip = [ (c // N) * N + (N - 1 - c % N) for c in range(NCELL)]  # (r, c) -> (r, N-1-c)
+    tabs = []
+    for f in (False, True):
+        cur = list(range(NCELL))
+        for _ in range(4):
+            cur = [rot[x] for x in cur]
+            tabs.append(tuple(flip[x] for x in cur) if f else tuple(cur))
+    return tuple(tabs)
+
+
+D4_TABLES = _build_d4()   # D4_TABLES[k][cell] = image of cell under symmetry k (all 8 distinct)
 
 # 8-connected moves: (neighbour, orthogonal cells that must be passable for a diagonal step)
 MOVES = []
@@ -88,13 +115,14 @@ class BattleResult:
     score: float                # reporting only; derived from the ints above
     destroyed: tuple            # destroyed building sids (value buildings and core)
     units_alive: int
-    fallback_calls: int
+    fallback_calls: int         # genuine canonical-form (rule 7 key 4) invocations
     walls_destroyed: int = 0
     defenders_destroyed: int = 0
     max_idle_run: int = 0       # longest run of ticks any unit made no progress (move or attack)
     struct_hp: tuple = ()       # final fixed-point hp per structure sid
     unit_hp: tuple = ()         # final fixed-point hp per unit (army order)
     trace: list = field(default_factory=list)  # record mode: per tick [(cell, hp, status)] per unit
+    canon_equal_picks: int = 0  # canonical-form calls whose best candidates had EQUAL strings (symmetric pick)
 
     @property
     def d(self) -> float:
@@ -258,8 +286,6 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
     # --- units
     u_type, u_cell, u_hp, u_max, u_acc = [], [], [], [], []
     for ut, tile in army:
-        if ut == MENDER:
-            raise NotImplementedError("Mender is B3 scope")
         rc = tile if isinstance(tile, tuple) else BORDER[tile]  # tuple = test hook: interior start cell
         c = cell_of(rc)
         if P.wall_bit_of_cell[c]:
@@ -267,6 +293,7 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
         u_type.append(ut); u_cell.append(c)
         u_hp.append(units_cfg[ut].hp); u_max.append(units_cfg[ut].hp); u_acc.append(0)
     nu = len(u_type)
+    has_mender = MENDER in u_type
     u_alive = [True] * nu
     alive_units = list(range(nu))
     u_idle = [0] * nu
@@ -274,6 +301,7 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
 
     d_alive = [True] * P.n_def
     fallback_calls = 0
+    equal_picks = 0
     version = 0          # bumped whenever any structure dies (invalidates movement-target cache)
     mt_cache: dict = {}
     cen = None           # centroid sums (m, sx, sy) of surviving value buildings + core
@@ -283,6 +311,7 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
     idle_ticks = 0
     reason = "horizon"
     tick = 0
+    pend: dict = {}      # unit -> steps it will take this tick (set at the start of the movement phase)
 
     def centroid():
         m = sx = sy = 0
@@ -292,10 +321,56 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
 
     cen = centroid()
 
-    def move_target(ut, cell):
+    # ---------------- rule 7 key 4: canonical-form fallback
+    def canon_pick(cands, marks_of):
+        """Rule 7 key 4. cands: tied decisions; marks_of(c) -> (marks_s, marks_u, override) describing the world
+        after decision c (which entities are tagged, which units sit on another cell). The candidate whose canonical
+        serialization (lexicographic minimum over the 8 D4 transforms) is smallest wins; EQUAL strings mean the
+        post-decision worlds are D4 images of each other, so the first of them is taken (counted in equal_picks)."""
+        nonlocal fallback_calls, equal_picks
+        fallback_calls += 1
+        ents, idx_s, idx_u = [], {}, {}
+        for sd in range(n_s):
+            if s_alive[sd]:
+                idx_s[sd] = len(ents)
+                ents.append((s_cell[sd], 0, s_class[sd], s_dtype[sd], s_value[sd], s_hp[sd], s_max[sd], ()))
+        for i in alive_units:
+            idx_u[i] = len(ents)
+            ents.append((u_cell[i], 1, u_type[i], u_hp[i], u_max[i], u_acc[i], pend.get(i, -1), ()))
+        # the sorted, transformed base world is built once and shared by all candidates
+        bases = [sorted((tab[e[0]],) + e[1:] for e in ents) for tab in D4_TABLES]
+        best, chosen, n_best = None, None, 0
+        for c in cands:
+            ms, mu, ov = marks_of(c)
+            edits = []   # (index in ents, new cell, new mark)
+            for sd, mk in ms.items():
+                edits.append((idx_s[sd], ents[idx_s[sd]][0], mk))
+            for i in set(mu) | set(ov):
+                k = idx_u[i]
+                edits.append((k, ov.get(i, ents[k][0]), mu.get(i, ())))
+            key = None
+            for tab, base in zip(D4_TABLES, bases):
+                lst = base[:]
+                for k, _, _ in edits:
+                    e = ents[k]
+                    del lst[bisect_left(lst, (tab[e[0]],) + e[1:])]
+                for k, cell, mk in edits:
+                    e = ents[k]
+                    insort(lst, (tab[cell],) + e[1:-1] + (mk,))
+                t = tuple(lst)
+                if key is None or t < key:
+                    key = t
+            if best is None or key < best:
+                best, chosen, n_best = key, c, 1
+            elif key == best:
+                n_best += 1
+        if n_best > 1:
+            equal_picks += 1
+        return chosen
+
+    def move_target(i, ut, cell, rem):
         """Nearest alive structure of the most-preferred non-empty class (movement target)."""
         u = units_cfg[ut]
-        nonlocal fallback_calls
         for cl in u.pref:
             best = None
             tied = []
@@ -309,17 +384,63 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                     tied.append(s)
             if tied:
                 if len(tied) > 1:
-                    fallback_calls += 1
-                    tied.sort(key=lambda s: s_cell[s])  # STOPGAP (B3: canonical fallback)
-                return tied[0]
-        return -1
+                    return canon_pick(tied, lambda s: ({s: (6,)}, {i: (5, rem)}, {i: cell})), False
+                return tied[0], True
+        return -1, True
+
+    # ---- Mender helpers (target point = centroid of living non-Mender allies, snapshot positions)
+    def mender_sources(m, sr, sc):
+        """Passable cells within 1.5 of the centroid (sr/m, sc/m); only the 4x4 box around it can qualify."""
+        wb = P.wall_bit_of_cell
+        out = []
+        r0, r1 = max(0, (sr - 2 * m) // m), min(N - 1, (sr + 2 * m) // m + 1)
+        q0, q1 = max(0, (sc - 2 * m) // m), min(N - 1, (sc + 2 * m) // m + 1)
+        for r_ in range(r0, r1 + 1):
+            for q_ in range(q0, q1 + 1):
+                c = r_ * N + q_
+                if wallmask & wb[c]:
+                    continue
+                T = m * m * (r_ * r_ + q_ * q_) - 2 * m * (r_ * sr + q_ * sc) + sr * sr + sc * sc
+                if 100 * T <= 225 * m * m:
+                    out.append(c)
+        return out
+
+    def mender_T(c, m, sr, sc):
+        r_, q_ = ROW[c], COL[c]
+        return m * m * (r_ * r_ + q_ * q_) - 2 * m * (r_ * sr + q_ * sc) + sr * sr + sc * sc
+
+    def mender_field(p, srcs):
+        """Reverse BFS from `srcs`, stopped once p is labelled. Returns dict cell->steps or None if p unreachable."""
+        wb = P.wall_bit_of_cell
+        f = {c: 0 for c in srcs}
+        if p in f:
+            return f
+        frontier = list(srcs)
+        d = 0
+        while frontier:
+            d += 1
+            nxt = []
+            for c in frontier:
+                for n, req in MOVES[c]:
+                    if n in f or (wallmask & wb[n]):
+                        continue
+                    if req is not None and ((wallmask & wb[req[0]]) or (wallmask & wb[req[1]])):
+                        continue
+                    f[n] = d
+                    nxt.append(n)
+            if p in f:
+                return f
+            frontier = nxt
+        return None
 
     while tick < max_ticks:
-        # ---------------- (a)/(b)/(c): intents and damage from the start-of-tick snapshot
+        # ---------------- (a)/(b)/(c): intents, damage and heals from the start-of-tick snapshot
         dmg_s: dict = {}
         dmg_u: dict = {}
+        heal_u: dict = {}
         acted = set()
         moving = []
+        pend.clear()
         for i in alive_units:
             ut = u_type[i]
             cands = P.cand(ut, u_cell[i])
@@ -352,9 +473,8 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
             u = units_cfg[ut]
             acted.add(i)
             if u.splash_pct:
-                if len(tied) > 1:
-                    fallback_calls += 1
-                    tied.sort(key=lambda s: s_cell[s])  # STOPGAP (B3)
+                if len(tied) > 1:   # a splash volley never splits: resolve to one centre
+                    tied = [canon_pick(tied, lambda s, i=i: ({s: (2,)}, {i: (1,)}, {}))]
                 s = tied[0]
                 dmg_s[s] = dmg_s.get(s, 0) + u.damage
                 share = u.damage * u.splash_pct // 100
@@ -365,6 +485,30 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                 hit = u.damage // len(tied)
                 for s in tied:
                     dmg_s[s] = dmg_s.get(s, 0) + hit
+
+        # Menders: heal the nearest damaged ally in range (key chain), ties split exactly
+        for m in (alive_units if has_mender else ()):
+            if u_type[m] != MENDER:
+                continue
+            mu_ = units_cfg[MENDER]
+            lim = mu_.heal_range_x10 * mu_.heal_range_x10
+            best, tiedh = None, []
+            for j in alive_units:
+                if j == m or u_hp[j] >= u_max[j]:
+                    continue
+                d2 = D2[u_cell[m]][u_cell[j]]
+                if 100 * d2 > lim:
+                    continue
+                key = (d2, _hpfrac(u_hp[j], u_max[j]), -units_cfg[u_type[j]].cost)
+                if best is None or key < best:
+                    best, tiedh = key, [j]
+                elif key == best:
+                    tiedh.append(j)
+            if tiedh:
+                acted.add(m)  # healing is the Mender's action (progress for the idle invariant); it still moves
+                share = mu_.heal // len(tiedh)
+                for j in tiedh:
+                    heal_u[j] = heal_u.get(j, 0) + share
 
         # defenders fire at units
         if alive_units and P.n_def:
@@ -423,20 +567,24 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                         best, tiedc = key, [c]
                     elif key == best:
                         tiedc.append(c)
-                if len(tiedc) > 1:
-                    fallback_calls += 1
-                    tiedc.sort(key=lambda c: (ROW[c], COL[c]))  # STOPGAP (B3)
+                if len(tiedc) > 1:   # a burst has one centre: resolve by canonical form
+                    dsid = P.def_sids[did]
+                    tiedc = [canon_pick(tiedc, lambda c, dsid=dsid: ({dsid: (3,)}, {i: (4,) for i in occ[c]}, {}))]
                 c0 = tiedc[0]
                 ul = occ[c0]
-                centre = min(ul, key=lambda i: (_hpfrac(u_hp[i], u_max[i]), -units_cfg[u_type[i]].cost))
+                # the centre is the lowest-(hp fraction, -cost) unit in the cell; exact ties share centre + neighbour damage
+                ck = min((_hpfrac(u_hp[i], u_max[i]), -units_cfg[u_type[i]].cost) for i in ul)
+                ctie = [i for i in ul if (_hpfrac(u_hp[i], u_max[i]), -units_cfg[u_type[i]].cost) == ck]
+                kc = len(ctie)
+                centre_share = (ds.damage + (kc - 1) * ds.damage_neighbour) // kc
                 for i in ul:
-                    dm = ds.damage if i == centre else ds.damage_neighbour
+                    dm = centre_share if i in ctie else ds.damage_neighbour
                     dmg_u[i] = dmg_u.get(i, 0) + max(dm - units_cfg[u_type[i]].armor, cfg.min_hit)
                 for n in disc_others(c0, ds.splash_r_x10):
                     for i in occ.get(n, ()):
                         dmg_u[i] = dmg_u.get(i, 0) + max(ds.damage_neighbour - units_cfg[u_type[i]].armor, cfg.min_hit)
 
-        # ---------------- (d)/(e): apply damage, remove dead
+        # ---------------- (d)/(e): apply damage, then heals to survivors, remove dead
         changed = any(d > 0 for d in dmg_s.values()) or any(d > 0 for d in dmg_u.values())
         structure_died = False
         for s, d in dmg_s.items():
@@ -463,31 +611,97 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                 u_hp[i] = 0
                 u_alive[i] = False
                 died_units = True
+        for j, h in heal_u.items():   # a unit killed this tick receives nothing; no overheal
+            if u_alive[j]:
+                nh = min(u_hp[j] + h, u_max[j])
+                if nh != u_hp[j]:
+                    u_hp[j] = nh
+                    changed = True
         if died_units:
             alive_units = [i for i in alive_units if u_alive[i]]
-        # ---------------- (f): movement of survivors that did not attack
+        # ---------------- (f): movement of survivors that did not attack (snapshot positions)
         status = {} if record else None
         for i in alive_units:
-            if i in acted:
+            if i in acted and u_type[i] != MENDER:
                 u_idle[i] = 0
                 if record:
                     status[i] = 2
-        for i in moving:
-            if not u_alive[i]:
-                continue
+        movers = [i for i in moving if u_alive[i]]
+        for i in movers:   # speed accumulators advance for ALL movers before any decision: the snapshot is order-free
+            u_acc[i] += units_cfg[u_type[i]].speed_x10
+            pend[i] = u_acc[i] // 10
+            u_acc[i] -= pend[i] * 10
+        # Mender target point: centroid of living non-Mender allies at the snapshot
+        am = asr = asc = 0
+        if has_mender:
+            for j in alive_units:
+                if u_type[j] != MENDER:
+                    am += 1; asr += ROW[u_cell[j]]; asc += COL[u_cell[j]]
+        msrc = None
+        new_cell: dict = {}
+        for i in movers:
             ut = u_type[i]
             u = units_cfg[ut]
-            u_acc[i] += u.speed_x10
-            steps = u_acc[i] // 10
-            u_acc[i] -= steps * 10
+            steps = pend[i]
             moved = False
             p = u_cell[i]
-            for _ in range(steps):
+            if ut == MENDER:
+                wants = False
+                if am:
+                    if msrc is None:
+                        msrc = mender_sources(am, asr, asc)
+                    for si in range(steps):
+                        rem = steps - si
+                        if 100 * mender_T(p, am, asr, asc) <= 225 * am * am:
+                            break
+                        f = mender_field(p, msrc)
+                        if f is None:   # walled off from its allies: holds (Menders cannot breach, it has no target)
+                            break
+                        wants = True
+                        dp = f[p]
+                        best, tiedn = None, []
+                        for n, req in MOVES[p]:
+                            if f.get(n, -9) != dp - 1:
+                                continue
+                            key = (mender_T(n, am, asr, asc),
+                                   sum(1 for d in P.cover_ids[n] if d_alive[d]),
+                                   cen[0] * (ROW[n] ** 2 + COL[n] ** 2) - 2 * (ROW[n] * cen[1] + COL[n] * cen[2])
+                                   + cen[1] ** 2 + cen[2] ** 2)
+                            if best is None or key < best:
+                                best, tiedn = key, [n]
+                            elif key == best:
+                                tiedn.append(n)
+                        if not tiedn:
+                            break
+                        if len(tiedn) > 1:
+                            tiedn = [canon_pick(tiedn, lambda n, i=i, rem=rem: ({}, {i: (9, rem)}, {i: n}))]
+                        p = tiedn[0]
+                        moved = True
+                if moved:
+                    new_cell[i] = p
+                    changed = True
+                    u_idle[i] = 0
+                    if record:
+                        status[i] = 1
+                else:
+                    # idle only counts when the Mender wanted to move and could not; holding is not stalling
+                    if wants and i not in acted:
+                        u_idle[i] += 1
+                        if u_idle[i] > max_idle:
+                            max_idle = u_idle[i]
+                    else:
+                        u_idle[i] = 0
+                    if record:
+                        status[i] = 2 if i in acted else 0
+                continue
+            for si in range(steps):
+                rem = steps - si
                 mk = ut * NCELL + p
                 t = mt_cache.get(mk)
                 if t is None:
-                    t = move_target(ut, p)
-                    mt_cache[mk] = t
+                    t, cacheable = move_target(i, ut, p, rem)
+                    if cacheable:
+                        mt_cache[mk] = t
                 if t < 0:
                     break
                 f = P.field(t, u.range_x10, wallmask)
@@ -495,8 +709,8 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                 if f[p] == 255:  # blocked: pick the wall on the cheapest shortest path
                     rid, reg = P.region(p, wallmask)
                     bkey = (t, u.range_x10, wallmask, rid)
-                    w = P._blocked.get(bkey)
-                    if w is None:
+                    tiedw = P._blocked.get(bkey)
+                    if tiedw is None:
                         ghost = P.field(t, u.range_x10, 0)
                         best, tiedw = None, []
                         for wi in range(P.n_walls):
@@ -510,16 +724,14 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                                 best, tiedw = key, [ws]
                             elif key == best:
                                 tiedw.append(ws)
-                        if tiedw:
-                            if len(tiedw) > 1:
-                                fallback_calls += 1
-                                tiedw.sort(key=lambda s: s_cell[s])  # STOPGAP (B3)
-                            w = tiedw[0]
-                        else:
-                            w = -1
-                        P._blocked[bkey] = w
-                    if w < 0:
+                        tiedw = tuple(tiedw)
+                        P._blocked[bkey] = tiedw
+                    if not tiedw:
                         break
+                    if len(tiedw) > 1:
+                        w = canon_pick(list(tiedw), lambda w, i=i, rem=rem: ({w: (8,)}, {i: (7, rem)}, {i: p}))
+                    else:
+                        w = tiedw[0]
                     tgt = w
                     f = P.field(w, u.range_x10, wallmask)
                     if f[p] == 255:
@@ -529,7 +741,6 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                     break
                 tcell = s_cell[tgt]
                 best, tiedn = None, []
-                wb = P.wall_bit_of_cell
                 for n, req in MOVES[p]:
                     if f[n] != dp - 1:
                         continue
@@ -543,15 +754,14 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                         tiedn.append(n)
                 if not tiedn:
                     break
-                if len(tiedn) > 1:
-                    fallback_calls += 1
-                    tiedn.sort()  # STOPGAP (B3: canonical-form fallback, rule 7 key 4)
+                if len(tiedn) > 1:   # rule 7 key 4
+                    tiedn = [canon_pick(tiedn, lambda n, i=i, rem=rem, tgt=tgt: ({tgt: (10,)}, {i: (9, rem)}, {i: n}))]
                 p = tiedn[0]
                 moved = True
                 if f[p] == 0:
                     break
             if moved:
-                u_cell[i] = p
+                new_cell[i] = p
                 changed = True
                 u_idle[i] = 0
                 if record:
@@ -562,6 +772,13 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                     max_idle = u_idle[i]
                 if record:
                     status[i] = 0
+        for i, c in new_cell.items():
+            u_cell[i] = c
+        pend.clear()
+        if record:
+            for i in alive_units:
+                if i in acted and u_type[i] == MENDER and i not in status:
+                    status[i] = 2
 
         if record:
             trace.append([(u_cell[i], u_hp[i], status.get(i, 0) if u_alive[i] else -1) for i in range(nu)])
@@ -591,4 +808,4 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
         destroyed=tuple(destroyed_order), units_alive=len(alive_units), fallback_calls=fallback_calls,
         walls_destroyed=sum(1 for w in range(P.n_walls) if not s_alive[wall_base + w]),
         defenders_destroyed=sum(1 for d in d_alive if not d), max_idle_run=max_idle,
-        struct_hp=tuple(s_hp), unit_hp=tuple(u_hp), trace=trace)
+        struct_hp=tuple(s_hp), unit_hp=tuple(u_hp), trace=trace, canon_equal_picks=equal_picks)

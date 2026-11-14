@@ -26,7 +26,7 @@ from breachlens.sim import Prepared, simulate
 
 OUT = Path(__file__).parent / "data" / "v2" / "speed.json"
 GATE = {"mean_ms_max": 60.0, "p95_ms_max": 150.0, "steps_per_s_min": 300.0}
-N_TYPES_B2 = N_UNIT_TYPES - 1  # no Mender until B3
+N_TYPES = N_UNIT_TYPES  # B3: the Mender is in the random armies
 N_LAYOUTS_PER_FAMILY = 25
 
 
@@ -42,7 +42,7 @@ def stress_cfg(hp_mult=20):
     return config._build(raw)
 
 
-def battle_times(warm: bool, n=200, seed=0, cfg=None):
+def battle_times(warm: bool, n=200, seed=0, cfg=None, n_types=N_TYPES):
     rng = np.random.default_rng(seed)
     lays = build_layouts()
     prepared = {(f, s): Prepared(L, cfg or config.CFG) for f, s, L in lays} if (warm or cfg) else None
@@ -50,7 +50,7 @@ def battle_times(warm: bool, n=200, seed=0, cfg=None):
     jobs = []
     for i in range(n):
         f, s, L = lays[int(rng.integers(len(lays)))]
-        jobs.append((f, s, L, random_army(rng, L, min_units=10)))
+        jobs.append((f, s, L, random_army(rng, L, min_units=10, n_types=n_types)))
     if warm:
         for f, s, L, a in jobs:
             simulate(prepared[(f, s)], a)
@@ -68,9 +68,9 @@ def battle_times(warm: bool, n=200, seed=0, cfg=None):
 def episode(rng, prepared_layout, layout):
     """One random legal BUY -> DEPLOY -> BATTLE episode via the action codec. Returns (steps, result)."""
     gold, owned, steps, army = BUDGET, [], 0, []
-    costs = [config.CFG.units[t].cost for t in range(N_TYPES_B2)]
+    costs = [config.CFG.units[t].cost for t in range(N_TYPES)]
     while True:  # BUY phase: uniform random legal buy, END_BUY with p=0.1 once >= 1 unit
-        legal = [encode_buy(t) for t in range(N_TYPES_B2) if costs[t] <= gold] if len(owned) < MAX_UNITS else []
+        legal = [encode_buy(t) for t in range(N_TYPES) if costs[t] <= gold] if len(owned) < MAX_UNITS else []
         if owned and (not legal or rng.random() < 0.1):
             a = END_BUY
         else:
@@ -130,7 +130,7 @@ def profile_top(n=3, cfg=None):
     rng = np.random.default_rng(5)
     lays = build_layouts()
     prepared = {(f, s): Prepared(L, cfg or config.CFG) for f, s, L in lays}
-    jobs = [(prepared[(f, s)], random_army(rng, L, min_units=10)) for f, s, L in
+    jobs = [(prepared[(f, s)], random_army(rng, L, min_units=10, n_types=N_TYPES)) for f, s, L in
             [lays[int(rng.integers(len(lays)))] for _ in range(200)]]
     for P, a in jobs:
         simulate(P, a)
@@ -154,8 +154,9 @@ def main(seconds=20.0):
     out = {"sim_version": config.sim_version(), "gate": GATE, "python": sys.version.split()[0],
            "machine": platform.platform(), "cpu_count": mp.cpu_count(),
            "git_commit": subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip(),
-           "layouts": f"PROVISIONAL bench layouts ({N_LAYOUTS_PER_FAMILY}/family), B4 replaces", "mender": "excluded (B3)"}
+           "layouts": f"PROVISIONAL bench layouts ({N_LAYOUTS_PER_FAMILY}/family), B4 replaces", "mender": "included (5 unit types in random armies)"}
     out["battle_warm"] = battle_times(True)
+    out["battle_warm_4types_no_mender_B2_workload"] = battle_times(True, n_types=4)   # same workload as the B2 numbers
     out["battle_cold"] = battle_times(False)
     out["battle_stress_hp20x_warm"] = battle_times(True, cfg=stress_cfg())
     steps, eps, dt = env_loop(1, seconds)

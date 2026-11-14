@@ -1,5 +1,5 @@
 {
-  "sim_version": "dd0415bcc9293eef21a5c64fad6749a615ce62b243e77b3b77c352015154788b",
+  "sim_version": "2f13f1390bbbcc9a4f99f0d902f03e16ac6164debc7439849daa8c9dd82d5447",
   "gate": {
     "mean_ms_max": 60.0,
     "p95_ms_max": 150.0,
@@ -8,95 +8,103 @@
   "python": "3.11.14",
   "machine": "macOS-26.2-arm64-arm-64bit",
   "cpu_count": 8,
-  "git_commit": "cb900a7",
+  "git_commit": "e8ffb52",
   "layouts": "PROVISIONAL bench layouts (25/family), B4 replaces",
-  "mender": "excluded (B3)",
+  "mender": "included (5 unit types in random armies)",
   "battle_warm": {
-    "mean_ms": 0.4409537100127636,
-    "p95_ms": 0.7943660503769931,
-    "max_ms": 0.9731250002005254,
-    "mean_ticks": 55.855,
+    "mean_ms": 0.9988154500115343,
+    "p95_ms": 2.0290110500809533,
+    "max_ms": 2.8650419999394217,
+    "mean_ticks": 57.235,
+    "mean_units": 10.875,
+    "n": 200
+  },
+  "battle_warm_4types_no_mender_B2_workload": {
+    "mean_ms": 0.6339777899938781,
+    "p95_ms": 1.3703732496196608,
+    "max_ms": 2.1037089991295943,
+    "mean_ticks": 56.4,
     "mean_units": 10.935,
     "n": 200
   },
   "battle_cold": {
-    "mean_ms": 1.7861387699963416,
-    "p95_ms": 2.994411849681455,
-    "max_ms": 4.47062500006723,
-    "mean_ticks": 55.855,
-    "mean_units": 10.935,
+    "mean_ms": 2.0144085699894276,
+    "p95_ms": 3.4168312493875397,
+    "max_ms": 5.098958999951719,
+    "mean_ticks": 57.235,
+    "mean_units": 10.875,
     "n": 200
   },
   "battle_stress_hp20x_warm": {
-    "mean_ms": 0.5786536050004543,
-    "p95_ms": 0.9560797998574344,
-    "max_ms": 1.142125000114902,
-    "mean_ticks": 25.565,
-    "mean_units": 10.935,
+    "mean_ms": 1.9579517049760398,
+    "p95_ms": 4.4560273997831175,
+    "max_ms": 7.144041999708861,
+    "mean_ticks": 31.115,
+    "mean_units": 10.875,
     "n": 200
   },
   "env_1proc": {
-    "steps_per_s": 26970.558309646825,
-    "episodes_per_s": 1754.9017402021666,
-    "steps_per_episode": 15.368699962961907
+    "steps_per_s": 17775.41665709171,
+    "episodes_per_s": 1174.718057477736,
+    "steps_per_episode": 15.13164503085763
   },
   "env_6proc": {
     "procs": 6,
-    "steps_per_s": 107986.45501432511,
-    "episodes_per_s": 7056.122815511848,
+    "steps_per_s": 74954.76303768468,
+    "episodes_per_s": 4951.245331065604,
     "per_proc_steps_per_s": [
-      18027.86115444123,
-      17713.716704478717,
-      18202.973897824257,
-      17764.261448631256,
-      18128.007931103257,
-      18528.34581963821
+      12534.043689802327,
+      12793.626869422495,
+      12546.943877540105,
+      12304.139722434824,
+      12315.279381757799,
+      12470.36588204095
     ]
   },
   "top3_hotspots": [
     {
-      "func": "sim.py:245:simulate",
-      "tottime_s": 0.165224919,
-      "cumtime_s": 0.23648514,
+      "func": "sim.py:273:simulate",
+      "tottime_s": 0.21004080900000002,
+      "cumtime_s": 0.475142206,
       "calls": 200,
-      "pct_of_total": 70.3034861185172
+      "pct_of_total": 44.21275318857941
     },
     {
-      "func": "sim.py:295:move_target",
-      "tottime_s": 0.015935496,
-      "cumtime_s": 0.016341918,
-      "calls": 6139,
-      "pct_of_total": 6.780580850686853
+      "func": "sim.py:412:mender_field",
+      "tottime_s": 0.093893453,
+      "cumtime_s": 0.098627608,
+      "calls": 1673,
+      "pct_of_total": 19.764197649383846
     },
     {
-      "func": "~:0:<method 'get' of 'dict' objects>",
-      "tottime_s": 0.008079177,
-      "cumtime_s": 0.008079177,
-      "calls": 152557,
-      "pct_of_total": 3.43770365575754
+      "func": "sim.py:392:mender_sources",
+      "tottime_s": 0.028425073000000002,
+      "cumtime_s": 0.029736284,
+      "calls": 1951,
+      "pct_of_total": 5.983364579958139
     }
   ],
   "top3_hotspots_stress": [
     {
-      "func": "sim.py:245:simulate",
-      "tottime_s": 0.226628299,
-      "cumtime_s": 0.32673087700000003,
+      "func": "sim.py:273:simulate",
+      "tottime_s": 0.366311469,
+      "cumtime_s": 0.8892031760000001,
       "calls": 200,
-      "pct_of_total": 69.52920337891946
+      "pct_of_total": 41.195638890228004
     },
     {
-      "func": "sim.py:295:move_target",
-      "tottime_s": 0.023638133000000002,
-      "cumtime_s": 0.024286314,
-      "calls": 10999,
-      "pct_of_total": 7.252141785059895
+      "func": "sim.py:412:mender_field",
+      "tottime_s": 0.191444895,
+      "cumtime_s": 0.201252546,
+      "calls": 4603,
+      "pct_of_total": 21.530024116710408
     },
     {
-      "func": "~:0:<method 'get' of 'dict' objects>",
-      "tottime_s": 0.013254216000000001,
-      "cumtime_s": 0.013254216000000001,
-      "calls": 246761,
-      "pct_of_total": 4.06637248727763
+      "func": "sim.py:392:mender_sources",
+      "tottime_s": 0.08327904,
+      "cumtime_s": 0.08673979700000001,
+      "calls": 5465,
+      "pct_of_total": 9.365617921629568
     }
   ],
   "passed": true

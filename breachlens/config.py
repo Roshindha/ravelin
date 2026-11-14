@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .constants import UNIT_TYPES
 
-SIM_CODE_VERSION = "breachlens-sim-b2.0"  # bump on ANY change to simulator behaviour
+SIM_CODE_VERSION = "breachlens-sim-b3.0"  # bump on ANY change to simulator behaviour
 STATS_PATH = Path(__file__).resolve().parents[1] / "data" / "v2" / "unit_stats.json"
 
 CLASS_BUILDING, CLASS_TURRET, CLASS_WALL = 0, 1, 2
