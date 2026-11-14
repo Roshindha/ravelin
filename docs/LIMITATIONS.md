@@ -15,6 +15,8 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - One-time waiver, changelog (f): item 9 criterion (ii) for R2a (labyrinth best single 0.669 vs 0.65, n = 20).
 - Sample sizes: sweeps used 20 layouts per family; the sampling error exceeded the margin in the item 9 case above.
 - Design sets: TUNE-train 180, TUNE-val 60, LAB-DESIGN 40; stats were tuned on them, so gate numbers are optimistic for those sets.
+- Greedy (B5 definition) buys 8 Bulwarks, identical to the single-Bulwark army.
+- Oracle is a fixed-budget search oracle, not the optimum (no breach found on one DEV-validation layout that the acceptance search breached).
 
 ## Prototype lessons that still apply (PROGRESS.md)
 - Resumed PPO runs are not bit-identical to uninterrupted runs (RNG state not in checkpoints; reseeded as seed + 100003 * k). Prototype seeds 13-15 were resumed twice.

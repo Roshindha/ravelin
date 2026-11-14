@@ -1,0 +1,18 @@
+{
+ "g7_bar": 0.436862743301702,
+ "g7_bar_rounded": 0.4369,
+ "baseline_mean_per_layout_max": 0.386862743301702,
+ "margin": 0.05,
+ "set": "TUNE-val",
+ "n_layouts": 60,
+ "definition": "mean over TUNE-val layouts of max(BestSingle, Greedy) per layout, + 0.05 (SPEC_V2 line 121, literal); source data/v2/baselines/b8_layout_rows.csv",
+ "per_family_per_layout_max_mean": {
+  "spine_pods": 0.44112598888525667,
+  "archipelago": 0.5160104011930099,
+  "bunker_nest": 0.20345183982683984
+ },
+ "not_used": {
+  "per_family_max_bar": 0.4308,
+  "pooled_max_baseline": 0.3808
+ }
+}

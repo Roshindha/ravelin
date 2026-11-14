@@ -14,3 +14,6 @@ results/*
 !results/layouts.json
 !results/layouts.sha256
 !results/layout_contact_sheet.png
+
+# run logs
+logs_*/

@@ -16,7 +16,10 @@ Spec: docs/SPEC_V2.md 3.5 (streams, FINAL-access ledger), 5.2 (pool of 300), 11 
 """
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import hashlib
+import uuid
 import json
 import multiprocessing as mp
 import os
@@ -97,6 +100,12 @@ def check_frozen() -> dict:
 
 
 # ---------------------------------------------------------------- FINAL-access ledger
+def git_dirty() -> bool:
+    """True iff tracked files changed or untracked files NOT covered by .gitignore exist (--porcelain already omits ignored files)."""
+    out = _git("status", "--porcelain", "--untracked-files=normal")
+    return out == "unknown" or bool(out)
+
+
 def _git(*a) -> str:
     try:
         return subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
@@ -104,12 +113,43 @@ def _git(*a) -> str:
         return "unknown"
 
 
+_EVAL_SESSION: contextvars.ContextVar = contextvars.ContextVar("eval_session", default=None)
+
+
+@contextlib.contextmanager
+def eval_session(session_id: str | None = None):
+    """Every 'eval' ledger entry written inside this block (loader entries and the evaluation's summary entry) carries one session_id.
+    Re-entrant: an already active session is reused."""
+    cur = _EVAL_SESSION.get()
+    if cur is not None:
+        yield cur
+        return
+    sid = session_id or uuid.uuid4().hex
+    tok = _EVAL_SESSION.set(sid)
+    try:
+        yield sid
+    finally:
+        _EVAL_SESSION.reset(tok)
+
+
+def count_eval_sessions(entries: list[dict] | None = None) -> int:
+    """Number of distinct evaluation SESSIONS among 'eval' entries (an eval entry without session_id counts as its own session)."""
+    entries = read_ledger() if entries is None else entries
+    keys = set()
+    for i, e in enumerate(entries):
+        if e.get("purpose") == "eval":
+            keys.add(e["session_id"] if e.get("session_id") else f"_nosession_{i}")
+    return len(keys)
+
+
 def log_final_access(purpose: str, entry_point: str, detail: dict | None = None) -> dict:
     """Append one ledger line (JSON). purpose is 'build' or 'eval'; this step only ever writes 'build'."""
     if purpose not in ("build", "eval"):
         raise ValueError(purpose)
     entry = {"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "commit": _git("rev-parse", "HEAD"),
-             "dirty": bool(_git("status", "--porcelain")), "entry_point": entry_point, "purpose": purpose, **(detail or {})}
+             "dirty": git_dirty(), "entry_point": entry_point, "purpose": purpose, **(detail or {})}
+    if purpose == "eval":
+        entry["session_id"] = _EVAL_SESSION.get() or uuid.uuid4().hex      # outside a session the entry is its own session
     # The ledger location is the module constant LEDGER_PATH: no env var, argument or helper can redirect it in non-test code.
     LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(LEDGER_PATH, "a") as f:

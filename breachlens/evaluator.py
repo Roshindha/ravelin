@@ -36,7 +36,7 @@ FINAL = P.FINAL_SPLITS
 def run_meta(seed: int, role: str, set_name: str) -> dict:
     gh = json.loads(P.GENERATOR_HASH_PATH.read_text())["generator_hash"]
     return {"score_version": SCORE_VERSION, "sim_version": sim_version(), "generator_hash": gh, "pool_sha256": P.pool_sha256(),
-            "git_commit": P._git("rev-parse", "HEAD"), "git_dirty": bool(P._git("status", "--porcelain")), "seed": int(seed), "role": role, "set": set_name}
+            "git_commit": P._git("rev-parse", "HEAD"), "git_dirty": P.git_dirty(), "seed": int(seed), "role": role, "set": set_name}
 
 
 def check_meta(row: dict) -> None:
@@ -101,6 +101,11 @@ def evaluate(policy, set_name: str, role: str, *, unlock: bool = False, items: l
         raise PermissionError("role 'eval' needs unlock=True")
     meta = run_meta(seed, role, set_name)
     check_meta(meta)
+    with P.eval_session():                                                             # loader entries + the summary entry share one session_id
+        return _evaluate(policy, set_name, role, unlock, items, procs, meta, entry_point)
+
+
+def _evaluate(policy, set_name, role, unlock, items, procs, meta, entry_point) -> dict:
     if items is None:
         items = load_set(set_name, role, unlock=unlock, entry_point=entry_point)        # FINAL loads write the ledger inside the loaders
     elif role != "eval":

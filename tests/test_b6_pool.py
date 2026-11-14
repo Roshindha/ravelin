@@ -412,3 +412,52 @@ def test_gate_and_balance_code_does_not_use_pool_roles_and_lab_design_stays_out_
             assert "breachlens.pool" not in p.read_text() and "import pool" not in p.read_text(), p
     for p in (ROOT / "rl").glob("*.py"):
         assert "LAB-DESIGN" not in p.read_text(), p
+
+
+# ------------------------------------------------------------------ B9 housekeeping: eval sessions, git_dirty
+def test_count_eval_sessions_synthetic(tmp_ledger):
+    P.log_final_access("build", "t")
+    assert P.count_eval_sessions() == 0
+    with P.eval_session("s1"):
+        P.log_final_access("eval", "t", {"split": "FINAL-familiar"})
+        P.log_final_access("eval", "t", {"split": "FINAL-transfer"})
+        with P.eval_session("ignored"):                    # re-entrant: same session
+            P.log_final_access("eval", "t", {"action": "evaluate"})
+    with P.eval_session("s2"):
+        P.log_final_access("eval", "t")
+    P.log_final_access("eval", "t")                        # outside a session: its own session
+    es = P.read_ledger()
+    assert [e.get("session_id") for e in es if e["purpose"] == "eval"][:3] == ["s1"] * 3
+    assert P.count_eval_sessions() == 3 and P.count_eval_sessions(es[:1]) == 0
+    assert "session_id" not in es[0]
+
+
+def test_real_ledger_still_5_build_0_eval():
+    es = P.read_ledger()
+    assert sum(e["purpose"] == "build" for e in es) == 5 and sum(e["purpose"] == "eval" for e in es) == 0 and P.count_eval_sessions() == 0
+
+
+def test_git_dirty_ignores_gitignored_untracked_files(tmp_path, monkeypatch):
+    import subprocess
+    run = lambda *a: subprocess.run(["git", *a], cwd=tmp_path, check=True, capture_output=True)
+    run("init", "-q"); run("config", "user.email", "a@b"); run("config", "user.name", "t")
+    (tmp_path / ".gitignore").write_text("logs_*/\n")
+    run("add", "."); run("commit", "-qm", "x")
+    monkeypatch.setattr(P, "ROOT", tmp_path)
+    assert P.git_dirty() is False
+    (tmp_path / "logs_x").mkdir(); (tmp_path / "logs_x" / "a.log").write_text("1")
+    assert P.git_dirty() is False                           # ignored untracked file
+    (tmp_path / "new.py").write_text("1")
+    assert P.git_dirty() is True                            # non-ignored untracked file
+
+
+def test_g7_bar_recomputes_from_b8_layout_rows():
+    import csv, json
+    rows = [r for r in csv.DictReader(open(ROOT / "data/v2/baselines/b8_layout_rows.csv")) if r["set"] == "TUNE-val" and r["policy"] in ("BestSingle", "Greedy")]
+    by = {}
+    for r in rows:
+        by.setdefault(r["id"], {})[r["policy"]] = float(r["score"])
+    assert len(by) == 60 and all(len(v) == 2 for v in by.values())
+    base = sum(max(v.values()) for v in by.values()) / 60
+    rec = json.loads((ROOT / "data/v2/g7_bar.json").read_text())
+    assert abs(base + 0.05 - rec["g7_bar"]) < 1e-12 and round(rec["g7_bar"], 4) == 0.4369
