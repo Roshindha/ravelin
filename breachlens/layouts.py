@@ -59,7 +59,8 @@ COUNT_RANGES = {   # (min, max) inclusive
 # Generator parameters that revisions may change (spec 3.5 iteration rule). The defaults ARE the current revision's values; with
 # lancer_share None and defender_count_mult 1.0 the generators are bit-identical to revision 0 (no extra rng draw).
 GEN_PARAMS = {"lancer_share": None,        # None = revision-0 rule (Lancer 0-2 per layout w.p. LANCER_P); a number = target share of defenders that are Lancers
-              "defender_count_mult": 1.0}  # multiplies every family's defender count (and the accepted defender range)
+              "defender_count_mult": 1.0,  # multiplies every family's defender count (and the accepted defender range)
+              "sealed_fraction": 0.0}      # B5-R1b: fraction of layouts whose core is enclosed by a ring of 8 walls (separate rng stream: 0.0 draws nothing)
 if os.environ.get("BREACHLENS_GEN_PARAMS"):     # exploration hook (B5-R1 sweep only); the gate run asserts it is unset
     GEN_PARAMS.update(json.loads(os.environ["BREACHLENS_GEN_PARAMS"]))
 
@@ -348,6 +349,46 @@ def _labyrinth(rng) -> dict:
 _GEN = {"spine_pods": _spine_pods, "archipelago": _archipelago, "bunker_nest": _bunker_nest, "labyrinth": _labyrinth}
 
 
+SEAL_TAG = 7373
+
+
+def core_ring(L: dict) -> list:
+    r, c = L["core"]["cell"]
+    return [(r + dr, c + dc) for dr in (-1, 0, 1) for dc in (-1, 0, 1) if (dr or dc)]
+
+
+def is_sealed(L: dict) -> bool:
+    """The core's 8 neighbours are all walls (so it cannot be reached without breaching a wall)."""
+    walls = set(map(tuple, L["walls"]))
+    return all(x in walls for x in core_ring(L))
+
+
+def seal_core(L: dict) -> dict:
+    """Enclose the core by walls on its 8 neighbours. A building / defender standing on a ring cell is displaced to the nearest free interior
+    cell outside the ring (scan order: squared distance, row, column), so all counts are preserved. Pure and deterministic. If a ring cell
+    lies outside the interior the layout is returned unchanged."""
+    ring = core_ring(L)
+    if any(not (LO <= r <= HI and LO <= c <= HI) for r, c in ring):
+        return L
+    walls = set(map(tuple, L["walls"]))
+    blockers = {tuple(b["cell"]) for b in L["buildings"]} | {tuple(d["cell"]) for d in L["defenders"]}
+    occ = walls | blockers | {tuple(L["core"]["cell"])}
+    ringset = set(ring)
+    move, new_walls = {}, []
+    for x in ring:
+        if x in walls:
+            continue
+        new_walls.append(x)
+        if x in blockers:
+            best = min(((r - x[0]) ** 2 + (c - x[1]) ** 2, r, c) for r in range(LO, HI + 1) for c in range(LO, HI + 1)
+                       if (r, c) not in occ and (r, c) not in ringset and (r, c) not in move.values())
+            move[x] = (best[1], best[2])
+    out = {"buildings": [dict(b, cell=move.get(tuple(b["cell"]), tuple(b["cell"]))) for b in L["buildings"]], "core": dict(L["core"]),
+           "walls": [tuple(w) for w in L["walls"]] + new_walls,
+           "defenders": [dict(d, cell=move.get(tuple(d["cell"]), tuple(d["cell"]))) for d in L["defenders"]]}
+    return out
+
+
 def candidate(family: str, seed: int) -> dict:
     """One candidate layout, a pure function of (family, seed). Not yet checked against the acceptance rules."""
     rng = np.random.default_rng([FAMILIES.index(family), int(seed)])
@@ -356,6 +397,8 @@ def candidate(family: str, seed: int) -> dict:
     L = transform(L, k)
     if L["core"] is None:
         L["core"] = {"cell": (-1, -1)}                       # surfaces as a rule violation, never a crash
+    elif GEN_PARAMS["sealed_fraction"] > 0 and np.random.default_rng([FAMILIES.index(family), int(seed), SEAL_TAG]).random() < GEN_PARAMS["sealed_fraction"]:
+        L = seal_core(L)
     return L
 
 
@@ -398,6 +441,9 @@ def check(L: dict, family: str) -> list:
     if GEN_PARAMS["defender_count_mult"] != 1.0:
         lo_d, hi_d = rc["defenders"]
         rc["defenders"] = (_sc(lo_d), int(math.ceil(hi_d * GEN_PARAMS["defender_count_mult"])))
+    sealed = GEN_PARAMS["sealed_fraction"] > 0 and is_sealed(L)   # relaxation for sealed layouts only: +8 walls allowed, core need not be reachable
+    if sealed:
+        rc["walls"] = (rc["walls"][0], rc["walls"][1] + 8)
     n_b, n_d, n_w = len(L["buildings"]), len(L["defenders"]), len(L["walls"])
     vt = sum(b["value"] for b in L["buildings"])
     for name, v in (("buildings", n_b), ("defenders", n_d), ("walls", n_w), ("value_total", vt)):
@@ -411,7 +457,7 @@ def check(L: dict, family: str) -> list:
     if family == "labyrinth" and not {"gun", "lancer", "flak"} <= set(types):
         bad.append("labyrinth_defender_types")
     reach = passable_reach(L)
-    if tuple(L["core"]["cell"]) not in reach:
+    if tuple(L["core"]["cell"]) not in reach and not sealed:
         bad.append("unreachable_core")
     if any(tuple(b["cell"]) not in reach for b in L["buildings"]):
         bad.append("unreachable_building")

@@ -32,6 +32,8 @@ from dataclasses import dataclass, field
 
 from .actions import BORDER
 from .config import CFG, CLASS_BUILDING, CLASS_TURRET, CLASS_WALL
+
+_FULL = (100, 100, 100)
 from .constants import GRID, MAX_BATTLE_TICKS
 
 N = GRID
@@ -494,15 +496,15 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
                 if len(tied) > 1:   # a splash volley never splits: resolve to one centre
                     tied = [canon_pick(tied, lambda s, i=i: ({s: (2,)}, {i: (1,)}, {}))]
                 s = tied[0]
-                dmg_s[s] = dmg_s.get(s, 0) + u.damage
+                dmg_s[s] = dmg_s.get(s, 0) + (u.damage if u.class_pct == _FULL else u.damage * u.class_pct[s_class[s]] // 100)
                 share = u.damage * u.splash_pct // 100
                 for t in P.splash_nb(s, u.splash_r_x10):
                     if s_alive[t]:
-                        dmg_s[t] = dmg_s.get(t, 0) + share
+                        dmg_s[t] = dmg_s.get(t, 0) + (share if u.class_pct == _FULL else share * u.class_pct[s_class[t]] // 100)
             else:
                 hit = u.damage // len(tied)
                 for s in tied:
-                    dmg_s[s] = dmg_s.get(s, 0) + hit
+                    dmg_s[s] = dmg_s.get(s, 0) + (hit if u.class_pct == _FULL else hit * u.class_pct[s_class[s]] // 100)
             # B5 counters (read-only): the primary target class of this volley, after any splash-centre resolution
             c_att[ut] += 1
             if rk0 == u.class_rank[CLASS_WALL]:

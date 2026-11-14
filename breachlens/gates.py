@@ -85,7 +85,7 @@ def evaluate_layout(task: dict) -> dict:
     r, _ = run(gt)
     out["greedy"] = _summ(r, gt)
     ws = warm_starts()
-    orc = {}
+    orc, ablated = {}, {}
     for ban in (None, 0, 1, 2, 3, 4):
         allowed = tuple(t for t in range(5) if t != ban)
         res = O.oracle_search(L, O.oracle_rng(seed), n_random=nr, n_refine=nf, allowed=allowed, warm_starts=ws, prepared=P)
@@ -94,8 +94,15 @@ def evaluate_layout(task: dict) -> dict:
         if ban is None:
             d["walls"] = _wall_metrics(res.result)
             d["reason"] = res.result.reason
+        else:
+            ablated[ban] = res
         orc["all" if ban is None else f"ban{ban}"] = d
     out["oracle"] = orc
+    out["mono"] = {}                     # monotone ban-loss estimator (gate changelog (d)): full / ablated pair per unit, full >= ablated by construction
+    for u in range(5):
+        m = O.monotone_ban_pair(L, seed, u, ablated[u], warm_starts=ws, prepared=P, n_random=nr, n_refine=nf)
+        out["mono"][str(u)] = {"full": m["full"].score, "ablated": m["ablated"].score, "loss": m["loss"], "full_breach": m["full"].breach,
+                               "full_units_of_u": m["full"].types.count(u)}
     sr = O.army_search(L, O.oracle_rng(seed, O.ARMY_SEARCH_TAG), n_random=ar, n_refine=af, prepared=P)
     out["army_search"] = {"score": sr.score, "d": sr.d, "breach": sr.breach, "units": sr.units, "gold": sr.gold, "sims": sr.sims}
     if fam == "labyrinth":   # G9 stalemate check: 21 armies per layout
@@ -161,6 +168,16 @@ def best_single_type(rows) -> int:
     return int(np.argmax(single_scores(rows).mean(axis=0)))
 
 
+def ban_loss_values(rows, u, estimator: str) -> np.ndarray:
+    """Per-layout paired ban-loss of unit `u`. 'monotone' (gate changelog (d)): full - ablated from `monotone_ban_pair` (>= 0 by construction);
+    'independent' (revision-0 definition): two independent searches on the same rng stream (can be negative)."""
+    if estimator == "monotone":
+        return _col(rows, lambda r: r["mono"][str(u)]["loss"])
+    if estimator == "independent":
+        return _col(rows, lambda r: r["oracle"]["all"]["score"] - r["oracle"][f"ban{u}"]["score"])
+    raise ValueError(estimator)
+
+
 # ------------------------------------------------------------------ gates
 def g1(raw, th):
     rows = _tune(raw)
@@ -186,18 +203,18 @@ def g1(raw, th):
             "part_a_pass": a_ok, "part_b_pass": not over}
 
 
-def g2(raw, th):
+def g2(raw, th, estimator=None):
+    estimator = estimator or th["G2"]["estimator"]
     need = th["G2"]["min_ban_loss"]
     table, passing = {}, {}
     for u in range(5):
         for f in FAM3:
             rows = _tune(raw, f)
-            diff = _col(rows, lambda r: r["oracle"]["all"]["score"] - r["oracle"][f"ban{u}"]["score"])
-            bs = bootstrap_mean(diff, th)
+            bs = bootstrap_mean(ban_loss_values(rows, u, estimator), th)
             ok = bs["mean"] >= need and bs["lo95"] > 0 and bs["lo_1s"] > 0
             table[f"{UNIT_TYPES[u]}/{f}"] = {**bs, "pass": bool(ok)}
         passing[UNIT_TYPES[u]] = [f for f in FAM3 if table[f"{UNIT_TYPES[u]}/{f}"]["pass"]]
-    return {"pass": all(passing[u] for u in UNIT_TYPES), "units_passing_in_families": passing, "paired_ban_loss": table,
+    return {"pass": all(passing[u] for u in UNIT_TYPES), "estimator": estimator, "units_passing_in_families": passing, "paired_ban_loss": table,
             "families_tested": len(FAM3), "one_sided_level": th["bootstrap"]["one_sided_level"]}
 
 
@@ -231,12 +248,13 @@ def g3(raw, th):
             "units_without_niche": [u for u, v in table.items() if not v["pass"]]}
 
 
-def g4(raw, th):
+def g4(raw, th, estimator=None):
+    estimator = estimator or th["G4"]["estimator"]
     need = th["G4"]["min_mender_gain"]
     sets = {"bunker_nest": _tune(raw, "bunker_nest"), "LAB-DESIGN": _rows(raw, "labyrinth", ("LAB-DESIGN",))}
     gains = {}
     for name, rows in sets.items():
-        bs = bootstrap_mean(_col(rows, lambda r: r["oracle"]["all"]["score"] - r["oracle"]["ban4"]["score"]), th)
+        bs = bootstrap_mean(ban_loss_values(rows, 4, estimator), th)
         gains[name] = {**bs, "pass": bool(bs["mean"] >= need and bs["lo95"] > 0)}
     only = {}
     for name, rows in {"TUNE": _tune(raw), "LAB-DESIGN": sets["LAB-DESIGN"]}.items():
@@ -244,7 +262,7 @@ def g4(raw, th):
         only[name] = {**bs, "pass": bool(bs["mean"] < th["G4"]["mender_only_max_mean"] and bs["hi95"] < th["G4"]["mender_only_max_upper95"])}
     a = any(g["pass"] for g in gains.values())
     b = all(o["pass"] for o in only.values())
-    return {"pass": a and b, "mender_gain": gains, "mender_only": only, "part_a_pass": a, "part_b_pass": b}
+    return {"pass": a and b, "estimator": estimator, "mender_gain": gains, "mender_only": only, "part_a_pass": a, "part_b_pass": b}
 
 
 def g5(raw, th):

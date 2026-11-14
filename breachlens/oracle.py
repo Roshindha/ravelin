@@ -15,7 +15,8 @@ from dataclasses import dataclass
 import numpy as np
 
 from .armies import army_cost, place_on_border, random_types, sort_by_rank, default_start
-from .constants import BUDGET, MAX_UNITS, N_BORDER, N_UNIT_TYPES
+from .config import CFG
+from .constants import BUDGET, N_BORDER, N_UNIT_TYPES
 from .sim import Prepared, simulate
 
 ORACLE_TAG = 4242          # spec 3.4: per-layout seed stream [layout_id, 4242]
@@ -42,6 +43,7 @@ class SearchResult:
     units: int
     gold: int
     result: object = None  # BattleResult of the best plan
+    free: object = None    # SearchResult of the best evaluated army containing no unit of type `track_free` (monotone ban-loss estimator)
 
 
 def score_key(r) -> tuple:
@@ -51,11 +53,13 @@ def score_key(r) -> tuple:
 
 
 class _Eval:
-    def __init__(self, layout, prepared):
+    def __init__(self, layout, prepared, track_free=None):
         self.L = layout
         self.P = prepared or Prepared(layout)
         self.sims = 0
         self.best = None   # (key, types, start, battle)
+        self.track = track_free
+        self.best_free = None
 
     def run(self, types, start):
         if not types:
@@ -66,16 +70,23 @@ class _Eval:
         k = score_key(r)[0]
         if self.best is None or k > self.best[0]:
             self.best = (k, tuple(types), int(start), r)
+        if self.track is not None and self.track not in types and (self.best_free is None or k > self.best_free[0]):
+            self.best_free = (k, tuple(types), int(start), r)
         return k
 
-    def final(self) -> SearchResult:
-        if self.best is None:
-            return SearchResult(0.0, 0, 0.0, False, (), 0, (), self.sims, 0, 0, None)
-        k, types, start, r = self.best
+    def _result(self, best) -> SearchResult:
+        k, types, start, r = best
         key, den10 = score_key(r)
         return SearchResult(score=key / den10, key=key, d=r.d, breach=r.core_destroyed, types=types, start=start,
                             army=tuple(place_on_border(self.L, types, start)), sims=self.sims, units=len(types),
                             gold=army_cost(types), result=r)
+
+    def final(self) -> SearchResult:
+        if self.best is None:
+            return SearchResult(0.0, 0, 0.0, False, (), 0, (), self.sims, 0, 0, None)
+        res = self._result(self.best)
+        res.free = self._result(self.best_free) if self.best_free is not None else None
+        return res
 
 
 def _legal_add(types, t, budget, cap):
@@ -111,11 +122,12 @@ def _mutate(types, start, rng, allowed, budget, cap, moves):
 
 
 def oracle_search(layout: dict, rng, n_random: int = N_RANDOM, n_refine: int = N_REFINE, allowed=None,
-                  warm_starts=(), prepared=None, budget: int = BUDGET, cap: int = MAX_UNITS) -> SearchResult:
+                  warm_starts=(), prepared=None, budget: int = BUDGET, cap: int | None = None, track_free=None) -> SearchResult:
     """Full Oracle. `warm_starts`: ((types, start|None), ...) evaluated first (they consume no rng, so a banned-type Oracle
     that skips some of them keeps the same random stream); any warm start containing a type outside `allowed` is skipped."""
     allowed = tuple(range(N_UNIT_TYPES)) if allowed is None else tuple(allowed)
-    ev = _Eval(layout, prepared)
+    cap = CFG.unit_cap if cap is None else cap
+    ev = _Eval(layout, prepared, track_free)
     for types, start in warm_starts:
         if set(types) <= set(allowed) and army_cost(types) <= budget and len(types) <= cap:
             ev.run(list(types), default_start(layout) if start is None else start)
@@ -133,10 +145,27 @@ def oracle_search(layout: dict, rng, n_random: int = N_RANDOM, n_refine: int = N
     return ev.final()
 
 
+def monotone_ban_pair(layout: dict, seed: int, unit: int, ablated: SearchResult, warm_starts=(), prepared=None, n_random: int = N_RANDOM,
+                      n_refine: int = N_REFINE, budget: int = BUDGET, cap: int | None = None) -> dict:
+    """Monotone ban-loss estimator (gate changelog (d)). `ablated` = the Oracle search without `unit` (same rng stream `oracle_rng(seed)`).
+    The full Oracle is re-run on the same rng stream and the same warm starts PLUS the ablated best army (with its start tile), so
+    full >= ablated by construction. Every unit-free army the full search evaluates is also a candidate for the ablated result (the ablated
+    side gets everything the full side saw): ablated' = best of (ablated, best unit-free army inside the full search). loss = full - ablated' >= 0."""
+    ws = tuple(warm_starts) + (((tuple(ablated.types), ablated.start),) if ablated.types else ())
+    full = oracle_search(layout, oracle_rng(seed), n_random=n_random, n_refine=n_refine, warm_starts=ws, prepared=prepared, budget=budget, cap=cap,
+                         track_free=unit)
+    abl = ablated
+    if full.free is not None and full.free.key > abl.key:
+        abl = full.free
+    assert full.key >= abl.key
+    return {"full": full, "ablated": abl, "loss": full.score - abl.score}
+
+
 def army_search(layout: dict, rng, n_random: int = AS_RANDOM, n_refine: int = AS_REFINE, allowed=None, prepared=None,
-                budget: int = BUDGET, cap: int = MAX_UNITS) -> SearchResult:
+                budget: int = BUDGET, cap: int | None = None) -> SearchResult:
     """G8(a): search over armies only; every candidate is deployed by the scripted deployer (Greedy ranking order, default start)."""
     allowed = tuple(range(N_UNIT_TYPES)) if allowed is None else tuple(allowed)
+    cap = CFG.unit_cap if cap is None else cap
     ev = _Eval(layout, prepared)
     start = default_start(layout)
     for _ in range(n_random):

@@ -45,6 +45,7 @@ class UnitStats:
     splash_pct: int
     heal: int          # fixed point per tick
     heal_range_x10: int
+    class_pct: tuple = (100, 100, 100)   # damage percent vs structure class (CLASS_BUILDING incl. the core, CLASS_TURRET, CLASS_WALL); B5-R1b sweep parameter
 
 
 @dataclass(frozen=True)
@@ -72,6 +73,7 @@ class Config:
     building_hp_default: int
     stalemate_ticks: int
     min_hit: int       # fixed point
+    unit_cap: int = 20 # max units per army (rules.unit_cap, default 20; B5-R1b sweep parameter)
 
 
 def _build(raw: dict) -> Config:
@@ -89,7 +91,8 @@ def _build(raw: dict) -> Config:
             name=name, idx=i, cost=int(u["cost"]), hp=int(u["hp"]) * S, damage=int(u["damage"]) * S,
             armor=int(u["armor"]) * S, range_x10=int(u["range_x10"]), speed_x10=int(u["speed_x10"]),
             pref=pref, class_rank=tuple(rank), splash_r_x10=int(u["splash_r_x10"]),
-            splash_pct=int(u["splash_pct"]), heal=int(u["heal"]) * S, heal_range_x10=int(u["heal_range_x10"])))
+            splash_pct=int(u["splash_pct"]), heal=int(u["heal"]) * S, heal_range_x10=int(u["heal_range_x10"]),
+            class_pct=tuple(int(u.get("class_damage_pct", {}).get(c, 100)) for c in ("building", "turret", "wall"))))
     defenders = []
     for i, (name, d) in enumerate(raw["defenders"].items()):
         defenders.append(DefenderStats(
@@ -102,7 +105,7 @@ def _build(raw: dict) -> Config:
                   defender_index={d.name: d.idx for d in defenders},
                   wall_hp=int(st["wall_hp"]) * S, core_hp=int(st["core_hp"]) * S,
                   building_hp_default=int(st["building_hp_default"]) * S,
-                  stalemate_ticks=int(rl["stalemate_ticks"]), min_hit=int(rl["min_hit_hp"]) * S)
+                  stalemate_ticks=int(rl["stalemate_ticks"]), min_hit=int(rl["min_hit_hp"]) * S, unit_cap=int(rl.get("unit_cap", 20)))
 
 
 def load_config(path: Path = STATS_PATH) -> Config:

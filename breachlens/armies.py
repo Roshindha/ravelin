@@ -86,8 +86,9 @@ def army_cost(types) -> int:
     return sum(unit_cost(t) for t in types)
 
 
-def single_unit_types(t: int, budget: int = 240, cap: int = 20) -> list:
+def single_unit_types(t: int, budget: int = 240, cap: int | None = None) -> list:
     """'Best fixed single-unit army' composition (spec 3.4): as many units of one type as fit in min(budget, cap)."""
+    cap = _cfg().unit_cap if cap is None else cap
     return [t] * min(cap, budget // unit_cost(t))
 
 
@@ -103,9 +104,10 @@ def sort_by_rank(types) -> list:
     return sorted(types, key=lambda t: (rank[t], t))
 
 
-def greedy_types(budget: int = 240, cap: int = 20) -> list:
+def greedy_types(budget: int = 240, cap: int | None = None) -> list:
     """Greedy army: walk the Lanchester ranking, buy as many of each as fit (cap respected), no Mender pairing in B5
     (B8 may refine the rule; any change is a G9 input change)."""
+    cap = _cfg().unit_cap if cap is None else cap
     types, gold = [], budget
     for t in greedy_rank():
         k = min(gold // unit_cost(t), cap - len(types))
@@ -114,8 +116,9 @@ def greedy_types(budget: int = 240, cap: int = 20) -> list:
     return types
 
 
-def random_types(rng, allowed=None, stop_p: float = 0.1, budget: int = 240, cap: int = 20) -> list:
+def random_types(rng, allowed=None, stop_p: float = 0.1, budget: int = 240, cap: int | None = None) -> list:
     """Phase-A style random legal army (spec section 6): random affordable (allowed) types, stop w.p. `stop_p` after each buy, <= cap units."""
+    cap = _cfg().unit_cap if cap is None else cap
     pool = list(range(len(_cfg().units))) if allowed is None else list(allowed)
     types, gold = [], budget
     while len(types) < cap:
