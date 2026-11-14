@@ -1,8 +1,8 @@
 # B5 report (BreachLens v2)
 
-Revision 1 | commit `21f71ff577` (dirty=False) | sim_version `3048422b62c94dcd...` | layouts: {'TUNE-train': 180, 'TUNE-val': 60, 'LAB-DESIGN': 40} | bootstrap: 10000 resamples, seed 8080
+Revision 1 | commit `f1bf4ad4b4` (dirty=False) | sim_version `3048422b62c94dcd...` | layouts: {'TUNE-train': 180, 'TUNE-val': 60, 'LAB-DESIGN': 40} | bootstrap: 10000 resamples, seed 8080
 
-**All gates pass: False**  (failed: G2, G3, G4, G8).  generator_hash recorded: False
+**All gates pass: False**  (failed: G2, G3, G8).  generator_hash recorded: True
 
 ## 1. G1-G9 summary
 
@@ -11,7 +11,7 @@ Revision 1 | commit `21f71ff577` (dirty=False) | sim_version `3048422b62c94dcd..
 | G1 | **PASS** | max best-single share 0.54 (limit 0.60); units over ban-loss 0.25 everywhere: none |
 | G2 | **FAIL** | units passing in: scout: spine_pods; sniper: spine_pods,archipelago,bunker_nest; bulwark: spine_pods,archipelago,bunker_nest; blaster: NONE; mender: spine_pods,archipelago |
 | G3 | **FAIL** | niche-layout share (need >= 8%, lo95 > 0): scout 7.9% [5.0%]; sniper 33.6% [28.2%]; bulwark 9.3% [6.1%]; blaster 1.1% [0.0%]; mender 15.0% [11.1%] |
-| G4 | **FAIL** | Mender gain bunker_nest 0.017 [0.006, 0.030], LAB 0.000 [0.000, 0.000]; Mender-only TUNE 0.000 / LAB 0.000 |
+| G4 | **PASS** | Mender gain spine_pods 0.029 [0.013, 0.046], archipelago 0.031 [0.016, 0.048], bunker_nest 0.017 [0.006, 0.030], LAB-DESIGN 0.000 [0.000, 0.000]; Mender-only TUNE 0.000 / LAB 0.000 |
 | G5 | **PASS** | spine_pods: best-single sniper 0.456, Oracle 0.885 / breach 1.00; archipelago: best-single bulwark 0.503, Oracle 0.928 / breach 1.00; bunker_nest: best-single sniper 0.277, Oracle 0.835 / breach 0.96 |
 | G6 (diagnostic) | **FAIL** | Oracle >12 units on 0.00 of layouts (diagnostic, was >=0.30); layouts with 20 Scouts >= Oracle: 0 |
 | G8 | **FAIL** | spine_pods: army-search +0.273 (89% layouts), Oracle +0.429; archipelago: army-search +0.275 (88% layouts), Oracle +0.425; bunker_nest: army-search +0.207 (56% layouts), Oracle +0.558 |
@@ -72,6 +72,8 @@ Mean template scores: scout 0.098, sniper 0.439, bulwark 0.367, blaster 0.242, b
 Descriptive only (per family, share of layouts where the unit's template wins by >= 0.03): spine_pods: scout 0.00, sniper 0.34, bulwark 0.01, blaster 0.00, mender 0.14, no clear winner 0.51; archipelago: scout 0.01, sniper 0.31, bulwark 0.23, blaster 0.01, mender 0.14, no clear winner 0.30; bunker_nest: scout 0.26, sniper 0.38, bulwark 0.04, blaster 0.01, mender 0.12, no clear winner 0.19; labyrinth: scout 0.00, sniper 0.30, bulwark 0.10, blaster 0.03, mender 0.25, no clear winner 0.33
 
 ### G4
+- Mender gain on spine_pods: 0.029 [0.013, 0.046] -> ok
+- Mender gain on archipelago: 0.031 [0.016, 0.048] -> ok
 - Mender gain on bunker_nest: 0.017 [0.006, 0.030] -> no
 - Mender gain on LAB-DESIGN: 0.000 [0.000, 0.000] -> no
 

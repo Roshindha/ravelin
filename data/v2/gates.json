@@ -1,7 +1,7 @@
 {
  "revision": 1,
  "git": {
-  "commit": "21f71ff5774fefb3e548683f44248b22f0263d6d",
+  "commit": "f1bf4ad4b4a5d8ec713c66daf8fd19c4835e06a4",
   "dirty": false
  },
  "sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338",
@@ -14,7 +14,6 @@
  "failed": [
   "G2",
   "G3",
-  "G4",
   "G8"
  ],
  "gates": {
@@ -356,9 +355,27 @@
    ]
   },
   "G4": {
-   "pass": false,
+   "pass": true,
    "estimator": "monotone",
    "mender_gain": {
+    "spine_pods": {
+     "n": 80,
+     "mean": 0.028588894346612843,
+     "lo95": 0.01349174430641822,
+     "hi95": 0.04578659925901577,
+     "lo_1s": 0.011715538847117794,
+     "hi_1s": 0.04855890016744722,
+     "pass": true
+    },
+    "archipelago": {
+     "n": 80,
+     "mean": 0.030994217160548433,
+     "lo95": 0.016417336095921622,
+     "hi95": 0.047799334826035676,
+     "lo_1s": 0.014468431868859962,
+     "hi_1s": 0.05028420337273671,
+     "pass": true
+    },
     "bunker_nest": {
      "n": 80,
      "mean": 0.016753881535131535,
@@ -398,7 +415,7 @@
      "pass": true
     }
    },
-   "part_a_pass": false,
+   "part_a_pass": true,
    "part_b_pass": true
   },
   "G5": {

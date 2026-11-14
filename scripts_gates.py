@@ -147,7 +147,7 @@ def build_report(raw, record_hash=False, git=None):   # B5-R2b: generator_hash i
         (G.DATA / "generator_hash.json").write_text(json.dumps({"generator_hash": rep["meta"]["generator_hash"], "source": "breachlens/layouts.py (sha256)",
                                                                   "commit": rep["meta"]["git"]["commit"], "revision": REVISION,
                                                                   "all_gates_pass": gates["all_pass"], "documented_failing_gates": list(gates["failed"]),
-                                                                  "note": "B5 closed at revision 1 (docs/SPEC_V2.md 3.5 B5-CLOSE); failing gates are known limitations (docs/LIMITATIONS.md)"}, indent=1) + "\n")
+                                                                  "note": "B5 closed at revision 1 (docs/SPEC_V2.md 3.6 B5-CLOSE); failing gates are known limitations (docs/LIMITATIONS.md)"}, indent=1) + "\n")
         rep["meta"]["generator_hash_recorded"] = True
     return rep
 

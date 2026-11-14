@@ -1,0 +1,13 @@
+{
+ "generator_hash": "49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095",
+ "source": "breachlens/layouts.py (sha256)",
+ "commit": "f1bf4ad4b4a5d8ec713c66daf8fd19c4835e06a4",
+ "revision": 1,
+ "all_gates_pass": false,
+ "documented_failing_gates": [
+  "G2",
+  "G3",
+  "G8"
+ ],
+ "note": "B5 closed at revision 1 (docs/SPEC_V2.md 3.6 B5-CLOSE); failing gates are known limitations (docs/LIMITATIONS.md)"
+}

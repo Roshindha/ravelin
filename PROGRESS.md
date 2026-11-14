@@ -431,6 +431,12 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Sweep (`scripts_b5r3_sweep.py`, `data/v2/b5r3_sweep/`; base = revision 1; same sample/seeds): Oracle score is above 0.97 in labyrinth in every arm (0.976 / 0.993 / 0.987 / 0.989) and in archipelago for R3b / R3d (0.975 / 0.987), so required item R2 fails everywhere; best-single is out of [0.25, 0.65] only in labyrinth, in every arm (Blaster 0.688-0.705), so required item R3 also fails everywhere (the pooled Sniper share <= 0.60 part holds: 0.16-0.35). Required R1 (Blaster ban-loss) passes in every arm (e.g. bunker_nest 0.048-0.078, lo95 > 0). Blaster niche 31-55 % (P1 yes), Scout niche 1-2.5 % (P2 no). Pooled Sniper best-single share 0.16-0.35. Blaster becomes the best single in most families (Sniper dominance gone, Blaster takes over, esp. R3c).
 - Full plain `pytest` (no -q): `343 passed in 363.95s (0:06:03)`, exit 0. FINAL never generated/loaded; ledger empty; generator_hash not recorded.
 
+### STEP B5-CLOSE (v2): **B5 closed at revision 1** (2 of 3 revisions remain: 1 held for after G7, 1 spare); generator_hash recorded; FINAL not generated or loaded, ledger empty
+- Decision recorded in SPEC_V2 3.6; known limitations with numbers in `docs/LIMITATIONS.md` (new, running list for the README). Commit f1bf4ad (decision, LIMITATIONS, `--record-hash` now records the failing-gate list and revision even when gates fail; test `test_generator_hash_record_matches_gates` replaces the "only if all pass" test).
+- Final gate run ONCE from clean commit f1bf4ad (`python scripts_gates.py --record-hash`, 481 s, dirty=false), G4 as aligned (changelog (g)): **G1 PASS | G2 FAIL | G3 FAIL | G4 PASS | G5 PASS | G6 diagnostic (Oracle > 12 units 0 %) | G8 FAIL | G9 PASS**. Documented-failing gates: G2, G3, G8. Numbers identical to the revision-1 run except G4 (definition).
+- `data/v2/generator_hash.json`: generator_hash 49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095, commit f1bf4ad, revision 1, documented_failing_gates [G2, G3, G8].
+- Full plain `pytest`: `343 passed in 395.37s (0:06:35)`, exit 0.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -469,7 +475,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
+- v2: B5 CLOSED at revision 1 (G2/G3/G8 documented limitations, hash recorded); next is B6 (build the 300-layout pool from stream F), only when told. History: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,
