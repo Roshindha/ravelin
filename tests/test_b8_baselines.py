@@ -160,3 +160,18 @@ def test_b8_outputs_exist_with_meta_and_precede_pilot():
     assert not (ROOT / "data" / "v2" / "gates_g7.json").exists()      # no G7 pilot result exists yet
     chk = json.loads((OUT / "b8_checks.json").read_text())
     assert chk["boundary_dev_acceptance"]["bit_mismatches"] == 0 and chk["ledger_after"]["eval"] == 0
+
+
+def test_b8_scripts_touch_only_dev_and_design_sets():
+    import ast
+    chk = ast.parse((ROOT / "scripts_b8_checks.py").read_text())
+    walks = [c for c in ast.walk(chk) if isinstance(c, ast.Call) and getattr(c.func, "attr", "") == "walk"]
+    assert walks and all(isinstance(c.args[0], ast.Constant) and c.args[0].value == "DEV" for c in walks)
+    for f in ("scripts_b8_baselines.py", "scripts_b8_checks.py"):
+        tree = ast.parse((ROOT / f).read_text())
+        for n in ast.walk(tree):                                   # string constants other than the module docstring / comments
+            if isinstance(n, ast.Constant) and isinstance(n.value, str) and n.value != ast.get_docstring(tree):
+                assert not n.value.startswith("FINAL-") and n.value != "LAB-DESIGN" or f == "scripts_b8_checks.py", (f, n.value)
+        names = {getattr(c.func, "attr", getattr(c.func, "id", "")) for c in ast.walk(tree) if isinstance(c, ast.Call)}
+        assert not names & {"log_final_access", "verify_final_acceptance", "build_pool", "load_pool_records"}, f
+        assert not any(k.arg == "unlock" for c in ast.walk(tree) if isinstance(c, ast.Call) for k in c.keywords), f

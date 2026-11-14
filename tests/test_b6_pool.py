@@ -187,8 +187,9 @@ def _call_names(path):
 
 def test_no_code_outside_tests_loads_final_layouts_without_the_ledger():
     import ast
-    allowed_generators = {"pool.py", "layouts.py", "gates.py", "acceptance.py", "scripts_b5r1_sweep.py", "scripts_b5r1b_sweep.py", "scripts_b5r3_sweep.py"}
-    pool_users = {"pool.py", "env.py", "scripts_b6_build_pool.py", "scripts_b6_verify_final.py"}   # env.py: BreachEnv, role-guarded (tests/test_b7_env.py)
+    allowed_generators = {"pool.py", "layouts.py", "gates.py", "acceptance.py", "scripts_b5r1_sweep.py", "scripts_b5r1b_sweep.py", "scripts_b5r3_sweep.py", "scripts_b8_checks.py"}
+    pool_users = {"pool.py", "env.py", "scripts_b6_build_pool.py", "scripts_b6_verify_final.py",
+                 "evaluator.py", "scripts_b8_checks.py"}   # env.py: BreachEnv, role-guarded (tests/test_b7_env.py); evaluator.py: role-guarded loaders; scripts_b8_checks.py: DEV walks only (tests/test_b8_baselines.py)
     for p in _non_test_py():
         src = p.read_text()
         calls = _call_names(p)
