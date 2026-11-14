@@ -8,7 +8,7 @@ from sb3_contrib.common.maskable.utils import get_action_masks
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 from rl import train_ppo
-from rl.augment import D4Wrapper
+from rl.augment_v1 import D4Wrapper
 from rl.features import SiegeFeaturesExtractor
 from rl.policy_io import policy_outputs
 from rl.split import SPLIT_PATH, load_split, make_split

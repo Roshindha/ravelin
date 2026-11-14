@@ -55,7 +55,7 @@ def test_reproducible_and_canonical_view():
     s2 = E.evaluate_records(model, recs, ids, deterministic=False, n_rollouts=2, seed_key=5)
     assert s1 == s2
     # canonical view == D4Wrapper pinned to identity: same actions as the bare env
-    from rl.augment import D4Wrapper, IDENTITY
+    from rl.augment_v1 import D4Wrapper, IDENTITY
     from siege.env import SiegeEnv
     env = D4Wrapper(SiegeEnv(), symmetry=IDENTITY)
     obs, _ = env.reset(seed=int(recs[0]["id"]), options={"layout_record": recs[0], "prebought": False})

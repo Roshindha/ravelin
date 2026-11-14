@@ -1,354 +1,270 @@
-"""D4 augmentation: transforms, action-permutation tables, wrapper, and simulator equivariance."""
+"""B9: D4 augmentation (rl/augment.py), D4Wrapper and test-time ensembling (rl/tta.py) for BreachEnv. DEV / TUNE layouts only."""
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from rl.augment import (
-    ACTION_PERM,
-    ACTION_PERM_INV,
-    D4Wrapper,
-    N_SYMMETRIES,
-    TILE_PERM,
-    inverse_symmetry,
-    transform_action,
-    transform_army,
-    transform_cell,
-    transform_grid,
-    transform_layout,
-    transform_mask,
-    transform_obs,
-    untransform_action,
-)
-from siege.bases import generate_base_layout
-from siege.combat import simulate_battle
-from siege.env import (
-    BORDER,
-    DEPLOY_BASE,
-    END_BUY,
-    GRID,
-    N_ACTIONS,
-    N_BORDER,
-    N_TROOPS,
-    WAIT,
-    SiegeEnv,
-    decode_action,
-)
-from siege.layouts import load_layout_pool
-from siege.troops import TROOP_COST, TROOP_TYPES
+from breachlens import layouts as Y
+from breachlens import pool as P
+from breachlens._d4check import tr as ind_tr
+from breachlens.actions import BORDER
+from breachlens.constants import DEPLOY_BASE, END_BUY, GRID, N_ACTIONS, N_BORDER, N_GRID_CHANNELS, WAIT
+from breachlens.env import BreachEnv, d4_action_perm, d4_cell_perm, d4_transform_grid, d4_transform_mask
+from breachlens.sim import Prepared, simulate
+from rl.augment import (ACTION_PERM, ACTION_PERM_INV, CELL_DEST, D4Wrapper, N_SYMMETRIES, TILE_PERM, compose, inverse_symmetry,
+                        transform_action, transform_army, transform_cell, transform_grid, transform_mask, transform_obs,
+                        untransform_action, untransform_probs)
+from rl.tta import tta_action, tta_scores
 
 ALL = range(N_SYMMETRIES)
+DEV_RECS = P.dev_records("train")
+TUNE_RECS = P.design_records("TUNE-train", "train")
+_L: dict = {}
 
 
-# -- group structure / transforms -----------------------------------------------------------------
-def test_eight_distinct_symmetries_of_the_square():
-    pts = [(0, 1), (2, 5)]  # a generic pair of cells distinguishes all 8 elements
-    images = {tuple(transform_cell(s, *p) for p in pts) for s in ALL}
-    assert len(images) == 8
+def layout_of(rec):
+    if rec["id"] not in _L:
+        _L[rec["id"]] = P.load_layout(rec, "train")
+    return _L[rec["id"]]
 
 
-@pytest.mark.parametrize("s", ALL)
-def test_cell_transform_then_inverse_is_identity(s):
-    inv = inverse_symmetry(s)
-    for r in range(GRID):
-        for c in range(GRID):
-            assert transform_cell(inv, *transform_cell(s, r, c)) == (r, c)
+def spread(recs, n):
+    return [recs[int(i)] for i in np.linspace(0, len(recs) - 1, n)]
 
 
-@pytest.mark.parametrize("s", ALL)
-def test_grid_transform_then_inverse_is_identity(s):
-    grid = np.random.default_rng(s).random((8, GRID, GRID)).astype(np.float32)
-    assert np.array_equal(transform_grid(transform_grid(grid, s), inverse_symmetry(s)), grid)
-    # and the other order
-    assert np.array_equal(transform_grid(transform_grid(grid, inverse_symmetry(s)), s), grid)
-
-
-@pytest.mark.parametrize("s", ALL)
-def test_grid_transform_moves_each_cell_exactly_as_transform_cell(s):
-    grid = np.arange(GRID * GRID, dtype=np.float32).reshape(1, GRID, GRID)
-    out = transform_grid(grid, s)
-    for r in range(GRID):
-        for c in range(GRID):
-            nr, nc = transform_cell(s, r, c)
-            assert out[0, nr, nc] == grid[0, r, c]
-
-
-def test_identity_and_rotations_match_numpy():
-    grid = np.random.default_rng(0).random((3, GRID, GRID))
-    assert np.array_equal(transform_grid(grid, 0), grid)
-    # one clockwise quarter turn == np.rot90 with k=-1 on the spatial axes
-    assert np.array_equal(transform_grid(grid, 1), np.rot90(grid, k=-1, axes=(-2, -1)))
-    # flip-then-no-rotation mirrors columns
-    assert np.array_equal(transform_grid(grid, 4), grid[..., ::-1])
-
-
-def test_state_vector_is_unchanged_and_obs_roundtrips():
-    env = SiegeEnv()
-    obs, _ = env.reset(seed=0)
+# ------------------------------------------------------------------ group structure
+def test_tables_match_the_independent_helpers_and_the_env_tables():
     for s in ALL:
-        t = transform_obs(obs, s)
-        assert np.array_equal(t["state"], obs["state"])
-        back = transform_obs(t, inverse_symmetry(s))
-        assert np.array_equal(back["grid"], obs["grid"]) and np.array_equal(back["state"], obs["state"])
+        for r in range(GRID):
+            for c in range(GRID):
+                assert transform_cell(s, r, c) == ind_tr(s, (r, c))
+        assert (CELL_DEST[s] == d4_cell_perm(s)).all()
+        assert (ACTION_PERM[s] == d4_action_perm(s)).all()
+    assert (ACTION_PERM[0] == np.arange(N_ACTIONS)).all()
 
 
-@pytest.mark.parametrize("s", ALL)
-def test_border_mask_channel_is_invariant(s):
-    obs, _ = SiegeEnv().reset(seed=1)
-    assert np.array_equal(transform_grid(obs["grid"], s)[6], obs["grid"][6])
+def test_inverse_identity():
+    for s in ALL:
+        i = inverse_symmetry(s)
+        for r, c in [(0, 0), (3, 11), (13, 2), (6, 6)]:
+            assert transform_cell(i, *transform_cell(s, r, c)) == (r, c)
+            assert transform_cell(s, *transform_cell(i, r, c)) == (r, c)
+        assert compose(s, i) == 0 == compose(i, s)
+        assert (ACTION_PERM_INV[s] == ACTION_PERM[i]).all()
+        for a in (0, 4, 5, 100, 264, END_BUY, WAIT):
+            assert untransform_action(transform_action(a, s), s) == a
 
 
-# -- action permutation table ---------------------------------------------------------------------
-@pytest.mark.parametrize("s", ALL)
-def test_action_permutation_is_a_bijection_with_correct_inverse(s):
-    perm = ACTION_PERM[s]
-    assert perm.shape == (N_ACTIONS,)
-    assert sorted(perm.tolist()) == list(range(N_ACTIONS))
-    assert np.array_equal(ACTION_PERM_INV[s][perm], np.arange(N_ACTIONS))
-    assert np.array_equal(perm[ACTION_PERM_INV[s]], np.arange(N_ACTIONS))
-    for a in range(N_ACTIONS):
-        assert untransform_action(transform_action(a, s), s) == a
-
-
-@pytest.mark.parametrize("s", ALL)
-def test_buy_end_buy_wait_are_fixed_and_deploy_keeps_troop_type(s):
-    perm = ACTION_PERM[s]
-    for a in list(range(N_TROOPS)) + [END_BUY, WAIT]:
-        assert perm[a] == a
-    for a in range(DEPLOY_BASE, END_BUY):
-        kind, k, t = decode_action(a)
-        kind2, k2, t2 = decode_action(int(perm[a]))
-        assert (kind, kind2) == ("deploy", "deploy") and k == k2
-        # the tile moves exactly as its board cell does
-        assert BORDER[t2] == transform_cell(s, *BORDER[t])
-
-
-@pytest.mark.parametrize("s", ALL)
-def test_tile_perm_is_a_bijection_on_the_60_border_tiles(s):
-    assert sorted(TILE_PERM[s].tolist()) == list(range(N_BORDER))
-
-
-def test_identity_symmetry_is_the_identity_permutation():
-    assert np.array_equal(ACTION_PERM[0], np.arange(N_ACTIONS))
-
-
-def test_permutation_tables_form_the_group_d4():
-    # the 8 tables are distinct, and closed under composition
-    tables = {tuple(ACTION_PERM[s]) for s in ALL}
-    assert len(tables) == 8
+def test_group_closure_identity_and_associativity():
+    assert len({compose(a, b) for a in ALL for b in ALL}) == 8
     for a in ALL:
+        assert compose(0, a) == a == compose(a, 0)
         for b in ALL:
-            composed = tuple(ACTION_PERM[b][ACTION_PERM[a]])
-            assert composed in tables
+            c = compose(a, b)
+            assert 0 <= c < 8
+            assert (ACTION_PERM[c] == ACTION_PERM[a][ACTION_PERM[b]]).all()      # tables compose like the group
+            assert (CELL_DEST[c] == CELL_DEST[a][CELL_DEST[b]]).all()
+            for d in ALL:
+                assert compose(compose(a, b), d) == compose(a, compose(b, d))
+    assert sorted(compose(1, 1) for _ in [0]) == [2] and compose(3, 1) == 0 and compose(4, 4) == 0   # r1.r1 = r2, r3.r1 = e, flip^2 = e
 
 
-# -- mask legality --------------------------------------------------------------------------------
-def _random_legal_actions(env, rng):
-    """Yield legal random actions until the episode ends."""
-    while True:
-        yield int(rng.choice(np.flatnonzero(env.action_masks())))
+# ------------------------------------------------------------------ action bijection and masks
+def test_action_permutation_is_a_bijection_per_symmetry_and_preserves_structure():
+    for s in ALL:
+        p = ACTION_PERM[s]
+        assert sorted(p) == list(range(N_ACTIONS))
+        assert (p[:DEPLOY_BASE] == np.arange(DEPLOY_BASE)).all() and p[END_BUY] == END_BUY and p[WAIT] == WAIT
+        assert sorted(TILE_PERM[s]) == list(range(N_BORDER))
+        for t in range(5):                                                    # a deploy keeps its unit type
+            block = p[DEPLOY_BASE + t * N_BORDER: DEPLOY_BASE + (t + 1) * N_BORDER]
+            assert sorted(block) == list(range(DEPLOY_BASE + t * N_BORDER, DEPLOY_BASE + (t + 1) * N_BORDER))
+        for i, (r, c) in enumerate(BORDER):                                    # a tile moves to the image cell
+            assert BORDER[TILE_PERM[s, i]] == transform_cell(s, r, c)
 
 
-@pytest.mark.parametrize("s", ALL)
-def test_mask_legality_preserved_through_the_whole_episode(s):
-    rng = np.random.default_rng(100 + s)
-    for ep in range(10):
-        w = D4Wrapper(SiegeEnv(), symmetry=s)
-        w.reset(seed=ep)
-        done, steps = False, 0
-        while not done and steps < 300:
-            steps += 1
-            raw = w.env.unwrapped.action_masks()  # original coordinates
-            view = w.action_masks()  # what the agent sees
-            assert raw.sum() == view.sum()
-            assert np.array_equal(view, transform_mask(raw, s))
-            for a in np.flatnonzero(raw):  # legal original -> legal in view
-                assert view[transform_action(a, s)]
-            for a in np.flatnonzero(view):  # legal in view -> legal original
-                assert raw[untransform_action(a, s)]
-            _, _, done, _, _ = w.step(int(rng.choice(np.flatnonzero(view))))
-        assert done
+def test_grid_transform_is_exact_per_channel_incl_repair_and_state_is_invariant():
+    rng = np.random.default_rng(0)
+    g = rng.random((N_GRID_CHANNELS, GRID, GRID), dtype=np.float64).astype(np.float32)
+    for s in ALL:
+        t = transform_grid(g, s)
+        assert (t == d4_transform_grid(g, s)).all()
+        for ch in range(N_GRID_CHANNELS):                                      # incl. channel 8 (repair reach)
+            for r, c in [(0, 0), (2, 9), (13, 5), (7, 7)]:
+                assert t[ch][transform_cell(s, r, c)] == g[ch, r, c]
+        assert (transform_grid(t, inverse_symmetry(s)) == g).all()
+    st = rng.random(11).astype(np.float32)
+    assert (transform_obs({"grid": g, "state": st}, 5)["state"] == st).all()
 
 
-# -- end-to-end equivariance of the env and the simulator ----------------------------------------
-def _hundred_layout_records():
-    records = load_layout_pool()
-    assert len(records) >= 100
-    step = len(records) / 100
-    picked = [records[int(i * step)] for i in range(100)]
-    assert {r["family"] for r in picked} == {"ring_defence", "clustered_core", "scattered_outposts"}
-    return picked
+def test_mask_legality_under_transform_on_real_episodes():
+    """The transformed mask equals the mask of the env run on the transformed layout, at every step, and a legal original action maps to a legal one."""
+    rng = np.random.default_rng(1)
+    for i, rec in enumerate(spread(DEV_RECS, 6) + spread(TUNE_RECS, 6)):
+        L = layout_of(rec)
+        base = BreachEnv(layouts=[L], prebought="random" if i % 2 else None)
+        for s in (1, 4, 6):
+            tr = BreachEnv(layouts=[Y.transform(L, s)], prebought="random" if i % 2 else None)
+            base.reset(seed=i), tr.reset(seed=i)
+            while not base.done:
+                m = base.action_masks()
+                mt = transform_mask(m, s)
+                assert (mt == tr.action_masks()).all() and mt.sum() == m.sum()
+                a = int(rng.choice(np.flatnonzero(m)))
+                assert tr.action_masks()[transform_action(a, s)]
+                base.step(a), tr.step(transform_action(a, s))
 
 
-def _random_army_actions(env, rng, mode):
-    """A full buy -> deploy action script for `env`'s current layout, in original coordinates."""
-    actions = []
-    gold = 200
-    while True:
-        affordable = [k for k in range(N_TROOPS) if TROOP_COST[k] <= gold]
-        if not affordable or rng.random() < 0.04:
-            break
-        k = int(rng.choice(affordable))
-        gold -= int(TROOP_COST[k])
-        actions.append(k)
-    n = len(actions)
-    actions.append(END_BUY)
-    if mode == "scatter":
-        tiles = rng.choice(N_BORDER, size=n, replace=False)
-    else:  # concentrated push on consecutive border tiles
-        start = int(rng.integers(N_BORDER))
-        tiles = [(start + i) % N_BORDER for i in range(n)]
-    deploys = [DEPLOY_BASE + k * N_BORDER + int(t) for k, t in zip(actions[:n], tiles)]
-    return actions + deploys
+# ------------------------------------------------------------------ simulator + env equivariance, incl. Menders
+def _random_army_actions(env, rng, with_mender: bool):
+    """A full legal episode script (original coordinates) from a freshly reset env; forces >= 1 Mender when requested."""
+    acts, probe = [], env.__class__(layouts=[env._synthetic[0]])
+    probe.reset(seed=0)
+    first = True
+    while not probe.done:
+        m = probe.action_masks()
+        if with_mender and first and m[4]:
+            a = 4
+        else:
+            a = int(rng.choice(np.flatnonzero(m)))
+        first = False
+        probe.step(a)
+        acts.append(a)
+    return acts
 
 
-def test_simulator_and_env_are_d4_equivariant_on_100_layouts():
-    """Same army, transformed layout + mapped actions => identical outcome, for all 8 symmetries.
-
-    Compares (a) the bare simulator on transformed layout/army, and (b) a full SiegeEnv episode on a
-    transformed layout stepped with permuted actions (obs must equal the transformed original obs at
-    every step), and (c) the D4Wrapper presenting the view over the *untransformed* env.
-    """
+def test_env_and_simulator_are_d4_equivariant_on_100_layouts_incl_menders_through_the_wrapper():
+    """100 layouts x 8 symmetries. D4Wrapper(symmetry=s) over the UNtransformed env must show exactly what the env on the transformed
+    layout shows (obs, state, mask), and the same action sequence must give the same score / D / breach. >= 50 % of armies hold a Mender."""
+    recs = spread(DEV_RECS, 50) + spread(TUNE_RECS, 50)
     rng = np.random.default_rng(7)
-    mismatches = []
-    for rec in _hundred_layout_records():
-        plain = SiegeEnv(layout_pool=[rec])
-        obs_plain, _ = plain.reset(seed=0)
-        script = _random_army_actions(plain, rng, "scatter" if rec["seed"] % 2 else "push")
-        base_layout = plain.layout
-
-        # reference trajectory in original coordinates
-        ref_obs, ref_rewards = [obs_plain], []
-        for a in script:
-            o, r, term, _, _ = plain.step(a)
-            ref_obs.append(o)
-            ref_rewards.append(r)
-        if plain.battle_result is None:  # script ended before deploying everything: force the battle
-            o, r, term, _, _ = plain.step(WAIT)
-            ref_obs.append(o)
-            ref_rewards.append(r)
-        ref_dest = plain.battle_result.destruction
-        ref_value = plain.battle_result.destroyed_value
-        ref_army = list(plain.deployed_troops)
-
+    n_mender, n_steps = 0, 0
+    for i, rec in enumerate(recs):
+        L = layout_of(rec)
+        with_mender = i % 2 == 0
+        script = _random_army_actions(BreachEnv(layouts=[L]), rng, with_mender)
+        n_mender += any(a == 4 for a in script)
         for s in ALL:
-            # (a) bare simulator
-            res = simulate_battle(
-                transform_army(ref_army, s),
-                transform_layout(base_layout, s)["buildings"],
-                transform_layout(base_layout, s)["walls"],
-                transform_layout(base_layout, s)["turrets"],
-                max_ticks=50,
-            )
-            if (res.destroyed_value, res.destruction) != (ref_value, ref_dest):
-                mismatches.append((rec["id"], s, "simulator", res.destruction, ref_dest))
-
-            # (b) env on a transformed layout, driven by permuted actions
-            env_t = SiegeEnv(layout_pool=[rec])
-            o_t, _ = env_t.reset(seed=0)
-            env_t.layout = transform_layout(base_layout, s)
-            o_t = env_t._obs()
-            assert np.array_equal(o_t["grid"], transform_obs(ref_obs[0], s)["grid"]), (rec["id"], s, "reset obs")
-            steps = list(script) + ([WAIT] if len(ref_obs) == len(script) + 2 else [])
-            for i, a in enumerate(steps):
-                o_t, r_t, _, _, _ = env_t.step(transform_action(a, s))
-                exp = transform_obs(ref_obs[i + 1], s)
-                if not (np.array_equal(o_t["grid"], exp["grid"]) and np.array_equal(o_t["state"], exp["state"])):
-                    mismatches.append((rec["id"], s, f"obs@{i}"))
-                    break
-                if r_t != ref_rewards[i]:
-                    mismatches.append((rec["id"], s, f"reward@{i}", r_t, ref_rewards[i]))
-                    break
-
-            # (c) wrapper over the untransformed env: agent acts in the view
-            w = D4Wrapper(SiegeEnv(layout_pool=[rec]), symmetry=s)
-            o_w, _ = w.reset(seed=0)
-            assert np.array_equal(o_w["grid"], transform_obs(ref_obs[0], s)["grid"])
-            for i, a in enumerate(steps):
-                assert w.action_masks()[transform_action(a, s)], (rec["id"], s, i)
-                o_w, r_w, _, _, _ = w.step(transform_action(a, s))
-                exp = transform_obs(ref_obs[i + 1], s)
-                assert np.array_equal(o_w["grid"], exp["grid"]) and np.array_equal(o_w["state"], exp["state"])
-                assert r_w == ref_rewards[i]
-            assert w.env.unwrapped.battle_result.destruction == ref_dest
-    assert not mismatches, f"{len(mismatches)} equivariance failures, first few: {mismatches[:5]}"
+            wrapped = D4Wrapper(BreachEnv(layouts=[L]), symmetry=s)
+            direct = BreachEnv(layouts=[Y.transform(L, s)])
+            ow, _ = wrapped.reset(seed=i)
+            od, _ = direct.reset(seed=i)
+            for a in script:
+                a_view = transform_action(a, s)                               # the action the agent would choose in the transformed view
+                assert (ow["grid"] == od["grid"]).all() and (ow["state"] == od["state"]).all()
+                assert (wrapped.action_masks() == direct.action_masks()).all()
+                n_steps += 1
+                ow, rw, dw, _, iw = wrapped.step(a_view)
+                od, rd, dd, _, idd = direct.step(a_view)
+                assert rw == rd and dw == dd
+            assert dw and iw["score"] == idd["score"] and iw["d_num"] == idd["d_num"] and iw["core_destroyed"] == idd["core_destroyed"]
+            assert (ow["grid"] == od["grid"]).all()
+    assert n_mender >= 50 and n_steps > 8 * 100
 
 
-def test_simulator_equivariant_on_fresh_random_layouts_all_families():
-    """Beyond the frozen pool: 300 fresh layouts x 8 symmetries x varied armies, exact agreement."""
-    from siege.armies import place_on_border
-    from siege.bases import FAMILIES
-
-    rng = np.random.default_rng(11)
-    bad = 0
-    for i in range(300):
-        layout = generate_base_layout(np.random.default_rng(5000 + i), family=FAMILIES[i % 3])
-        names, gold = [], 200
-        while True:
-            ok = [k for k in range(N_TROOPS) if TROOP_COST[k] <= gold]
-            if not ok or rng.random() < 0.03:
-                break
-            k = int(rng.choice(ok))
-            gold -= int(TROOP_COST[k])
-            names.append(TROOP_TYPES[k].name)
-        army = place_on_border(names, int(rng.integers(N_BORDER)))
-        base = simulate_battle(army, layout["buildings"], layout["walls"], layout["turrets"], max_ticks=50)
+def test_bare_simulator_equivariance_with_transformed_army_helper():
+    rng = np.random.default_rng(3)
+    for rec in spread(TUNE_RECS, 12):
+        L = layout_of(rec)
+        army = [(int(rng.integers(5)), int(rng.integers(N_BORDER))) for _ in range(8)] + [(4, 3), (4, 30)]
+        free = [t for t in range(N_BORDER) if BORDER[t] not in {tuple(w) for w in L["walls"]}]
+        army = [(t, free[tile % len(free)]) for t, tile in army]
+        army = list({tile: (t, tile) for t, tile in army}.values())
+        ref = simulate(Prepared(L), army)
         for s in ALL:
-            tl = transform_layout(layout, s)
-            r = simulate_battle(transform_army(army, s), tl["buildings"], tl["walls"], tl["turrets"], max_ticks=50)
-            bad += (r.destroyed_value, r.destruction) != (base.destroyed_value, base.destruction)
-    assert bad == 0
+            r2 = simulate(Prepared(Y.transform(L, s)), transform_army(army, s))
+            assert (r2.d_num, r2.d_den, r2.core_destroyed, r2.ticks) == (ref.d_num, ref.d_den, ref.core_destroyed, ref.ticks)
 
 
-# -- wrapper behaviour ----------------------------------------------------------------------------
-def test_wrapper_samples_all_eight_symmetries_and_is_seed_reproducible():
-    w = D4Wrapper(SiegeEnv(), seed=0)
-    seen = {w.reset()[1]["symmetry"] for _ in range(200)}
-    assert seen == set(ALL)
-    a = D4Wrapper(SiegeEnv(), seed=3)
-    b = D4Wrapper(SiegeEnv(), seed=3)
-    assert [a.reset()[1]["symmetry"] for _ in range(10)] == [b.reset()[1]["symmetry"] for _ in range(10)]
-    assert D4Wrapper(SiegeEnv()).reset(seed=5)[1]["symmetry"] == D4Wrapper(SiegeEnv()).reset(seed=5)[1]["symmetry"]
+# ------------------------------------------------------------------ wrapper behaviour
+def test_wrapper_identity_and_random_symmetry_stream_is_seeded():
+    L = layout_of(TUNE_RECS[0])
+    plain = BreachEnv(layouts=[L])
+    o0, _ = plain.reset(seed=3)
+    w0 = D4Wrapper(BreachEnv(layouts=[L]), symmetry=0)
+    ow, info = w0.reset(seed=3)
+    assert (ow["grid"] == o0["grid"]).all() and info["symmetry"] == 0 and (w0.action_masks() == plain.action_masks()).all()
+    a, b = D4Wrapper(BreachEnv(layouts=[L]), seed=0), D4Wrapper(BreachEnv(layouts=[L]), seed=0)
+    sa = [a.reset(seed=k)[1]["symmetry"] for k in range(30)]
+    sb = [b.reset(seed=k)[1]["symmetry"] for k in range(30)]
+    assert sa == sb and len(set(sa)) >= 6
+    with pytest.raises(ValueError):
+        D4Wrapper(BreachEnv(layouts=[L]), symmetry=8)
 
 
-def test_wrapper_works_with_maskable_ppo_helpers():
-    from sb3_contrib.common.maskable.utils import get_action_masks
+# ------------------------------------------------------------------ TTA
+def _obs_mask(i=0, steps=3):
+    env = BreachEnv(layouts=[layout_of(TUNE_RECS[i])])
+    env.reset(seed=0)
+    rng = np.random.default_rng(i)
+    for _ in range(steps):
+        env.step(int(rng.choice(np.flatnonzero(env.action_masks()))))
+    return env._obs(), env.action_masks()
 
-    w = D4Wrapper(SiegeEnv(), symmetry=5)
-    w.reset(seed=0)
-    assert np.array_equal(get_action_masks(w), w.action_masks())
-    assert w.action_space.n == N_ACTIONS
+
+def _masked_softmax(logits, mask):
+    z = np.where(mask, logits, -np.inf)
+    e = np.exp(z - z.max())
+    return e / e.sum()
 
 
-def test_simulator_equivariance_holds_even_when_object_ids_are_shuffled():
-    """Stronger than label-preserving equivariance: relabel buildings/turrets/walls arbitrarily.
+def _random_policy(seed=0):
+    """A fixed, NON-equivariant policy: probabilities from a random linear map of (grid, state), masked."""
+    rng = np.random.default_rng(seed)
+    W = rng.normal(size=(N_GRID_CHANNELS * GRID * GRID + 11, N_ACTIONS)) * 0.3
+    return lambda obs, mask: _masked_softmax(np.concatenate([obs["grid"].ravel(), obs["state"]]) @ W, mask)
 
-    Since STEP 5c (simultaneous turret fire + invariant tie-breaks) this is exact; before it, 4/7000
-    comparisons differed (wall-id ties) and turret order mattered when two turrets chose one troop.
-    """
-    from siege.armies import place_on_border
-    from siege.bases import FAMILIES
 
-    rng = np.random.default_rng(21)
-    bad = 0
-    for i in range(150):
-        layout = generate_base_layout(np.random.default_rng(8000 + i), family=FAMILIES[i % 3])
-        names, gold = [], 200
-        while True:
-            ok = [k for k in range(N_TROOPS) if TROOP_COST[k] <= gold]
-            if not ok or rng.random() < 0.03:
-                break
-            k = int(rng.choice(ok))
-            gold -= int(TROOP_COST[k])
-            names.append(TROOP_TYPES[k].name)
-        army = place_on_border(names, int(rng.integers(N_BORDER)))
-        base = simulate_battle(army, layout["buildings"], layout["walls"], layout["turrets"], max_ticks=50)
-        for s in ALL:
-            tl = transform_layout(layout, s)
-            b = [tl["buildings"][j] for j in rng.permutation(len(tl["buildings"]))]
-            t = [tl["turrets"][j] for j in rng.permutation(len(tl["turrets"]))]
-            items = list(tl["walls"].items())
-            w = dict(items[j] for j in rng.permutation(len(items)))
-            r = simulate_battle(transform_army(army, s), b, w, t, max_ticks=50)
-            bad += (r.destroyed_value, r.destruction) != (base.destroyed_value, base.destruction)
-    assert bad == 0
+def test_tta_with_identity_only_equals_the_plain_policy():
+    pol = _random_policy()
+    for i in range(4):
+        obs, mask = _obs_mask(i)
+        assert (tta_scores(pol, obs, mask, syms=[0]) == pol(obs, mask)).all()
+        assert tta_action(pol, obs, mask, syms=[0]) == int(np.argmax(pol(obs, mask)))
+
+
+def test_tta_of_an_equivariant_policy_equals_the_policy_and_tta_is_itself_equivariant():
+    base = _random_policy(1)
+
+    def equivariant(obs, mask):                      # symmetrise: average of the 8 mapped-back views (an exactly D4-equivariant policy)
+        return tta_scores(base, obs, mask)
+
+    for i in range(3):
+        obs, mask = _obs_mask(i, steps=4)
+        p = tta_scores(base, obs, mask)
+        assert abs(p.sum() - 1.0) < 1e-9 and (p[~mask] == 0).all()
+        for s in (1, 4, 7):
+            ps = tta_scores(base, transform_obs(obs, s), transform_mask(mask, s))
+            np.testing.assert_allclose(ps, _apply(p, s), atol=1e-12)   # TTA(view_s) = view_s of TTA
+            # a TTA-symmetrised policy is a fixed point of TTA
+            np.testing.assert_allclose(tta_scores(equivariant, obs, mask), p, atol=1e-12)
+        assert int(np.argmax(np.where(mask, p, -1))) == tta_action(base, obs, mask)
+
+
+def _apply(p, s):
+    """p over original actions -> p over the transformed view's actions: out[ACTION_PERM[s][a]] = p[a]."""
+    out = np.empty_like(p)
+    out[ACTION_PERM[s]] = p
+    return out
+
+
+def test_tta_maps_q_values_back_through_the_inverse_permutation():
+    obs, mask = _obs_mask(2, steps=5)
+    q = np.where(mask, np.random.default_rng(5).normal(size=N_ACTIONS), 0.0)
+    for s in ALL:
+        assert (untransform_probs(_apply(q, s), s) == q).all()
+
+    def true_equivariant_q(o, m):                    # knows the true Q in original coordinates; answers in the view it is shown
+        return _apply(q, _sym_of(o, obs))
+
+    np.testing.assert_allclose(tta_scores(true_equivariant_q, obs, mask), q, atol=1e-12)
+    assert tta_action(true_equivariant_q, obs, mask) == int(np.argmax(np.where(mask, q, -np.inf)))
+    with pytest.raises(ValueError):
+        tta_scores(true_equivariant_q, obs, mask, syms=[])
+
+
+def _sym_of(o, obs):
+    for s in ALL:
+        if (transform_grid(obs["grid"], s) == o["grid"]).all():
+            return s
+    raise AssertionError

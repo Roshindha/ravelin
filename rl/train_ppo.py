@@ -27,7 +27,7 @@ from stable_baselines3.common.logger import configure
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 
-from rl.augment import D4Wrapper
+from rl.augment_v1 import D4Wrapper
 from rl.evaluation import TROOP_NAMES, evaluate_policy, summarize
 from rl.features import SiegeFeaturesExtractor
 from rl.split import layouts_sha, load_split

@@ -1,24 +1,24 @@
-"""D4 (dihedral group of order 8) augmentation for SiegeEnv.
+"""D4 augmentation for BreachEnv (v2, B9; docs/SPEC_V2.md 4.1, 4.2, 7, 9).
 
-A symmetry is an integer ``s`` in ``0..7``: ``s = 4 * flip + k`` means "mirror the columns first if
-``flip``, then rotate ``k`` quarter turns clockwise". Cells are ``(row, col)`` == the simulator's
-``(x, y)``, the same indexing as ``grid[channel, x, y]`` and ``siege.env.BORDER``.
+A symmetry is an integer ``s`` in 0..7: ``s = 4 * flip + k`` = mirror the columns first if ``flip``, then rotate ``k`` quarter turns
+clockwise (the convention of ``breachlens.layouts._tr``). Cells are (row, col), the same indexing as ``grid[channel, row, col]`` and
+``breachlens.actions.BORDER``. The tables here are written out independently of ``breachlens.env.d4_*`` and ``breachlens.sim``; the tests
+cross-check them.
 
-Three things are transformed consistently:
-  * the grid observation (spatially; the 9-d ``state`` vector is symmetry-invariant),
-  * the 246-way action space, via an explicit permutation table (buy / END_BUY / WAIT are fixed;
-    a deploy action keeps its troop type and moves its border-tile index), and
-  * the action mask (a pure re-indexing of the original mask through that table).
+Transformed consistently: the 9-channel grid (spatially; channel 8 "repair reach" is a count of range-2 discs, hence covariant like the rest),
+the 267-way action space (explicit permutation: buy / END_BUY / WAIT fixed, a deploy keeps its unit type and moves its border-tile index),
+the action mask (a re-indexing through that table) and the 11-d state vector (invariant).
 
-``D4Wrapper`` picks a random symmetry on every reset, shows the agent the transformed view, and maps
-each chosen action back to original simulator coordinates before stepping the wrapped env.
+``D4Wrapper`` shows the agent a transformed view (random symmetry per reset, or a pinned one) and maps chosen actions back to original
+coordinates before stepping the wrapped env. Evaluation of D4 models uses the canonical (identity) view; TTA lives in ``rl/tta.py``.
 """
 from __future__ import annotations
 
 import gymnasium as gym
 import numpy as np
 
-from siege.env import BORDER, DEPLOY_BASE, GRID, N_ACTIONS, N_BORDER, N_TROOPS
+from breachlens.actions import BORDER
+from breachlens.constants import DEPLOY_BASE, GRID, N_ACTIONS, N_BORDER, N_UNIT_TYPES
 
 N_SYMMETRIES = 8
 IDENTITY = 0
@@ -43,9 +43,17 @@ def transform_cell(sym: int, r: int, c: int) -> tuple[int, int]:
 
 def inverse_symmetry(sym: int) -> int:
     flip, k = decompose(sym)
-    if not flip:
-        return (-k) % 4  # rotation only
-    return sym  # every reflection-type element of D4 is an involution
+    return sym if flip else (-k) % 4   # every reflection-type element of D4 is an involution
+
+
+def compose(a: int, b: int) -> int:
+    """The symmetry 'apply b, then a' (found by its action on cells; the group is closed, so it exists)."""
+    probe = [(0, 1), (1, 3), (5, 2)]            # three non-collinear-orbit cells pin down a D4 element
+    want = [transform_cell(a, *transform_cell(b, r, c)) for r, c in probe]
+    for s in range(N_SYMMETRIES):
+        if [transform_cell(s, r, c) for r, c in probe] == want:
+            return s
+    raise AssertionError("D4 is not closed")    # unreachable
 
 
 # -- cell / grid tables ---------------------------------------------------------------------------
@@ -63,7 +71,7 @@ CELL_DEST = _build_cell_dest()  # CELL_DEST[s][i] = flat index that flat cell i 
 
 
 def transform_grid(grid: np.ndarray, sym: int) -> np.ndarray:
-    """Apply ``sym`` to the spatial axes (-2, -1) of a (..., 16, 16) array; returns a new array."""
+    """Apply ``sym`` to the spatial axes (-2, -1) of a (..., 14, 14) array (all 9 channels incl. repair reach); returns a new array."""
     flat = grid.reshape(*grid.shape[:-2], GRID * GRID)
     out = np.empty_like(flat)
     out[..., CELL_DEST[sym]] = flat
@@ -71,7 +79,7 @@ def transform_grid(grid: np.ndarray, sym: int) -> np.ndarray:
 
 
 def transform_obs(obs: dict, sym: int) -> dict:
-    """Grid is transformed spatially; the state vector is invariant and passed through unchanged."""
+    """Grid is transformed spatially; the state vector is invariant and passed through (copied)."""
     return {"grid": transform_grid(obs["grid"], sym), "state": obs["state"].copy()}
 
 
@@ -83,7 +91,7 @@ def _build_tile_perm() -> np.ndarray:
     perm = np.zeros((N_SYMMETRIES, N_BORDER), dtype=np.int64)
     for s in range(N_SYMMETRIES):
         for t, (r, c) in enumerate(BORDER):
-            perm[s, t] = _BORDER_INDEX[transform_cell(s, r, c)]  # KeyError == border not preserved
+            perm[s, t] = _BORDER_INDEX[transform_cell(s, r, c)]  # KeyError == the border is not preserved
     return perm
 
 
@@ -91,10 +99,10 @@ TILE_PERM = _build_tile_perm()
 
 
 def _build_action_perm() -> np.ndarray:
-    """ACTION_PERM[s][a] = the action, in the transformed view, that corresponds to original ``a``."""
-    perm = np.tile(np.arange(N_ACTIONS, dtype=np.int64), (N_SYMMETRIES, 1))  # buy/END_BUY/WAIT fixed
+    """ACTION_PERM[s][a] = the action, in the transformed view, that corresponds to original ``a`` (267 entries)."""
+    perm = np.tile(np.arange(N_ACTIONS, dtype=np.int64), (N_SYMMETRIES, 1))  # buy / END_BUY / WAIT fixed
     for s in range(N_SYMMETRIES):
-        for k in range(N_TROOPS):
+        for k in range(N_UNIT_TYPES):
             for t in range(N_BORDER):
                 perm[s, DEPLOY_BASE + k * N_BORDER + t] = DEPLOY_BASE + k * N_BORDER + TILE_PERM[s, t]
     return perm
@@ -116,48 +124,34 @@ def untransform_action(action: int, sym: int) -> int:
 
 def transform_mask(mask: np.ndarray, sym: int) -> np.ndarray:
     out = np.empty_like(mask)
-    out[ACTION_PERM[sym]] = mask  # out[P[a]] = mask[a]
+    out[..., ACTION_PERM[sym]] = mask  # out[P[a]] = mask[a]
     return out
 
 
-# -- layouts / armies (for simulator-level equivariance checks) -----------------------------------
-def transform_layout(layout: dict, sym: int) -> dict:
-    """Return a copy of a layout dict with every building/turret/wall moved by ``sym``.
-
-    List / dict insertion order is preserved so object labels (ids) stay attached to the same object.
-    """
-
-    def move(d: dict) -> dict:
-        nd = dict(d)
-        nd["x"], nd["y"] = transform_cell(sym, d["x"], d["y"])
-        return nd
-
-    out = dict(layout)
-    out["buildings"] = [move(b) for b in layout["buildings"]]
-    out["turrets"] = [move(t) for t in layout["turrets"]]
-    out["walls"] = {transform_cell(sym, x, y): hp for (x, y), hp in layout["walls"].items()}
-    return out
+def untransform_probs(probs: np.ndarray, sym: int) -> np.ndarray:
+    """Probabilities / Q-values over the transformed view's actions -> over original actions: result[a] = probs[ACTION_PERM[s][a]]."""
+    return probs[..., ACTION_PERM[sym]]
 
 
-def transform_army(army: list[dict], sym: int) -> list[dict]:
-    out = []
-    for u in army:
-        nu = dict(u)
-        nu["x"], nu["y"] = transform_cell(sym, u["x"], u["y"])
-        out.append(nu)
-    return out
+# -- armies (for simulator-level checks) ----------------------------------------------------------
+def transform_army(army: list, sym: int) -> list:
+    """[(unit type, border tile)] -> the same army in the transformed world."""
+    return [(int(t), int(TILE_PERM[sym, tile])) for t, tile in army]
 
 
 # -- wrapper --------------------------------------------------------------------------------------
 class D4Wrapper(gym.Wrapper):
-    """Presents a randomly D4-transformed view of a SiegeEnv to the agent.
+    """Presents a randomly D4-transformed view of a BreachEnv to the agent.
 
-    ``symmetry`` pins a fixed symmetry (useful for tests/eval); ``None`` samples uniformly per reset.
-    The wrapped env always runs in original coordinates; only what the agent sees/does is mapped.
+    ``symmetry`` pins a fixed symmetry (tests / evaluation: ``symmetry=0`` is the canonical view); ``None`` samples uniformly per reset.
+    The wrapped env always runs in original coordinates; only what the agent sees and does is mapped. The symmetry stream is seeded from
+    ``reset(seed=...)`` (or the constructor ``seed``) and is independent of the env's own RNG.
     """
 
     def __init__(self, env: gym.Env, symmetry: int | None = None, seed: int | None = None) -> None:
         super().__init__(env)
+        if symmetry is not None:
+            decompose(int(symmetry))
         self._fixed = symmetry
         self._rng = np.random.default_rng(seed)
         self.sym = IDENTITY if symmetry is None else int(symmetry)
@@ -165,10 +159,9 @@ class D4Wrapper(gym.Wrapper):
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         if seed is not None:
             self._rng = np.random.default_rng([seed, 0xD4])
-        self.sym = int(self._rng.integers(N_SYMMETRIES)) if self._fixed is None else self._fixed
+        self.sym = int(self._rng.integers(N_SYMMETRIES)) if self._fixed is None else int(self._fixed)
         obs, info = self.env.reset(seed=seed, options=options)
-        info = dict(info, symmetry=self.sym)
-        return transform_obs(obs, self.sym), info
+        return transform_obs(obs, self.sym), dict(info, symmetry=self.sym)
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(untransform_action(action, self.sym))
