@@ -334,6 +334,14 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - `tests/test_b1_constants.py` (14 tests): 52 unique clockwise contiguous edge tiles, codec bijection over 267, range errors, constants parsed from SPEC_V2 section 2 and compared. Full suite 153 passing (prototype tests untouched; `siege/` still present until B20).
 - No unit stats, simulator, env or layouts yet (B2+). Run: `.venv/bin/pytest tests/test_b1_constants.py`.
 
+### STEP B2 (v2): units/defenders/walls/core combat + simulator speed gate (done, branch v2-redesign)
+- `data/v2/unit_stats.json` is the only place unit/defender/structure stats live; `breachlens/config.py` loads it once (`CFG`), scales hp-like values by S=840, ranges/speeds are integer tenths, and exposes `sim_version()` = sha256(stats file bytes + NUL + `SIM_CODE_VERSION`). Bump `SIM_CODE_VERSION` on any behaviour change.
+- `breachlens/sim.py`: Scout/Sniper/Bulwark/Blaster, Gun/Lancer/Flak, walls, buildings, core. Integer-only outcomes; tick order per spec 3.3; nearest-in-preference targeting (equal keys -> exact damage split); BFS movement with rule-7 keys 1-3; blocked units pick the wall on the cheapest ghost path; early exit (cleared / all_dead / stalemate / horizon). `Prepared` caches fields per layout (hold one per layout in the env).
+- Mender is rejected (B3). Rule-7 key 4 is NOT implemented: exhausted ties use a raw-coordinate STOPGAP counted in `fallback_calls`; B3 replaces it.
+- `breachlens/_bench_layouts.py`: PROVISIONAL crude layouts of the 4 families, used only by speed benchmark and tests; B4 replaces them (not balanced, not for gates).
+- Speed gate (`scripts_speed.py` -> `data/v2/speed.json`): PASSED by a wide margin, see numbers in the B2 report; tests `tests/test_b2_sim.py`, `tests/test_b2_speed.py`.
+- Spec-silent interpretations (see report): speed via integer accumulator (steps = acc//10 per tick); stalemate = no hp change anywhere and no movement for 12 ticks; in-range walls are attacked per rule 6 (so a passing Scout stops to chew an adjacent wall).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -372,7 +380,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B1 done; B2 (units/combat core + simulator speed gate) starts only when told.
+- v2: B1, B2 done; B3 (Mender, canonical-form fallback, D4 equivariance) starts only when told.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

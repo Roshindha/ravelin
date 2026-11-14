@@ -1,0 +1,103 @@
+{
+  "sim_version": "dd0415bcc9293eef21a5c64fad6749a615ce62b243e77b3b77c352015154788b",
+  "gate": {
+    "mean_ms_max": 60.0,
+    "p95_ms_max": 150.0,
+    "steps_per_s_min": 300.0
+  },
+  "python": "3.11.14",
+  "machine": "macOS-26.2-arm64-arm-64bit",
+  "cpu_count": 8,
+  "git_commit": "cb900a7",
+  "layouts": "PROVISIONAL bench layouts (25/family), B4 replaces",
+  "mender": "excluded (B3)",
+  "battle_warm": {
+    "mean_ms": 0.4409537100127636,
+    "p95_ms": 0.7943660503769931,
+    "max_ms": 0.9731250002005254,
+    "mean_ticks": 55.855,
+    "mean_units": 10.935,
+    "n": 200
+  },
+  "battle_cold": {
+    "mean_ms": 1.7861387699963416,
+    "p95_ms": 2.994411849681455,
+    "max_ms": 4.47062500006723,
+    "mean_ticks": 55.855,
+    "mean_units": 10.935,
+    "n": 200
+  },
+  "battle_stress_hp20x_warm": {
+    "mean_ms": 0.5786536050004543,
+    "p95_ms": 0.9560797998574344,
+    "max_ms": 1.142125000114902,
+    "mean_ticks": 25.565,
+    "mean_units": 10.935,
+    "n": 200
+  },
+  "env_1proc": {
+    "steps_per_s": 26970.558309646825,
+    "episodes_per_s": 1754.9017402021666,
+    "steps_per_episode": 15.368699962961907
+  },
+  "env_6proc": {
+    "procs": 6,
+    "steps_per_s": 107986.45501432511,
+    "episodes_per_s": 7056.122815511848,
+    "per_proc_steps_per_s": [
+      18027.86115444123,
+      17713.716704478717,
+      18202.973897824257,
+      17764.261448631256,
+      18128.007931103257,
+      18528.34581963821
+    ]
+  },
+  "top3_hotspots": [
+    {
+      "func": "sim.py:245:simulate",
+      "tottime_s": 0.165224919,
+      "cumtime_s": 0.23648514,
+      "calls": 200,
+      "pct_of_total": 70.3034861185172
+    },
+    {
+      "func": "sim.py:295:move_target",
+      "tottime_s": 0.015935496,
+      "cumtime_s": 0.016341918,
+      "calls": 6139,
+      "pct_of_total": 6.780580850686853
+    },
+    {
+      "func": "~:0:<method 'get' of 'dict' objects>",
+      "tottime_s": 0.008079177,
+      "cumtime_s": 0.008079177,
+      "calls": 152557,
+      "pct_of_total": 3.43770365575754
+    }
+  ],
+  "top3_hotspots_stress": [
+    {
+      "func": "sim.py:245:simulate",
+      "tottime_s": 0.226628299,
+      "cumtime_s": 0.32673087700000003,
+      "calls": 200,
+      "pct_of_total": 69.52920337891946
+    },
+    {
+      "func": "sim.py:295:move_target",
+      "tottime_s": 0.023638133000000002,
+      "cumtime_s": 0.024286314,
+      "calls": 10999,
+      "pct_of_total": 7.252141785059895
+    },
+    {
+      "func": "~:0:<method 'get' of 'dict' objects>",
+      "tottime_s": 0.013254216000000001,
+      "cumtime_s": 0.013254216000000001,
+      "calls": 246761,
+      "pct_of_total": 4.06637248727763
+    }
+  ],
+  "passed": true
+}
