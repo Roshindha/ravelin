@@ -153,7 +153,7 @@ def test_ledger_has_build_entries_only_and_zero_eval():
     entries = P.read_ledger()
     assert {e["purpose"] for e in entries} <= {"build"}
     assert sum(e["purpose"] == "eval" for e in entries) == 0
-    assert sum(e["purpose"] == "build" for e in entries) == 4
+    assert sum(e["purpose"] == "build" for e in entries) == 5
     assert all({"time", "commit", "entry_point", "purpose"} <= set(e) for e in entries)
     assert {e["family"] for e in entries if e.get("action") == "walk"} == set(Y.FAMILIES)
 
@@ -341,3 +341,73 @@ def test_build_refuses_to_overwrite_a_frozen_pool():
     import sys
     r = subprocess.run([sys.executable, str(ROOT / "scripts_b6_build_pool.py")], cwd=ROOT, capture_output=True, text=True)
     assert r.returncode != 0 and "frozen" in (r.stdout + r.stderr)
+
+
+# ------------------------------------------------------------------ B7.1: LAB-DESIGN guard and the "design" role
+LAB_RECS = P.design_records("LAB-DESIGN", "design")
+DESIGN_BY_SPLIT = {s: P.design_records(s, "design") for s in ("TUNE-train", "TUNE-val", "LAB-DESIGN")}
+
+
+def test_design_role_loads_tune_and_lab_design_and_nothing_from_the_pool(tmp_ledger):
+    assert [len(DESIGN_BY_SPLIT[s]) for s in ("TUNE-train", "TUNE-val", "LAB-DESIGN")] == [180, 60, 40]
+    for recs in DESIGN_BY_SPLIT.values():
+        for r in recs[:3]:
+            P.load_layout(r, "design")
+    for rec in RECS:                                            # every pool id: DEV-train, DEV-validation, FINAL-familiar, FINAL-transfer
+        with pytest.raises(PermissionError):
+            P.load_layout(rec, "design")
+        with pytest.raises(PermissionError):
+            P.load_layout(rec, "design", purpose="build")
+        with pytest.raises(PermissionError):
+            P.assert_dev_only([rec["id"]], "design")
+    for split in P.SPLITS:
+        with pytest.raises(PermissionError):
+            P.load_pool_records(split, "design", purpose="build")
+    with pytest.raises(PermissionError):
+        P.dev_records("design")
+    assert not tmp_ledger.exists()
+
+
+@pytest.mark.parametrize("role", ["train", "validation", "tuning"])
+def test_dev_side_roles_raise_on_every_lab_design_id(role, tmp_ledger):
+    assert len(LAB_RECS) == 40
+    for rec in LAB_RECS:
+        with pytest.raises(PermissionError):
+            P.load_layout(rec, role)
+        with pytest.raises(PermissionError):
+            P.load_layout(dict(rec, split="TUNE-train"), role)         # a relabelled record is still refused (stream L)
+        with pytest.raises(PermissionError):
+            P.assert_dev_only([rec["id"]], role)
+    with pytest.raises(PermissionError):
+        P.design_records("LAB-DESIGN", role)
+    with pytest.raises(PermissionError):
+        P.assert_dev_only([LAB_RECS[0]["id"], RECS[0]["id"]], role)
+    assert not tmp_ledger.exists()
+
+
+def test_design_set_role_matrix():
+    allowed = {"train": {"TUNE-train"}, "validation": {"TUNE-val"}, "tuning": {"TUNE-train", "TUNE-val"},
+               "design": {"TUNE-train", "TUNE-val", "LAB-DESIGN"}}
+    for role, ok in allowed.items():
+        for split in ("TUNE-train", "TUNE-val", "LAB-DESIGN"):
+            if split in ok:
+                assert {r["split"] for r in P.design_records(split, role)} == {split}
+                P.load_layout(P.design_records(split, role)[0], role)
+            else:
+                with pytest.raises(PermissionError):
+                    P.design_records(split, role)
+                with pytest.raises(PermissionError):
+                    P.load_layout(DESIGN_BY_SPLIT[split][0], role)
+    for role in ("build", "eval"):
+        for split in ("TUNE-train", "TUNE-val", "LAB-DESIGN"):
+            with pytest.raises(PermissionError):
+                P.design_records(split, role)
+
+
+def test_gate_and_balance_code_does_not_use_pool_roles_and_lab_design_stays_out_of_rl():
+    # Gate / design scripts read design sets through breachlens.layouts (never through pool.py), so no pool role applies to them.
+    for p in [ROOT / "breachlens" / n for n in ("gates.py", "acceptance.py", "oracle.py")] + list(ROOT.glob("scripts_b[45]*.py")) + [ROOT / "scripts_gates.py"]:
+        if p.exists():
+            assert "breachlens.pool" not in p.read_text() and "import pool" not in p.read_text(), p
+    for p in (ROOT / "rl").glob("*.py"):
+        assert "LAB-DESIGN" not in p.read_text(), p

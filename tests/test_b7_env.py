@@ -506,7 +506,9 @@ def test_env_role_split_matrix_and_eval_needs_unlock():
     assert BreachEnv(source="DEV-train", role="train").n_layouts == 150
     assert BreachEnv(source="DEV-validation", role="validation").n_layouts == 30
     assert BreachEnv(source="TUNE-train", role="train").n_layouts == 180 and BreachEnv(source="TUNE-val", role="validation").n_layouts == 60
-    assert BreachEnv(source="LAB-DESIGN", role="tuning").n_layouts == 40
+    for role in ("train", "validation", "tuning"):                                       # LAB-DESIGN is design-role only (B7.1)
+        with pytest.raises(PermissionError):
+            BreachEnv(source="LAB-DESIGN", role=role)
     with pytest.raises(PermissionError):
         BreachEnv(source="DEV-validation", role="train")
     with pytest.raises(PermissionError):

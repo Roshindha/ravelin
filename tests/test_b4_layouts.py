@@ -238,7 +238,7 @@ def test_content_hash_is_d4_canonical_and_catches_a_regenerated_duplicate():
 def test_final_access_ledger_has_no_entries_from_this_step(tmp_path):
     ledger = ROOT / "data" / "v2" / "final_access.log"
     _e = [json.loads(x) for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip()]
-    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 4
+    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 5
     bad = copy.deepcopy(META)                              # the loader refuses a stream-F seed
     rec = bad["sets"]["TUNE-train"][0]
     rec["seed"] = Y.stream_range("F", "spine_pods")[0]
@@ -247,7 +247,7 @@ def test_final_access_ledger_has_no_entries_from_this_step(tmp_path):
     with pytest.raises(PermissionError):
         Y.load_design_set("TUNE-train", "spine_pods", path=p)
     _e = [json.loads(x) for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip()]
-    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 4
+    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 5
 
 
 # ------------------------------------------------------------------ contact sheets

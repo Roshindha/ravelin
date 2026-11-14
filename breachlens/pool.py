@@ -42,11 +42,14 @@ SPLITS = ("DEV-train", "DEV-validation", "FINAL-familiar", "FINAL-transfer")
 PER_FAMILY = {"DEV-train": 50, "DEV-validation": 10, "FINAL-familiar": 20}   # per familiar family (spec 5.2)
 TRANSFER_N = 60                                                              # labyrinth, FINAL-transfer
 FINAL_SPLITS = ("FINAL-familiar", "FINAL-transfer")
-ROLES = ("train", "validation", "tuning", "build", "eval")
-ROLE_SPLITS = {"train": ("DEV-train",), "validation": ("DEV-validation",), "tuning": ("DEV-train", "DEV-validation")}
+ROLES = ("train", "validation", "tuning", "design", "build", "eval")
+ROLE_SPLITS = {"train": ("DEV-train",), "validation": ("DEV-validation",), "tuning": ("DEV-train", "DEV-validation"), "design": ()}
+DEV_SIDE_ROLES = ("train", "validation", "tuning")      # may never see FINAL / transfer / LAB-DESIGN
 # Design sets (streams T / L, B7): never FINAL. The pilot trains on TUNE-train and validates on TUNE-val.
+# LAB-DESIGN (labyrinth, held-out transfer) is loadable ONLY by role "design" (gate / balance scripts): no training, model selection or
+# hyperparameter tuning may touch it. Role "design" loads TUNE + LAB-DESIGN and nothing from the pool (DEV or FINAL).
 DESIGN_SETS = ("TUNE-train", "TUNE-val", "LAB-DESIGN")
-DESIGN_ROLE_SPLITS = {"train": ("TUNE-train",), "validation": ("TUNE-val",), "tuning": DESIGN_SETS}
+DESIGN_ROLE_SPLITS = {"train": ("TUNE-train",), "validation": ("TUNE-val",), "tuning": ("TUNE-train", "TUNE-val"), "design": DESIGN_SETS}
 LAYOUT_ROLE_SPLITS = {r: ROLE_SPLITS[r] + DESIGN_ROLE_SPLITS[r] for r in ROLE_SPLITS}   # what load_layout lets each DEV-side role load
 
 
@@ -129,10 +132,14 @@ def _check_role(role: str) -> None:
 def assert_dev_only(layout_ids, role: str) -> None:
     """Training / validation / tuning code paths call this (or the loaders below): any FINAL or transfer id raises."""
     _check_role(role)
-    if role in ROLE_SPLITS:
-        bad = [i for i in layout_ids if is_final_id(i)]
+    if role == "design":                                   # design loads no pool layout at all (DEV, FINAL or transfer: all stream F)
+        bad = [i for i in layout_ids if Y.stream_of(parse_id(i)[1]) == "F"]
         if bad:
-            raise PermissionError(f"role {role!r} may not load FINAL / transfer layouts: {bad[:3]}")
+            raise PermissionError(f"role 'design' may not load pool layouts: {bad[:3]}")
+    elif role in ROLE_SPLITS:
+        bad = [i for i in layout_ids if is_final_id(i) or Y.stream_of(parse_id(i)[1]) == "L"]     # FINAL / transfer, or LAB-DESIGN (stream L)
+        if bad:
+            raise PermissionError(f"role {role!r} may not load FINAL / transfer / LAB-DESIGN layouts: {bad[:3]}")
 
 
 def load_pool_records(split: str, role: str, purpose: str | None = None, unlock: bool = False, entry_point: str = "unknown",
@@ -157,12 +164,14 @@ def load_layout(rec: dict, role: str, purpose: str | None = None, unlock: bool =
     """Regenerate one pool layout from (family, seed), content-hash verified. Same guards and ledger as load_pool_records."""
     _check_role(role)
     final = is_final(rec["family"], rec["seed"])
+    if role == "design" and Y.stream_of(rec["seed"]) == "F":
+        raise PermissionError(f"role 'design' may not load pool layout {rec['id']}")
     if final:
         ok = (role == "build" and purpose == "build") or (role == "eval" and purpose == "eval" and unlock)
         if not ok:
             raise PermissionError(f"role {role!r} / purpose {purpose!r} may not load FINAL layout {rec['id']}")
         log_final_access(purpose, entry_point, {"id": rec["id"]})
-    elif role in ROLE_SPLITS and rec["split"] not in LAYOUT_ROLE_SPLITS[role]:
+    elif role in ROLE_SPLITS and (rec["split"] not in LAYOUT_ROLE_SPLITS[role] or (role in DEV_SIDE_ROLES and Y.stream_of(rec["seed"]) == "L")):
         raise PermissionError(f"role {role!r} may not load {rec['split']}")
     L = Y.generate(rec["family"], rec["seed"])
     assert Y.content_hash(L) == rec["content_hash"], f"layout content changed for {rec['id']}"
@@ -197,6 +206,8 @@ def design_records(split: str, role: str) -> list[dict]:
     if role not in DESIGN_ROLE_SPLITS or split not in DESIGN_ROLE_SPLITS[role]:
         raise PermissionError(f"role {role!r} may not load {split}")
     out = [dict(r, split=split) for r in Y.load_design_sets_meta()["sets"][split]]
+    if role == "design":
+        return out
     assert_dev_only([r["id"] for r in out], role)
     return out
 
@@ -204,7 +215,7 @@ def design_records(split: str, role: str) -> list[dict]:
 def dev_records(role: str, path: Path = POOL_PATH) -> list[dict]:
     """The only record source a training / validation / tuning sampler may use: DEV splits permitted for `role`, never FINAL."""
     _check_role(role)
-    if role not in ROLE_SPLITS:
+    if role not in DEV_SIDE_ROLES:
         raise PermissionError(f"dev_records is for train / validation / tuning, not {role!r}")
     out = [r for s in ROLE_SPLITS[role] for r in load_pool_records(s, role, path=path)]
     assert_dev_only([r["id"] for r in out], role)

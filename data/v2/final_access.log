@@ -2,3 +2,4 @@
 {"action": "walk", "commit": "bab548e4799f119cd20bc9866ee4f5e0dd3f91a5", "dirty": true, "entry_point": "scripts_b6_build_pool.py", "family": "archipelago", "group": "FINAL-familiar", "purpose": "build", "time": "2026-11-14T14:36:12+00:00"}
 {"action": "walk", "commit": "bab548e4799f119cd20bc9866ee4f5e0dd3f91a5", "dirty": true, "entry_point": "scripts_b6_build_pool.py", "family": "bunker_nest", "group": "FINAL-familiar", "purpose": "build", "time": "2026-11-14T14:36:18+00:00"}
 {"action": "walk", "commit": "bab548e4799f119cd20bc9866ee4f5e0dd3f91a5", "dirty": true, "entry_point": "scripts_b6_build_pool.py", "family": "labyrinth", "group": "FINAL-transfer", "purpose": "build", "time": "2026-11-14T14:36:23+00:00"}
+{"action": "verify_final_acceptance", "commit": "0ca8d71a45adeda4c19c914d77b08b3ff895d852", "dirty": true, "entry_point": "scripts_b6_verify_final.py", "n": 120, "purpose": "build", "time": "2026-11-14T15:49:38+00:00"}
