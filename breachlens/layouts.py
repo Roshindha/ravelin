@@ -60,6 +60,7 @@ COUNT_RANGES = {   # (min, max) inclusive
 # lancer_share None and defender_count_mult 1.0 the generators are bit-identical to revision 0 (no extra rng draw).
 GEN_PARAMS = {"lancer_share": None,        # None = revision-0 rule (Lancer 0-2 per layout w.p. LANCER_P); a number = target share of defenders that are Lancers
               "defender_count_mult": 1.0,  # multiplies every family's defender count (and the accepted defender range)
+              "island_gap": 4,             # B5-R2: archipelago minimum island-center Chebyshev spacing (4 = revision 0, bit-identical)
               "sealed_fraction": 0.0}      # B5-R1b: fraction of layouts whose core is enclosed by a ring of 8 walls (separate rng stream: 0.0 draws nothing)
 if os.environ.get("BREACHLENS_GEN_PARAMS"):     # exploration hook (B5-R1 sweep only); the gate run asserts it is unset
     GEN_PARAMS.update(json.loads(os.environ["BREACHLENS_GEN_PARAMS"]))
@@ -220,7 +221,7 @@ def _archipelago(rng) -> dict:
         if len(centers) == n_isl:
             break
         cc = (int(rng.integers(2, HI)), int(rng.integers(2, HI)))
-        if all(max(abs(cc[0] - o[0]), abs(cc[1] - o[1])) >= 4 for o in centers):
+        if all(max(abs(cc[0] - o[0]), abs(cc[1] - o[1])) >= GEN_PARAMS["island_gap"] for o in centers):
             centers.append(cc)
     n_def_per = [int(rng.integers(1, 3)) for _ in centers]
     for k in range(_sc(sum(n_def_per)) - sum(n_def_per)):     # defender_count_mult: extra defenders spread round-robin over the islands (no rng)
