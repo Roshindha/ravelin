@@ -35,7 +35,7 @@ def markdown(rep) -> str:
     k["G1"] = (f"max best-single share {max(g['G1']['best_single_share_pooled'].values()):.2f} (limit 0.60); "
                f"units over ban-loss 0.25 everywhere: {g['G1']['units_with_ban_loss_over_limit_everywhere'] or 'none'}")
     k["G2"] = "units passing in: " + "; ".join(f"{u}: {','.join(f) or 'NONE'}" for u, f in g["G2"]["units_passing_in_families"].items())
-    k["G3"] = "units winning a family: " + "; ".join(f"{u}: {','.join(f) or 'NONE'}" for u, f in g["G3"]["units_winning_a_family"].items())
+    k["G3"] = "niche-layout share (need >= 8%, lo95 > 0): " + "; ".join(f"{u} {v['mean']:.1%} [{v['lo95']:.1%}]" for u, v in g["G3"]["niche_share"].items())
     k["G4"] = (f"Mender gain bunker_nest {fmt_ci(g['G4']['mender_gain']['bunker_nest'])}, LAB {fmt_ci(g['G4']['mender_gain']['LAB-DESIGN'])}; "
                f"Mender-only TUNE {g['G4']['mender_only']['TUNE']['mean']:.3f} / LAB {g['G4']['mender_only']['LAB-DESIGN']['mean']:.3f}")
     k["G5"] = "; ".join(f"{f}: best-single {v['best_single_type']} {v['best_single_mean']:.3f}, Oracle breach {v['oracle_breach_rate']:.2f}" for f, v in g["G5"]["by_family"].items())
@@ -59,13 +59,13 @@ def markdown(rep) -> str:
     for key, v in g["G2"]["paired_ban_loss"].items():
         u, f = key.split("/")
         L.append(f"| {u} | {f} | {fmt_ci(v)} | {v['lo_1s']:.3f} | {'yes' if v['pass'] else 'no'} |")
-    L.append("\n### G3 template means (score) and winner margin\n")
-    L.append("| family | " + " | ".join(G.TEMPLATES) + " | winner | runner-up | margin [95% CI] | lo(98.75%) | pass |\n|---|" + "---|" * (len(G.TEMPLATES) + 5))
-    for f, v in g["G3"]["by_family"].items():
-        L.append(f"| {f} | " + " | ".join(f"{v['template_means'][t]:.3f}" for t in G.TEMPLATES) + f" | {v['winner']} | {v['runner_up']} | {fmt_ci(v['margin'])} | {v['margin']['lo_1s']:.3f} | {'yes' if v['pass'] else 'no'} |")
-    L.append(f"\n{g['G3']['pigeonhole_note']}\n")
-    L.append("Exploratory (not gating): share of layouts where a unit's template beats every other template by >= 0.03: " +
-             "; ".join(f"{k}: {v:.2f}" for k, v in g["G3"]["exploratory_layout_share_template_beats_all_others_by_margin"].items()) + "\n")
+    L.append("\n### G3 per-layout niches (B5-R1: pooled TUNE-train + TUNE-val + LAB-DESIGN, margin >= 0.03 over the runner-up template; need share >= 8% and lo95 > 0)\n")
+    L.append("Mean template scores: " + ", ".join(f"{k} {v:.3f}" for k, v in g["G3"]["mean_template_scores"].items()) + "\n")
+    L.append("| unit | template | niche layouts | share [95% CI] | pass |\n|---|---|---|---|---|")
+    for u, v in g["G3"]["niche_share"].items():
+        L.append(f"| {u} | {v['template']} | {v['layouts']} / {g['G3']['layouts_pooled']} | {fmt_ci(v)} | {'yes' if v['pass'] else 'no'} |")
+    L.append("\nDescriptive only (per family, share of layouts where the unit's template wins by >= 0.03): " + "; ".join(
+        f"{f}: " + ", ".join(f"{u} {x[u]:.2f}" for u in G.UNIT_TYPES) + f", no clear winner {x['no_niche_winner_(margin<need)']:.2f}" for f, x in g["G3"]["layout_share_by_family_(descriptive_only)"].items()) + "\n")
     L.append("### G4\n" + "\n".join(f"- Mender gain on {k}: {fmt_ci(v)} -> {'ok' if v['pass'] else 'no'}" for k, v in g["G4"]["mender_gain"].items()))
     L.append("\n" + "\n".join(f"- Mender-only army on {k}: mean {fmt_ci(v)} (upper95 {v['hi95']:.3f}) -> {'ok' if v['pass'] else 'no'}" for k, v in g["G4"]["mender_only"].items()) + "\n")
     L.append("### G5 / G6 / G8\n")

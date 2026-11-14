@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "v2"
 FAM3 = Y.FAMILIAR
 TUNE_SETS = ("TUNE-train", "TUNE-val")
-TEMPLATES = ("scout", "sniper", "bulwark", "blaster", "bulwark_mender")   # template i is "owned" by unit i (4 = Mender via bulwark_mender)
+TEMPLATES = ("scout", "sniper", "bulwark", "blaster", "bulwark_mender", "mender_only")   # template i is owned by unit i (4 = Mender via bulwark_mender); 5 = Mender-only army, a competitor only
 STALE_TAG = 9191
 N_RANDOM_STALE = 14
 
@@ -154,7 +154,7 @@ def single_scores(rows):
 
 
 def template_scores(rows):
-    return np.array([[r["single"][t]["score"] for t in range(4)] + [r["template_bulwark_mender"]["score"]] for r in rows], dtype=float)
+    return np.array([[r["single"][t]["score"] for t in range(4)] + [r["template_bulwark_mender"]["score"], r["single"][4]["score"]] for r in rows], dtype=float)
 
 
 def best_single_type(rows) -> int:
@@ -202,30 +202,33 @@ def g2(raw, th):
 
 
 def g3(raw, th):
-    need = th["G3"]["min_template_margin"]
-    table, wins = {}, {u: [] for u in UNIT_TYPES}
-    explo = {}
-    for f in FAM3:
-        rows = _tune(raw, f)
-        T = template_scores(rows)
-        means = T.mean(axis=0)
-        order = np.argsort(-means, kind="stable")
-        w, ru = int(order[0]), int(order[1])
-        diff = T[:, w] - T[:, ru]
-        bs = bootstrap_mean(diff, th)
-        strict = bool(means[w] > means[ru])
-        ok = strict and bs["mean"] >= need and bs["lo95"] > 0 and bs["lo_1s"] > 0
-        table[f] = {"template_means": dict(zip(TEMPLATES, means.tolist())), "winner": TEMPLATES[w], "runner_up": TEMPLATES[ru], "margin": bs, "pass": bool(ok)}
-        if ok:
-            wins[UNIT_TYPES[w]].append(f)
-        # exploratory (never gates): per unit, share of layouts where its template beats every other template by >= `need`
-        for u in range(5):
-            others = np.delete(T, u, axis=1).max(axis=1)
-            explo[f"{UNIT_TYPES[u]}/{f}"] = float(np.mean(T[:, u] - others >= need))
-    n_winners = sum(1 for u in UNIT_TYPES if wins[u])
-    return {"pass": all(wins[u] for u in UNIT_TYPES), "units_winning_a_family": wins, "by_family": table,
-            "pigeonhole_note": f"{len(UNIT_TYPES)} units but only {len(FAM3)} tested families: under this reading at most {len(FAM3)} units can win a family; {n_winners} did.",
-            "exploratory_layout_share_template_beats_all_others_by_margin": explo, "families_tested": len(FAM3)}
+    """B5-R1 per-layout niche (spec 3.4 item 6): 6 templates (5 single-focus armies + bulwark_mender), pooled over TUNE-train, TUNE-val and
+    LAB-DESIGN. Unit u (owner of template u; the Mender owns bulwark_mender) has a niche on a layout iff its template is the best by a margin
+    >= `min_template_margin` over the runner-up. Pass iff the niche-layout share >= `min_layout_share` and its 95 % bootstrap lower bound > 0."""
+    need, share_min = th["G3"]["min_template_margin"], th["G3"]["min_layout_share"]
+    rows = _rows(raw, None, (*TUNE_SETS, "LAB-DESIGN"))
+    T = template_scores(rows)
+    srt = np.sort(T, axis=1)
+    margin = srt[:, -1] - srt[:, -2]
+    best = np.argmax(T, axis=1)
+    niche = (margin >= need)
+    table = {}
+    for u in range(5):
+        ind = (niche & (best == u)).astype(float)
+        bs = bootstrap_mean(ind, th)
+        table[UNIT_TYPES[u]] = {**bs, "template": TEMPLATES[u], "layouts": int(ind.sum()), "pass": bool(bs["mean"] >= share_min and bs["lo95"] > 0)}
+    by_family = {}
+    for name, rws in {**{f: _rows(raw, f, (*TUNE_SETS, "LAB-DESIGN")) for f in Y.FAMILIES}}.items():
+        if not rws:
+            continue
+        Tf = template_scores(rws)
+        s2 = np.sort(Tf, axis=1)
+        bf, nf = np.argmax(Tf, axis=1), (s2[:, -1] - s2[:, -2] >= need)
+        by_family[name] = {"n": len(rws), **{UNIT_TYPES[u]: float(np.mean(nf & (bf == u))) for u in range(5)},
+                           "no_niche_winner_(margin<need)": float(np.mean(~nf)), "mender_only_best_by_margin": float(np.mean(nf & (bf == 5)))}
+    return {"pass": all(v["pass"] for v in table.values()), "niche_share": table, "layouts_pooled": len(rows),
+            "mean_template_scores": dict(zip(TEMPLATES, T.mean(axis=0).tolist())), "layout_share_by_family_(descriptive_only)": by_family,
+            "units_without_niche": [u for u, v in table.items() if not v["pass"]]}
 
 
 def g4(raw, th):

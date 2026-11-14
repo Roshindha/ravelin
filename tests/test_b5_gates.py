@@ -56,7 +56,8 @@ def test_g2_g3_require_the_one_sided_bound_in_addition():
     assert b["mean"] >= 0.02
     assert (b["lo95"] > 0 and b["lo_1s"] > 0) == (b["lo_1s"] > 0)       # the conjunction equals the stricter condition
     src = (ROOT / "breachlens" / "gates.py").read_text()
-    assert src.count('bs["lo_1s"] > 0') >= 2                                # used in both g2 and g3
+    assert src.count('bs["lo_1s"] > 0') >= 1                                # used in g2 (G3 is pooled per-layout since B5-R1: no one-sided bound)
+    assert "lo_1s" not in src.split("def g3")[1].split("def g4")[0]
     assert "lo_1s" not in src.split("def g4")[1].split("def g5")[0]       # G4 keeps the 95 % rules
 
 
@@ -74,7 +75,9 @@ def test_thresholds_file_equals_the_spec():
     assert TH["G1"]["max_best_single_share"] == 0.60 and "> 60 %" in r1
     assert TH["G1"]["max_ban_loss_in_every_family"] == 0.25 and "> 0.25" in r1
     assert TH["G2"]["min_ban_loss"] == 0.02 and "≥ 0.02" in _row("G2") and "98.75" in _row("G2")
-    assert TH["G3"]["min_template_margin"] == 0.03 and "≥ 0.03" in _row("G3") and "98.75" in _row("G3")
+    assert TH["G3"]["min_template_margin"] == 0.03 and "≥ 0.03" in _row("G3") and "98.75" not in _row("G3")
+    assert TH["G3"]["min_layout_share"] == 0.08 and "≥ 8 %" in _row("G3") and "per-layout niche" in _row("G3") and "bulwark_mender" in _row("G3")
+    assert TH["G3"]["bonferroni_applies"] is False and "B5-R1 clarification of G3" in SPEC
     r4 = _row("G4")
     assert TH["G4"]["min_mender_gain"] == 0.02 and "≥ 0.02" in r4 and TH["G4"]["mender_only_max_mean"] == 0.01 and "< 0.01" in r4 and TH["G4"]["mender_only_max_upper95"] == 0.02 and "< 0.02" in r4
     r5 = _row("G5")
@@ -265,3 +268,44 @@ def test_generator_hash_is_recorded_only_if_all_gates_pass():
         assert f.exists() and json.loads(f.read_text())["generator_hash"] == G.generator_hash()
     else:
         assert not f.exists()
+
+
+# ------------------------------------------------------------------ B5-R1: per-layout niche G3 on synthetic data
+def _fake_row(i, scores, fam="spine_pods"):
+    """scores = [scout, sniper, bulwark, blaster, bulwark_mender, mender_only]"""
+    return {"id": f"x{i}", "family": fam, "set": "TUNE-train", "single": [{"score": s} for s in (*scores[:4], scores[5])], "template_bulwark_mender": {"score": scores[4]}}
+
+
+def test_g3_per_layout_niche_counts_margin_and_share_threshold():
+    rows = []
+    for i in range(100):
+        sc = [0.20, 0.20, 0.20, 0.20, 0.20, 0.0]
+        if i < 10:   sc[0] = 0.40    # scout wins by 0.10 on 10 layouts
+        elif i < 20: sc[1] = 0.45    # sniper wins by 0.15 on 10
+        elif i < 30: sc[2] = 0.50    # bulwark on 10
+        elif i < 38: sc[3] = 0.50    # blaster on only 8 -> share exactly 8 %
+        elif i < 45: sc[4] = 0.50    # bulwark_mender (Mender's template) on 7 -> 7 % < 8 %
+        elif i < 60: sc[0] = 0.215                  # scout wins by only 0.015: no niche for anyone
+        rows.append(_fake_row(i, sc))
+    g = G.g3(rows, TH)
+    ns = g["niche_share"]
+    assert ns["sniper"]["layouts"] == 10 and ns["bulwark"]["layouts"] == 10 and ns["scout"]["layouts"] == 10
+    assert ns["blaster"]["layouts"] == 8 and ns["blaster"]["mean"] == pytest.approx(0.08) and ns["blaster"]["pass"]
+    assert ns["mender"]["layouts"] == 7 and not ns["mender"]["pass"] and not g["pass"] and g["units_without_niche"] == ["mender"]
+    assert G.TEMPLATES[:5] == ("scout", "sniper", "bulwark", "blaster", "bulwark_mender")
+
+
+def test_g3_passes_when_every_unit_has_a_niche_and_lower_bound_is_positive():
+    rows = []
+    for i in range(100):
+        sc = [0.10] * 5 + [0.0]
+        sc[i % 5] = 0.40 if i < 90 else 0.10
+        rows.append(_fake_row(i, sc))
+    g = G.g3(rows, TH)
+    assert g["pass"] and all(v["mean"] >= 0.08 and v["lo95"] > 0 for v in g["niche_share"].values())
+
+
+def test_g3_ties_are_not_niches():
+    rows = [_fake_row(i, [0.5, 0.5, 0.1, 0.1, 0.1, 0.0]) for i in range(50)]
+    g = G.g3(rows, TH)
+    assert all(v["layouts"] == 0 for v in g["niche_share"].values()) and not g["pass"]

@@ -1,7 +1,7 @@
 {
  "revision": 0,
  "git": {
-  "commit": "67ae8b17259d3865a6e8cba19ad6b57484c918b2",
+  "commit": "e6f4a048930392ad43dadeefa2019e24cc6c1366",
   "dirty": true
  },
  "sim_version": "5962b969fe445f4bc4a4fa140822dfa97e865e3a71a7f6ddfd00c8f40596c64e",
@@ -231,98 +231,119 @@
   },
   "G3": {
    "pass": false,
-   "units_winning_a_family": {
-    "scout": [],
-    "sniper": [
-     "spine_pods",
-     "archipelago",
-     "bunker_nest"
-    ],
-    "bulwark": [],
-    "blaster": [],
-    "mender": []
-   },
-   "by_family": {
-    "spine_pods": {
-     "template_means": {
-      "scout": 0.13596418906442825,
-      "sniper": 0.6939660828808105,
-      "bulwark": 0.43793835581692014,
-      "blaster": 0.5210717623249758,
-      "bulwark_mender": 0.5189369682042091
-     },
-     "winner": "sniper",
-     "runner_up": "blaster",
-     "margin": {
-      "n": 80,
-      "mean": 0.1728943205558345,
-      "lo95": 0.14271168010682594,
-      "hi95": 0.20299187653720682,
-      "lo_1s": 0.13878582758341737,
-      "hi_1s": 0.20814714244630794
-     },
+   "niche_share": {
+    "scout": {
+     "n": 280,
+     "mean": 0.02857142857142857,
+     "lo95": 0.010714285714285714,
+     "hi95": 0.05,
+     "lo_1s": 0.007142857142857143,
+     "hi_1s": 0.05357142857142857,
+     "template": "scout",
+     "layouts": 8,
+     "pass": false
+    },
+    "sniper": {
+     "n": 280,
+     "mean": 0.4785714285714286,
+     "lo95": 0.42142857142857143,
+     "hi95": 0.5357142857142857,
+     "lo_1s": 0.4142857142857143,
+     "hi_1s": 0.5464285714285714,
+     "template": "sniper",
+     "layouts": 134,
      "pass": true
     },
-    "archipelago": {
-     "template_means": {
-      "scout": 0.14024940931914362,
-      "sniper": 0.7267119353223284,
-      "bulwark": 0.6380632274823486,
-      "blaster": 0.5317229727142335,
-      "bulwark_mender": 0.6177680905464955
-     },
-     "winner": "sniper",
-     "runner_up": "bulwark",
-     "margin": {
-      "n": 80,
-      "mean": 0.08864870783997938,
-      "lo95": 0.04746917722009112,
-      "hi95": 0.13152048227252147,
-      "lo_1s": 0.04253755200131868,
-      "hi_1s": 0.13807654432110422
-     },
-     "pass": true
+    "bulwark": {
+     "n": 280,
+     "mean": 0.060714285714285714,
+     "lo95": 0.03571428571428571,
+     "hi95": 0.08928571428571429,
+     "lo_1s": 0.03214285714285714,
+     "hi_1s": 0.09285714285714286,
+     "template": "bulwark",
+     "layouts": 17,
+     "pass": false
     },
-    "bunker_nest": {
-     "template_means": {
-      "scout": 0.16859517849281785,
-      "sniper": 0.5255539979241604,
-      "bulwark": 0.10888646318851428,
-      "blaster": 0.17198329025205955,
-      "bulwark_mender": 0.398433346677832
-     },
-     "winner": "sniper",
-     "runner_up": "bulwark_mender",
-     "margin": {
-      "n": 80,
-      "mean": 0.1271206512463285,
-      "lo95": 0.02421329272185506,
-      "hi95": 0.22792796121899256,
-      "lo_1s": 0.009041729026504314,
-      "hi_1s": 0.24377982674776563
-     },
+    "blaster": {
+     "n": 280,
+     "mean": 0.010714285714285714,
+     "lo95": 0.0,
+     "hi95": 0.025,
+     "lo_1s": 0.0,
+     "hi_1s": 0.025,
+     "template": "blaster",
+     "layouts": 3,
+     "pass": false
+    },
+    "mender": {
+     "n": 280,
+     "mean": 0.24642857142857144,
+     "lo95": 0.19642857142857142,
+     "hi95": 0.29642857142857143,
+     "lo_1s": 0.18928571428571428,
+     "hi_1s": 0.30357142857142855,
+     "template": "bulwark_mender",
+     "layouts": 69,
      "pass": true
     }
    },
-   "pigeonhole_note": "5 units but only 3 tested families: under this reading at most 3 units can win a family; 1 did.",
-   "exploratory_layout_share_template_beats_all_others_by_margin": {
-    "scout/spine_pods": 0.0,
-    "sniper/spine_pods": 0.625,
-    "bulwark/spine_pods": 0.0,
-    "blaster/spine_pods": 0.0125,
-    "mender/spine_pods": 0.1875,
-    "scout/archipelago": 0.0,
-    "sniper/archipelago": 0.475,
-    "bulwark/archipelago": 0.175,
-    "blaster/archipelago": 0.0,
-    "mender/archipelago": 0.1625,
-    "scout/bunker_nest": 0.1,
-    "sniper/bunker_nest": 0.425,
-    "bulwark/bunker_nest": 0.0125,
-    "blaster/bunker_nest": 0.025,
-    "mender/bunker_nest": 0.35
+   "layouts_pooled": 280,
+   "mean_template_scores": {
+    "scout": 0.14556526278100923,
+    "sniper": 0.6567864511136744,
+    "bulwark": 0.42943894711030084,
+    "blaster": 0.4363079453831578,
+    "bulwark_mender": 0.5392382920890444,
+    "mender_only": 0.0
    },
-   "families_tested": 3
+   "layout_share_by_family_(descriptive_only)": {
+    "spine_pods": {
+     "n": 80,
+     "scout": 0.0,
+     "sniper": 0.625,
+     "bulwark": 0.0,
+     "blaster": 0.0125,
+     "mender": 0.1875,
+     "no_niche_winner_(margin<need)": 0.175,
+     "mender_only_best_by_margin": 0.0
+    },
+    "archipelago": {
+     "n": 80,
+     "scout": 0.0,
+     "sniper": 0.475,
+     "bulwark": 0.175,
+     "blaster": 0.0,
+     "mender": 0.1625,
+     "no_niche_winner_(margin<need)": 0.1875,
+     "mender_only_best_by_margin": 0.0
+    },
+    "bunker_nest": {
+     "n": 80,
+     "scout": 0.1,
+     "sniper": 0.425,
+     "bulwark": 0.0125,
+     "blaster": 0.025,
+     "mender": 0.35,
+     "no_niche_winner_(margin<need)": 0.0875,
+     "mender_only_best_by_margin": 0.0
+    },
+    "labyrinth": {
+     "n": 40,
+     "scout": 0.0,
+     "sniper": 0.3,
+     "bulwark": 0.05,
+     "blaster": 0.0,
+     "mender": 0.325,
+     "no_niche_winner_(margin<need)": 0.325,
+     "mender_only_best_by_margin": 0.0
+    }
+   },
+   "units_without_niche": [
+    "scout",
+    "bulwark",
+    "blaster"
+   ]
   },
   "G4": {
    "pass": false,

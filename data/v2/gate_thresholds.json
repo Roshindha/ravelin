@@ -3,7 +3,7 @@
   "bootstrap": {"n_resamples": 10000, "seed": 8080, "ci_level": 0.95, "one_sided_level": 0.9875, "bonferroni_families": 4, "familywise_alpha": 0.05},
   "G1": {"max_best_single_share": 0.60, "max_ban_loss_in_every_family": 0.25},
   "G2": {"min_ban_loss": 0.02, "families_tested": 3},
-  "G3": {"min_template_margin": 0.03, "families_tested": 3},
+  "G3": {"min_template_margin": 0.03, "min_layout_share": 0.08, "scope": "pooled TUNE-train + TUNE-val + LAB-DESIGN", "bonferroni_applies": false},
   "G4": {"min_mender_gain": 0.02, "mender_only_max_mean": 0.01, "mender_only_max_upper95": 0.02},
   "G5": {"best_single_mean_range": [0.25, 0.65], "oracle_breach_range": [0.6, 0.95]},
   "G6": {"min_units_over": 12, "min_layout_share": 0.30},

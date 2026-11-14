@@ -1,6 +1,6 @@
 # B5 report (BreachLens v2)
 
-Revision 0 | commit `67ae8b1725` (dirty=True) | sim_version `5962b969fe445f4b...` | layouts: {'TUNE-train': 180, 'TUNE-val': 60, 'LAB-DESIGN': 40} | bootstrap: 10000 resamples, seed 8080
+Revision 0 | commit `e6f4a04893` (dirty=True) | sim_version `5962b969fe445f4b...` | layouts: {'TUNE-train': 180, 'TUNE-val': 60, 'LAB-DESIGN': 40} | bootstrap: 10000 resamples, seed 8080
 
 **All gates pass: False**  (failed: G1, G2, G3, G4, G5, G6, G9).  generator_hash recorded: False
 
@@ -10,7 +10,7 @@ Revision 0 | commit `67ae8b1725` (dirty=True) | sim_version `5962b969fe445f4b...
 |---|---|---|
 | G1 | **FAIL** | max best-single share 0.75 (limit 0.60); units over ban-loss 0.25 everywhere: none |
 | G2 | **FAIL** | units passing in: scout: NONE; sniper: NONE; bulwark: NONE; blaster: NONE; mender: NONE |
-| G3 | **FAIL** | units winning a family: scout: NONE; sniper: spine_pods,archipelago,bunker_nest; bulwark: NONE; blaster: NONE; mender: NONE |
+| G3 | **FAIL** | niche-layout share (need >= 8%, lo95 > 0): scout 2.9% [1.1%]; sniper 47.9% [42.1%]; bulwark 6.1% [3.6%]; blaster 1.1% [0.0%]; mender 24.6% [19.6%] |
 | G4 | **FAIL** | Mender gain bunker_nest -0.001 [-0.004, 0.002], LAB 0.008 [0.000, 0.023]; Mender-only TUNE 0.000 / LAB 0.000 |
 | G5 | **FAIL** | spine_pods: best-single sniper 0.694, Oracle breach 1.00; archipelago: best-single sniper 0.727, Oracle breach 1.00; bunker_nest: best-single sniper 0.526, Oracle breach 1.00 |
 | G6 | **FAIL** | Oracle >12 units on 0.01 of layouts (need >=0.30); layouts with 20 Scouts >= Oracle: 0 |
@@ -57,17 +57,19 @@ best-single-unit share per layout (ties split), pooled TUNE: scout 0.04, sniper 
 | mender | archipelago | -0.003 [-0.009, 0.000] | -0.011 | no |
 | mender | bunker_nest | -0.001 [-0.004, 0.002] | -0.005 | no |
 
-### G3 template means (score) and winner margin
+### G3 per-layout niches (B5-R1: pooled TUNE-train + TUNE-val + LAB-DESIGN, margin >= 0.03 over the runner-up template; need share >= 8% and lo95 > 0)
 
-| family | scout | sniper | bulwark | blaster | bulwark_mender | winner | runner-up | margin [95% CI] | lo(98.75%) | pass |
-|---|---|---|---|---|---|---|---|---|---|---|
-| spine_pods | 0.136 | 0.694 | 0.438 | 0.521 | 0.519 | sniper | blaster | 0.173 [0.143, 0.203] | 0.139 | yes |
-| archipelago | 0.140 | 0.727 | 0.638 | 0.532 | 0.618 | sniper | bulwark | 0.089 [0.047, 0.132] | 0.043 | yes |
-| bunker_nest | 0.169 | 0.526 | 0.109 | 0.172 | 0.398 | sniper | bulwark_mender | 0.127 [0.024, 0.228] | 0.009 | yes |
+Mean template scores: scout 0.146, sniper 0.657, bulwark 0.429, blaster 0.436, bulwark_mender 0.539, mender_only 0.000
 
-5 units but only 3 tested families: under this reading at most 3 units can win a family; 1 did.
+| unit | template | niche layouts | share [95% CI] | pass |
+|---|---|---|---|---|
+| scout | scout | 8 / 280 | 0.029 [0.011, 0.050] | no |
+| sniper | sniper | 134 / 280 | 0.479 [0.421, 0.536] | yes |
+| bulwark | bulwark | 17 / 280 | 0.061 [0.036, 0.089] | no |
+| blaster | blaster | 3 / 280 | 0.011 [0.000, 0.025] | no |
+| mender | bulwark_mender | 69 / 280 | 0.246 [0.196, 0.296] | yes |
 
-Exploratory (not gating): share of layouts where a unit's template beats every other template by >= 0.03: scout/spine_pods: 0.00; sniper/spine_pods: 0.62; bulwark/spine_pods: 0.00; blaster/spine_pods: 0.01; mender/spine_pods: 0.19; scout/archipelago: 0.00; sniper/archipelago: 0.47; bulwark/archipelago: 0.17; blaster/archipelago: 0.00; mender/archipelago: 0.16; scout/bunker_nest: 0.10; sniper/bunker_nest: 0.42; bulwark/bunker_nest: 0.01; blaster/bunker_nest: 0.03; mender/bunker_nest: 0.35
+Descriptive only (per family, share of layouts where the unit's template wins by >= 0.03): spine_pods: scout 0.00, sniper 0.62, bulwark 0.00, blaster 0.01, mender 0.19, no clear winner 0.17; archipelago: scout 0.00, sniper 0.47, bulwark 0.17, blaster 0.00, mender 0.16, no clear winner 0.19; bunker_nest: scout 0.10, sniper 0.42, bulwark 0.01, blaster 0.03, mender 0.35, no clear winner 0.09; labyrinth: scout 0.00, sniper 0.30, bulwark 0.05, blaster 0.00, mender 0.33, no clear winner 0.33
 
 ### G4
 - Mender gain on bunker_nest: -0.001 [-0.004, 0.002] -> no

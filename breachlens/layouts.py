@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import os
 from collections import deque
 from pathlib import Path
 
@@ -54,6 +56,24 @@ COUNT_RANGES = {   # (min, max) inclusive
     "bunker_nest": {"buildings": (4, 9),  "defenders": (7, 13), "walls": (36, 60), "value_total": (7, 22)},
     "labyrinth":   {"buildings": (3, 6),  "defenders": (4, 8),  "walls": (30, 90), "value_total": (5, 16)},
 }
+# Generator parameters that revisions may change (spec 3.5 iteration rule). The defaults ARE the current revision's values; with
+# lancer_share None and defender_count_mult 1.0 the generators are bit-identical to revision 0 (no extra rng draw).
+GEN_PARAMS = {"lancer_share": None,        # None = revision-0 rule (Lancer 0-2 per layout w.p. LANCER_P); a number = target share of defenders that are Lancers
+              "defender_count_mult": 1.0}  # multiplies every family's defender count (and the accepted defender range)
+if os.environ.get("BREACHLENS_GEN_PARAMS"):     # exploration hook (B5-R1 sweep only); the gate run asserts it is unset
+    GEN_PARAMS.update(json.loads(os.environ["BREACHLENS_GEN_PARAMS"]))
+
+
+def gen_override_active() -> bool:
+    return bool(os.environ.get("BREACHLENS_GEN_PARAMS"))
+
+
+def _sc(n: int) -> int:
+    """Defender count after `defender_count_mult` (round half up; identity at 1.0)."""
+    m = GEN_PARAMS["defender_count_mult"]
+    return n if m == 1.0 else int(math.floor(n * m + 0.5))
+
+
 LANCER_P = {"spine_pods": 0.88, "bunker_nest": 0.88}   # generator probabilities behind the spec's >= 70 % set-level rule
 FLAK_P = {"archipelago": 0.80}                          # ... and the >= 50 % rule
 MIN_GUN_FRAC = 0.5                                      # familiar families: Gun turrets are at least half of the defenders
@@ -118,13 +138,21 @@ class _Builder:
 
 
 def _defender_types(rng, n: int, lancer_p: float, flak_p: float) -> list:
-    """Types for n defenders: Gun majority (>= 50 %), >= 1 Lancer w.p. lancer_p, >= 1 Flak w.p. flak_p."""
+    """Types for n defenders: Gun majority (>= 50 %), >= 1 Lancer w.p. lancer_p, >= 1 Flak w.p. flak_p.
+    With GEN_PARAMS['lancer_share'] set, Flaks are drawn as before and the Lancer count is the stochastic rounding of share * n
+    (capped so that Guns stay >= ceil(n / 2))."""
     budget = n // 2                 # non-gun slots so that guns >= ceil(n/2)
     lancers = flaks = 0
-    if rng.random() < lancer_p and budget:
-        lancers = 1 + int(rng.random() < 0.35 and budget > 1)
-    if rng.random() < flak_p and budget - lancers > 0:
-        flaks = 1 + int(rng.random() < 0.3 and budget - lancers > 1)
+    share = GEN_PARAMS["lancer_share"]
+    if share is None:
+        if rng.random() < lancer_p and budget:
+            lancers = 1 + int(rng.random() < 0.35 and budget > 1)
+        if rng.random() < flak_p and budget - lancers > 0:
+            flaks = 1 + int(rng.random() < 0.3 and budget - lancers > 1)
+    else:
+        if rng.random() < flak_p and budget:
+            flaks = 1 + int(rng.random() < 0.3 and budget > 1)
+        lancers = min(int(share * n + rng.random()), budget - flaks)
     types = ["lancer"] * lancers + ["flak"] * flaks + ["gun"] * (n - lancers - flaks)
     return [types[i] for i in rng.permutation(n)]
 
@@ -150,7 +178,7 @@ def _spine_pods(rng) -> dict:
     r_top, r_bot = 2, int(rng.integers(9, 12))
     b.core((r_bot, c))
     spine_def = [(r, c) for r in range(r_top, r_bot) if (r - r_top) % 2 == 0]
-    types = _defender_types(rng, len(spine_def) + 4, LANCER_P["spine_pods"], 0.12)   # spine + pod guards share one type draw
+    types = _defender_types(rng, _sc(len(spine_def) + 4), LANCER_P["spine_pods"], 0.12)   # spine + pod guards share one type draw
     ti = 0
     for r in range(r_top, r_bot):
         if (r - r_top) % 2 == 0:
@@ -194,6 +222,8 @@ def _archipelago(rng) -> dict:
         if all(max(abs(cc[0] - o[0]), abs(cc[1] - o[1])) >= 4 for o in centers):
             centers.append(cc)
     n_def_per = [int(rng.integers(1, 3)) for _ in centers]
+    for k in range(_sc(sum(n_def_per)) - sum(n_def_per)):     # defender_count_mult: extra defenders spread round-robin over the islands (no rng)
+        n_def_per[k % len(n_def_per)] += 1
     types = _defender_types(rng, sum(n_def_per), 0.2, FLAK_P["archipelago"])
     ti = 0
     core_i = int(rng.integers(len(centers)))
@@ -236,8 +266,8 @@ def _bunker_nest(rng) -> dict:
             for c in range(cc - h, cc + h + 1):
                 if max(abs(r - cr), abs(c - cc)) == h and (r, c) not in door:
                     b.wall((r, c))
-    n_corr = int(rng.integers(6, 10))
-    n_out = int(rng.integers(0, 3))
+    n_corr = _sc(int(rng.integers(6, 10)))
+    n_out = _sc(int(rng.integers(0, 3)))
     types = _defender_types(rng, n_corr + n_out, LANCER_P["bunker_nest"], 0.1)
     corr = [(r, c) for r in range(cr - 3, cr + 4) for c in range(cc - 3, cc + 4) if max(abs(r - cr), abs(c - cc)) == 3]
     _scatter(rng, b, n_corr, corr, lambda x: b.defender(x, types[len(b.L["defenders"])]))
@@ -295,9 +325,13 @@ def _labyrinth(rng) -> dict:
     corr_cells = [(r, c) for (r0, r1) in rows for r in range(r0, r1 + 1) for c in range(2, 12)]
     _scatter(rng, b, int(rng.integers(3, 6)), corr_cells, lambda x: b.building(x, _value(rng)))
     sites = junction + [(2, ent_c + 1 if ent_c + 1 <= 11 else ent_c)]
-    n_def = max(4, len(sites)) + int(rng.integers(0, 2))
+    n_def = _sc(max(4, len(sites)) + int(rng.integers(0, 2)))
     types = ["gun", "lancer", "flak"]
-    types += ["gun" if rng.random() < 0.55 else str(rng.choice(["lancer", "flak"])) for _ in range(n_def - 3)]
+    if GEN_PARAMS["lancer_share"] is None:
+        types += ["gun" if rng.random() < 0.55 else str(rng.choice(["lancer", "flak"])) for _ in range(n_def - 3)]
+    else:   # extras: Lancer w.p. `lancer_share`, 10 % Flak, the rest Gun (each layout keeps its mandatory one of each type)
+        sh = GEN_PARAMS["lancer_share"]
+        types += ["lancer" if u < sh else "flak" if u < sh + 0.1 else "gun" for u in (rng.random() for _ in range(n_def - 3))]
     types = [types[i] for i in rng.permutation(n_def)]
     placed = 0
     for site in sites:
@@ -360,7 +394,10 @@ def check(L: dict, family: str) -> list:
         bad.append("overlap")
     if any(not (LO <= r <= HI and LO <= c <= HI) for r, c in cells):
         bad.append("out_of_interior")
-    rc = COUNT_RANGES[family]
+    rc = dict(COUNT_RANGES[family])
+    if GEN_PARAMS["defender_count_mult"] != 1.0:
+        lo_d, hi_d = rc["defenders"]
+        rc["defenders"] = (_sc(lo_d), int(math.ceil(hi_d * GEN_PARAMS["defender_count_mult"])))
     n_b, n_d, n_w = len(L["buildings"]), len(L["defenders"]), len(L["walls"])
     vt = sum(b["value"] for b in L["buildings"])
     for name, v in (("buildings", n_b), ("defenders", n_d), ("walls", n_w), ("value_total", vt)):
