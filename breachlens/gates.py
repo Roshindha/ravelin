@@ -251,7 +251,8 @@ def g3(raw, th):
 def g4(raw, th, estimator=None):
     estimator = estimator or th["G4"]["estimator"]
     need = th["G4"]["min_mender_gain"]
-    sets = {"bunker_nest": _tune(raw, "bunker_nest"), "LAB-DESIGN": _rows(raw, "labyrinth", ("LAB-DESIGN",))}
+    # Gate changelog (g): at least one familiar TUNE family or LAB-DESIGN (was bunker_nest or LAB-DESIGN)
+    sets = {**{f: _tune(raw, f) for f in FAM3}, "LAB-DESIGN": _rows(raw, "labyrinth", ("LAB-DESIGN",))}
     gains = {}
     for name, rows in sets.items():
         bs = bootstrap_mean(ban_loss_values(rows, 4, estimator), th)

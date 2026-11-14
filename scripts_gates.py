@@ -38,7 +38,7 @@ def markdown(rep) -> str:
                f"units over ban-loss 0.25 everywhere: {g['G1']['units_with_ban_loss_over_limit_everywhere'] or 'none'}")
     k["G2"] = "units passing in: " + "; ".join(f"{u}: {','.join(f) or 'NONE'}" for u, f in g["G2"]["units_passing_in_families"].items())
     k["G3"] = "niche-layout share (need >= 8%, lo95 > 0): " + "; ".join(f"{u} {v['mean']:.1%} [{v['lo95']:.1%}]" for u, v in g["G3"]["niche_share"].items())
-    k["G4"] = (f"Mender gain bunker_nest {fmt_ci(g['G4']['mender_gain']['bunker_nest'])}, LAB {fmt_ci(g['G4']['mender_gain']['LAB-DESIGN'])}; "
+    k["G4"] = ("Mender gain " + ", ".join(f"{k} {fmt_ci(v)}" for k, v in g["G4"]["mender_gain"].items()) + "; "
                f"Mender-only TUNE {g['G4']['mender_only']['TUNE']['mean']:.3f} / LAB {g['G4']['mender_only']['LAB-DESIGN']['mean']:.3f}")
     k["G5"] = "; ".join(f"{f}: best-single {v['best_single_type']} {v['best_single_mean']:.3f}, Oracle {v['oracle_score']:.3f} / breach {v['oracle_breach_rate']:.2f}" for f, v in g["G5"]["by_family"].items())
     k["G6"] = (f"Oracle >12 units on {g['G6']['share_oracle_over_12_units']:.2f} of layouts (diagnostic, was >=0.30); layouts with 20 Scouts >= Oracle: "

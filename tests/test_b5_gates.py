@@ -80,6 +80,7 @@ def test_thresholds_file_equals_the_spec():
     assert TH["G3"]["bonferroni_applies"] is False and "B5-R1 clarification of G3" in SPEC
     r4 = _row("G4")
     assert TH["G4"]["min_mender_gain"] == 0.02 and "≥ 0.02" in r4 and TH["G4"]["mender_only_max_mean"] == 0.01 and "< 0.01" in r4 and TH["G4"]["mender_only_max_upper95"] == 0.02 and "< 0.02" in r4
+    assert "at least one of the three familiar TUNE families or on LAB-DESIGN" in r4 and "(g)" in SPEC and "(h) **Time-box.**" in SPEC
     r5 = _row("G5")
     assert TH["G5"]["best_single_mean_range"] == [0.25, 0.65] and "[0.25, 0.65]" in r5 and TH["G5"]["oracle_score_range"] == [0.80, 0.97] and "[0.80, 0.97]" in r5 and TH["G5"]["oracle_breach_min"] == 0.6 and "≥ 0.6" in r5 and "0.95" not in r5
     r6 = _row("G6")
@@ -264,8 +265,13 @@ def test_report_is_reproducible_from_raw_and_matches_the_files():
     # gates.json is the stored revision-1 record (R2a, B5-R2b): every gate reproduces exactly from the stored raw data (which has the monotone fields)
     assert gj["revision"] == 1
     again = G.compute_gates(raw, th)
-    for k in ("G1", "G2", "G3", "G4", "G5", "G6", "G8", "G9"):
+    for k in ("G1", "G2", "G3", "G5", "G6", "G8", "G9"):
         assert again["gates"][k] == gj["gates"][k], k
+    # G4: the stored record is under the pre-(g) definition (bunker_nest or LAB-DESIGN); gates.py now also tests spine_pods / archipelago (Gate changelog (g)).
+    a4, s4 = again["gates"]["G4"], gj["gates"]["G4"]
+    assert a4["mender_only"] == s4["mender_only"] and a4["part_b_pass"] == s4["part_b_pass"]
+    assert all(a4["mender_gain"][n] == s4["mender_gain"][n] for n in s4["mender_gain"]) and set(s4["mender_gain"]) <= set(a4["mender_gain"])
+    assert a4["part_a_pass"] == any(v["pass"] for v in a4["mender_gain"].values())
 
 
 def test_generator_hash_is_recorded_only_if_all_gates_pass():
