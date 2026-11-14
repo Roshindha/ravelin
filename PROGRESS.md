@@ -413,6 +413,11 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Result: criteria met R0 0, R1a 1, R1b 3, R1c 3, R1d 2 (of 5). Sniper stays best single in every family and arm (pooled share 0.6-0.8); rejection > 40 % in archipelago and labyrinth in all arms; R1c == R1b (cap 14 never binds: Oracle uses <= 12 units); R1d pushes Oracle score above 0.97 (Mender buff). See `sweep_summary.md`.
 - 3 revisions remain unspent; FINAL never generated or loaded, ledger empty; generator_hash not recorded.
 
+### STEP B5-R2 (v2): Sniper-cost / island-gap / Mender sweep -- **no arm qualifies (best 4/5 but fails (ii)); NOTHING APPLIED, no revision spent, gate script NOT re-run**
+- Gate changelog (e) + SPEC 3.4 item 9 committed (7f2c753) before the sweep: criterion (iii) = rejection <= 65 % per family, disclosed in README. Recorded as POST-HOC (made after seeing R1b; R1b would already meet 4/5 under it). Cap lever dropped (never binds); G6 stays a diagnostic.
+- Sweep (`scripts_b5r2_sweep.py`, `data/v2/b5r2_sweep/`; new hook `GEN_PARAMS.island_gap`, default 4 = bit-identical; interpreted as island-center Chebyshev spacing): R2a 4/5, R2d 4/5, R2b 3/5, R2c 1/5. Best arm R2a fails (ii): labyrinth best single = Sniper 0.669 (> 0.65); bunker_nest 0.288. R2c: archipelago rejection 89.8 %, Oracle 1.00. Sniper cost 28 vs 30 gives identical best-single numbers.
+- Full suite: 343 tests, all pass, exit 0 (pytest.ini addopts -q plus -q suppresses the summary line). FINAL never generated/loaded; ledger empty; generator_hash not recorded. 3 revisions unspent.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
