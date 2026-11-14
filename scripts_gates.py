@@ -11,11 +11,13 @@ import sys
 import time
 
 from breachlens import gates as G
+from breachlens import config as K
 from breachlens import layouts as Y
 from breachlens.acceptance import thresholds
 from breachlens.config import sim_version
 
-REVISION = 0   # B5 design revision number (0 = the spec's initial design); incremented only by the owner's decision
+REVISION = 0   # B5 design revision number (0 = the spec's initial design; 1 = B5-R1, see REVISION_NOTES); incremented only by the owner's decision
+REVISION_NOTES = {0: 'initial design', 1: 'B5-R1: see data/v2/b5r1_sweep/sweep_summary.md (chosen arm applied)'}
 
 
 def fmt_ci(b, p=3):
@@ -120,13 +122,13 @@ def markdown(rep) -> str:
     return "\n".join(L) + "\n"
 
 
-def build_report(raw, record_hash=True):
+def build_report(raw, record_hash=True, git=None):
     th = thresholds()
     gates = G.compute_gates(raw, th)
     meta_sets = Y.load_design_sets_meta()
     mix = G.defender_mix()
     rep = {
-        "meta": {"revision": REVISION, "git": G.git_info(), "sim_version": sim_version(), "counts": meta_sets["counts"], "generator_hash": G.generator_hash(),
+        "meta": {"revision": REVISION, "revision_notes": REVISION_NOTES[REVISION], "git": git or G.git_info(), "sim_version": sim_version(), "counts": meta_sets["counts"], "generator_hash": G.generator_hash(),
                  "generator_hash_recorded": False, "layouts_per_set": {k: len(v) for k, v in meta_sets["sets"].items()}},
         "thresholds": th, "gates": gates, "unit_static": G.unit_static_report(), "single_unit_table": G.single_unit_table(raw, th),
         "wall_metrics": G.wall_table(raw), "oracle_summary": G.oracle_summary(raw), "defender_mix": mix, "defender_mix_rules": G.defender_mix_rules(mix),
@@ -149,11 +151,13 @@ def write_outputs(raw, rep):
 
 if __name__ == "__main__":
     t0 = time.time()
+    git0 = G.git_info()    # captured BEFORE any output file is written, so a run from a clean commit records dirty=false
+    assert not (K.stats_override_active() or Y.gen_override_active()), "sweep override hooks must not be set for a gate run"
     if "--report" in sys.argv:
         raw = json.loads((G.DATA / "b5_raw.json").read_text())["layouts"]
     else:
         raw = G.run_raw(G.design_tasks())
         (G.DATA / "b5_raw.json").write_text(json.dumps({"sim_version": sim_version(), "layouts": raw}) + "\n")
-    rep = build_report(raw)
+    rep = build_report(raw, git=git0)
     write_outputs(raw, rep)
     print(f"done in {time.time() - t0:.0f}s; all_pass={rep['gates']['all_pass']} failed={rep['gates']['failed']}")

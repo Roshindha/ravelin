@@ -1,0 +1,1319 @@
+{
+ "summaries": {
+  "R0": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6628387599107264,
+     "single_means": [
+      0.1502655121855904,
+      0.6628387599107264,
+      0.4453882468106607,
+      0.5351243590829406,
+      0.0
+     ],
+     "sniper_share_best_single": 0.8416666666666666,
+     "best_single_share": [
+      0.0,
+      0.8416666666666666,
+      0.016666666666666666,
+      0.14166666666666666,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.4453882468106606,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.5,
+     "oracle_mean_counts": [
+      2.15,
+      1.9,
+      2.6,
+      1.15,
+      1.7
+     ],
+     "mean_defenders": 8.65,
+     "lancer_share": 0.20809248554913296,
+     "gun_share": 0.7572254335260116,
+     "flak_share": 0.03468208092485549,
+     "rejection_rate": 0.9193548387096774,
+     "single_type_trivial": 228,
+     "too_hard": 0,
+     "stat_evaluated": 248
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.7480368813109088,
+     "single_means": [
+      0.16218506251566897,
+      0.7480368813109088,
+      0.6735476223242813,
+      0.556112555007921,
+      0.0
+     ],
+     "sniper_share_best_single": 0.6166666666666666,
+     "best_single_share": [
+      0.0,
+      0.6166666666666666,
+      0.3416666666666667,
+      0.041666666666666664,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.6735476223242813,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.45,
+     "oracle_mean_counts": [
+      1.9,
+      1.95,
+      2.55,
+      1.2,
+      1.85
+     ],
+     "mean_defenders": 9.55,
+     "lancer_share": 0.16230366492146597,
+     "gun_share": 0.6963350785340314,
+     "flak_share": 0.14136125654450263,
+     "rejection_rate": 0.9936285441223319,
+     "single_type_trivial": 3119,
+     "too_hard": 0,
+     "stat_evaluated": 3139
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5468288663091295,
+     "single_means": [
+      0.1817741074714759,
+      0.5468288663091295,
+      0.0818652926021347,
+      0.14914714014056116,
+      0.0
+     ],
+     "sniper_share_best_single": 0.875,
+     "best_single_share": [
+      0.1,
+      0.875,
+      0.025,
+      0.0,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.0818652926021347,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.6,
+     "oracle_mean_counts": [
+      0.8,
+      1.75,
+      3.3,
+      0.95,
+      1.8
+     ],
+     "mean_defenders": 8.9,
+     "lancer_share": 0.15730337078651685,
+     "gun_share": 0.797752808988764,
+     "flak_share": 0.0449438202247191,
+     "rejection_rate": 0.5348837209302325,
+     "single_type_trivial": 23,
+     "too_hard": 0,
+     "stat_evaluated": 43
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.7161244588744589,
+     "single_means": [
+      0.12292857142857143,
+      0.7161244588744589,
+      0.6514134199134199,
+      0.6128896103896104,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5,
+     "best_single_share": [
+      0.0,
+      0.5,
+      0.325,
+      0.175,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.015000000000000003,
+      "lo95": 0.0,
+      "hi95": 0.045000000000000005,
+      "lo_1s": 0.0,
+      "hi_1s": 0.06000000000000001
+     },
+     "greedy_score": 0.65141341991342,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.0,
+     "oracle_mean_counts": [
+      1.6,
+      1.45,
+      2.7,
+      0.9,
+      2.35
+     ],
+     "mean_defenders": 5.3,
+     "lancer_share": 0.3113207547169811,
+     "gun_share": 0.3867924528301887,
+     "flak_share": 0.3018867924528302,
+     "rejection_rate": 0.7468354430379747,
+     "single_type_trivial": 59,
+     "too_hard": 0,
+     "stat_evaluated": 79
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.7777777777777778
+  },
+  "A": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6654539518117893,
+     "single_means": [
+      0.08957180665412962,
+      0.6654539518117893,
+      0.44828861684243987,
+      0.48186390653812083,
+      0.0
+     ],
+     "sniper_share_best_single": 0.8833333333333332,
+     "best_single_share": [
+      0.0,
+      0.8833333333333332,
+      0.05833333333333333,
+      0.05833333333333333,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.44828861684243987,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.3,
+     "oracle_mean_counts": [
+      1.6,
+      1.75,
+      3.4,
+      0.8,
+      1.75
+     ],
+     "mean_defenders": 8.7,
+     "lancer_share": 0.1896551724137931,
+     "gun_share": 0.764367816091954,
+     "flak_share": 0.04597701149425287,
+     "rejection_rate": 0.7849462365591398,
+     "single_type_trivial": 73,
+     "too_hard": 0,
+     "stat_evaluated": 93
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 0.9882608695652173,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.7239569864122058,
+     "single_means": [
+      0.08114664347744507,
+      0.7239569864122058,
+      0.6641679563941242,
+      0.537301110716806,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5166666666666667,
+     "best_single_share": [
+      0.0,
+      0.5166666666666667,
+      0.4416666666666667,
+      0.041666666666666664,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.6641679563941241,
+     "share_oracle_over_12_units": 0.05,
+     "oracle_mean_units": 9.35,
+     "oracle_mean_counts": [
+      1.75,
+      1.65,
+      3.15,
+      1.25,
+      1.55
+     ],
+     "mean_defenders": 9.35,
+     "lancer_share": 0.12299465240641712,
+     "gun_share": 0.7272727272727273,
+     "flak_share": 0.1497326203208556,
+     "rejection_rate": 0.9674267100977199,
+     "single_type_trivial": 594,
+     "too_hard": 0,
+     "stat_evaluated": 614
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 1.0,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.4857974525474525,
+     "single_means": [
+      0.1590810855810856,
+      0.4857974525474525,
+      0.048359557109557104,
+      0.05066612554112554,
+      0.0
+     ],
+     "sniper_share_best_single": 0.725,
+     "best_single_share": [
+      0.225,
+      0.725,
+      0.05,
+      0.0,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.0,
+      "lo95": 0.0,
+      "hi95": 0.0,
+      "lo_1s": 0.0,
+      "hi_1s": 0.0
+     },
+     "greedy_score": 0.04835955710955711,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.25,
+     "oracle_mean_counts": [
+      1.8,
+      2.35,
+      2.5,
+      1.2,
+      1.4
+     ],
+     "mean_defenders": 9.1,
+     "lancer_share": 0.15934065934065933,
+     "gun_share": 0.7967032967032966,
+     "flak_share": 0.04395604395604396,
+     "rejection_rate": 0.4594594594594595,
+     "single_type_trivial": 17,
+     "too_hard": 0,
+     "stat_evaluated": 37
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 0.9870000000000001,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.679672077922078,
+     "single_means": [
+      0.1454285714285714,
+      0.679672077922078,
+      0.6417467532467532,
+      0.6321277056277056,
+      0.0
+     ],
+     "sniper_share_best_single": 0.3833333333333333,
+     "best_single_share": [
+      0.0,
+      0.3833333333333333,
+      0.3833333333333333,
+      0.23333333333333334,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.012857142857142855,
+      "lo95": 0.0,
+      "hi95": 0.03428571428571428,
+      "lo_1s": 0.0,
+      "hi_1s": 0.03857142857142856
+     },
+     "greedy_score": 0.6417467532467531,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.3,
+     "oracle_mean_counts": [
+      1.0,
+      1.55,
+      3.15,
+      0.9,
+      1.7
+     ],
+     "mean_defenders": 5.3,
+     "lancer_share": 0.330188679245283,
+     "gun_share": 0.3867924528301887,
+     "flak_share": 0.2830188679245283,
+     "rejection_rate": 0.6551724137931034,
+     "single_type_trivial": 38,
+     "too_hard": 0,
+     "stat_evaluated": 58
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.7083333333333334
+  },
+  "B": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 0.8764520487682251,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5658657958977653,
+     "single_means": [
+      0.05471181805548814,
+      0.5658657958977653,
+      0.40260869565217405,
+      0.4266354004052215,
+      0.0
+     ],
+     "sniper_share_best_single": 0.8416666666666666,
+     "best_single_share": [
+      0.0,
+      0.8416666666666666,
+      0.06666666666666667,
+      0.09166666666666666,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.02227115556367476,
+      "lo95": -0.08169571344842284,
+      "hi95": 0.035873453294361195,
+      "lo_1s": -0.08957574284242695,
+      "hi_1s": 0.04390523313492063
+     },
+     "greedy_score": 0.40260869565217394,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.75,
+     "oracle_mean_counts": [
+      1.3,
+      1.75,
+      3.0,
+      1.05,
+      1.65
+     ],
+     "mean_defenders": 8.35,
+     "lancer_share": 0.38922155688622756,
+     "gun_share": 0.5748502994011976,
+     "flak_share": 0.03592814371257485,
+     "rejection_rate": 0.375,
+     "single_type_trivial": 12,
+     "too_hard": 0,
+     "stat_evaluated": 32
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 0.9185085802742149,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6196027200353826,
+     "single_means": [
+      0.07242855936633028,
+      0.6196027200353826,
+      0.469860396646697,
+      0.34230221543162714,
+      0.0
+     ],
+     "sniper_share_best_single": 0.7000000000000001,
+     "best_single_share": [
+      0.0,
+      0.7000000000000001,
+      0.2,
+      0.09999999999999999,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.02620420168067227,
+      "lo95": -0.0673858718487395,
+      "hi95": 0.011343035714285724,
+      "lo_1s": -0.07454268382352948,
+      "hi_1s": 0.016528429621848837
+     },
+     "greedy_score": 0.4698603966466969,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.2,
+     "oracle_mean_counts": [
+      1.3,
+      2.25,
+      3.1,
+      0.95,
+      1.6
+     ],
+     "mean_defenders": 9.1,
+     "lancer_share": 0.34065934065934067,
+     "gun_share": 0.554945054945055,
+     "flak_share": 0.1043956043956044,
+     "rejection_rate": 0.7959183673469388,
+     "single_type_trivial": 78,
+     "too_hard": 0,
+     "stat_evaluated": 98
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 0.9168284215784217,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.3838325424575425,
+     "single_means": [
+      0.11320104895104896,
+      0.3838325424575425,
+      0.026061813186813186,
+      0.07340796703296705,
+      0.0
+     ],
+     "sniper_share_best_single": 0.6516666666666666,
+     "best_single_share": [
+      0.27666666666666667,
+      0.6516666666666666,
+      0.01,
+      0.05166666666666666,
+      0.01
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.046073676323676316,
+      "lo95": -0.10685898476523475,
+      "hi95": 0.009497652347652309,
+      "lo_1s": -0.11647997315184815,
+      "hi_1s": 0.017618678196803208
+     },
+     "greedy_score": 0.026061813186813186,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.55,
+     "oracle_mean_counts": [
+      2.05,
+      2.65,
+      1.65,
+      1.55,
+      1.65
+     ],
+     "mean_defenders": 9.1,
+     "lancer_share": 0.3791208791208791,
+     "gun_share": 0.5934065934065934,
+     "flak_share": 0.027472527472527472,
+     "rejection_rate": 0.16666666666666666,
+     "single_type_trivial": 4,
+     "too_hard": 0,
+     "stat_evaluated": 24
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 0.949857142857143,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6818809523809524,
+     "single_means": [
+      0.15799999999999997,
+      0.6818809523809524,
+      0.5821547619047621,
+      0.5982380952380952,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5416666666666667,
+     "best_single_share": [
+      0.0,
+      0.5416666666666667,
+      0.21666666666666665,
+      0.2416666666666667,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.0017857142857142904,
+      "lo95": -0.03285714285714287,
+      "hi95": 0.03321428571428571,
+      "lo_1s": -0.03857142857142858,
+      "hi_1s": 0.0375
+     },
+     "greedy_score": 0.5821547619047621,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.35,
+     "oracle_mean_counts": [
+      1.65,
+      3.55,
+      1.95,
+      0.95,
+      1.25
+     ],
+     "mean_defenders": 5.2,
+     "lancer_share": 0.46153846153846156,
+     "gun_share": 0.3269230769230769,
+     "flak_share": 0.21153846153846154,
+     "rejection_rate": 0.574468085106383,
+     "single_type_trivial": 27,
+     "too_hard": 0,
+     "stat_evaluated": 47
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.7311111111111112
+  },
+  "C": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 0.8813166027280476,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.4706871691110822,
+     "single_means": [
+      0.05471181805548814,
+      0.4706871691110822,
+      0.40260869565217405,
+      0.4266354004052215,
+      0.0
+     ],
+     "sniper_share_best_single": 0.6166666666666668,
+     "best_single_share": [
+      0.0,
+      0.6166666666666668,
+      0.11666666666666665,
+      0.26666666666666666,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.015183135740360804,
+      "lo95": -0.0665308054158118,
+      "hi95": 0.09547409337341396,
+      "lo_1s": -0.07858512304378276,
+      "hi_1s": 0.10553933961614198
+     },
+     "greedy_score": 0.40260869565217394,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.8,
+     "oracle_mean_counts": [
+      1.6,
+      1.45,
+      3.15,
+      1.1,
+      1.5
+     ],
+     "mean_defenders": 8.35,
+     "lancer_share": 0.38922155688622756,
+     "gun_share": 0.5748502994011976,
+     "flak_share": 0.03592814371257485,
+     "rejection_rate": 0.375,
+     "single_type_trivial": 12,
+     "too_hard": 0,
+     "stat_evaluated": 32
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 0.9138109243697479,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.4976995114792328,
+     "single_means": [
+      0.07242855936633028,
+      0.4976995114792328,
+      0.469860396646697,
+      0.34230221543162714,
+      0.0
+     ],
+     "sniper_share_best_single": 0.475,
+     "best_single_share": [
+      0.0,
+      0.475,
+      0.325,
+      0.2,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.031217647058823527,
+      "lo95": -0.06755338235294114,
+      "hi95": -0.001200000000000001,
+      "lo_1s": -0.07443551470588237,
+      "hi_1s": -0.001200000000000001
+     },
+     "greedy_score": 0.4698603966466969,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.85,
+     "oracle_mean_counts": [
+      1.65,
+      1.4,
+      2.95,
+      1.2,
+      1.65
+     ],
+     "mean_defenders": 9.1,
+     "lancer_share": 0.34065934065934067,
+     "gun_share": 0.554945054945055,
+     "flak_share": 0.1043956043956044,
+     "rejection_rate": 0.7959183673469388,
+     "single_type_trivial": 78,
+     "too_hard": 0,
+     "stat_evaluated": 98
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 0.886591158841159,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.2988325424575424,
+     "single_means": [
+      0.11320104895104896,
+      0.2988325424575424,
+      0.026061813186813186,
+      0.07340796703296705,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5116666666666667,
+     "best_single_share": [
+      0.33666666666666667,
+      0.5116666666666667,
+      0.06999999999999999,
+      0.06166666666666666,
+      0.02
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.009417832167832174,
+      "lo95": -0.05821363636363635,
+      "hi95": 0.042632998251748225,
+      "lo_1s": -0.0657066870629371,
+      "hi_1s": 0.05158474650349655
+     },
+     "greedy_score": 0.026061813186813186,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.9,
+     "oracle_mean_counts": [
+      2.7,
+      2.7,
+      2.0,
+      0.9,
+      1.6
+     ],
+     "mean_defenders": 9.1,
+     "lancer_share": 0.3791208791208791,
+     "gun_share": 0.5934065934065934,
+     "flak_share": 0.027472527472527472,
+     "rejection_rate": 0.16666666666666666,
+     "single_type_trivial": 4,
+     "too_hard": 0,
+     "stat_evaluated": 24
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 0.9498571428571427,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6738452380952382,
+     "single_means": [
+      0.18,
+      0.6738452380952382,
+      0.630654761904762,
+      0.5827380952380952,
+      0.0
+     ],
+     "sniper_share_best_single": 0.4166666666666667,
+     "best_single_share": [
+      0.0,
+      0.4166666666666667,
+      0.41666666666666663,
+      0.16666666666666669,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.000500000000000006,
+      "lo95": -0.030500000000000017,
+      "hi95": 0.034499999999999996,
+      "lo_1s": -0.03600000000000002,
+      "hi_1s": 0.039999999999999994
+     },
+     "greedy_score": 0.630654761904762,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.95,
+     "oracle_mean_counts": [
+      1.9,
+      2.25,
+      2.4,
+      1.0,
+      1.4
+     ],
+     "mean_defenders": 5.1,
+     "lancer_share": 0.43137254901960786,
+     "gun_share": 0.3333333333333333,
+     "flak_share": 0.23529411764705882,
+     "rejection_rate": 0.48717948717948717,
+     "single_type_trivial": 19,
+     "too_hard": 0,
+     "stat_evaluated": 39
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.5344444444444444
+  },
+  "D": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 0.8716623810372649,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5587294244865115,
+     "single_means": [
+      0.0747368851322509,
+      0.5587294244865115,
+      0.41264090909090917,
+      0.42261785714285727,
+      0.0
+     ],
+     "sniper_share_best_single": 0.8416666666666668,
+     "best_single_share": [
+      0.0,
+      0.8416666666666668,
+      0.06666666666666667,
+      0.09166666666666665,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.03496535151290435,
+      "lo95": -0.09781491921439085,
+      "hi95": 0.027323067648116216,
+      "lo_1s": -0.10647921020550344,
+      "hi_1s": 0.03716335227272752
+     },
+     "greedy_score": 0.41264090909090917,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.55,
+     "oracle_mean_counts": [
+      2.1,
+      2.45,
+      2.75,
+      1.2,
+      1.05
+     ],
+     "mean_defenders": 10.15,
+     "lancer_share": 0.39408866995073893,
+     "gun_share": 0.5763546798029556,
+     "flak_share": 0.029556650246305417,
+     "rejection_rate": 0.047619047619047616,
+     "single_type_trivial": 1,
+     "too_hard": 0,
+     "stat_evaluated": 21
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 0.9504855459970549,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5693520824488922,
+     "single_means": [
+      0.11089752280294748,
+      0.5693520824488922,
+      0.5233002377081796,
+      0.47387160556050045,
+      0.0
+     ],
+     "sniper_share_best_single": 0.4666666666666667,
+     "best_single_share": [
+      0.0,
+      0.4666666666666667,
+      0.31666666666666665,
+      0.21666666666666665,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.025013326154260322,
+      "lo95": -0.00712834836451743,
+      "hi95": 0.05886604634989004,
+      "lo_1s": -0.011515705343922492,
+      "hi_1s": 0.06354292468703734
+     },
+     "greedy_score": 0.5233002377081796,
+     "share_oracle_over_12_units": 0.05,
+     "oracle_mean_units": 9.8,
+     "oracle_mean_counts": [
+      2.05,
+      2.25,
+      2.95,
+      0.6,
+      1.95
+     ],
+     "mean_defenders": 10.8,
+     "lancer_share": 0.37037037037037035,
+     "gun_share": 0.5601851851851852,
+     "flak_share": 0.06944444444444445,
+     "rejection_rate": 0.6610169491525424,
+     "single_type_trivial": 39,
+     "too_hard": 0,
+     "stat_evaluated": 59
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 0.9014346829640949,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.29189530322618557,
+     "single_means": [
+      0.10255653904918609,
+      0.29189530322618557,
+      0.030823176823176823,
+      0.03884090909090909,
+      0.0
+     ],
+     "sniper_share_best_single": 0.515,
+     "best_single_share": [
+      0.33999999999999997,
+      0.515,
+      0.04,
+      0.065,
+      0.04
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.003941844919786097,
+      "lo95": -0.056113118315508026,
+      "hi95": 0.048811079545454494,
+      "lo_1s": -0.0634893048128343,
+      "hi_1s": 0.057639237967914606
+     },
+     "greedy_score": 0.030823176823176823,
+     "share_oracle_over_12_units": 0.05,
+     "oracle_mean_units": 10.15,
+     "oracle_mean_counts": [
+      2.55,
+      3.25,
+      2.15,
+      1.25,
+      0.95
+     ],
+     "mean_defenders": 10.9,
+     "lancer_share": 0.3944954128440367,
+     "gun_share": 0.5825688073394495,
+     "flak_share": 0.022935779816513763,
+     "rejection_rate": 0.047619047619047616,
+     "single_type_trivial": 1,
+     "too_hard": 0,
+     "stat_evaluated": 21
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 0.99,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.7459383116883117,
+     "single_means": [
+      0.15,
+      0.7459383116883117,
+      0.6356428571428572,
+      0.6428246753246755,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5666666666666667,
+     "best_single_share": [
+      0.0,
+      0.5666666666666667,
+      0.2166666666666667,
+      0.21666666666666665,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.015333333333333338,
+      "lo95": 0.0,
+      "hi95": 0.04266666666666667,
+      "lo_1s": 0.0,
+      "hi_1s": 0.048
+     },
+     "greedy_score": 0.6356428571428572,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.5,
+     "oracle_mean_counts": [
+      1.95,
+      2.3,
+      1.9,
+      1.45,
+      1.9
+     ],
+     "mean_defenders": 6.3,
+     "lancer_share": 0.42857142857142855,
+     "gun_share": 0.3492063492063492,
+     "flak_share": 0.2222222222222222,
+     "rejection_rate": 0.5348837209302325,
+     "single_type_trivial": 23,
+     "too_hard": 0,
+     "stat_evaluated": 43
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.6077777777777779
+  },
+  "E": {
+   "by_family": {
+    "spine_pods": {
+     "n": 20,
+     "oracle_score": 0.8737257771001378,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.5238931262460338,
+     "single_means": [
+      0.027483448904037137,
+      0.5238931262460338,
+      0.418208695652174,
+      0.4093621084797556,
+      0.0
+     ],
+     "sniper_share_best_single": 0.7833333333333334,
+     "best_single_share": [
+      0.0,
+      0.7833333333333334,
+      0.13333333333333333,
+      0.08333333333333333,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.03184377110528006,
+      "lo95": -0.09481295276015546,
+      "hi95": 0.02629507928665533,
+      "lo_1s": -0.10451614412069175,
+      "hi_1s": 0.03545948260232945
+     },
+     "greedy_score": 0.418208695652174,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 8.75,
+     "oracle_mean_counts": [
+      1.35,
+      2.15,
+      2.9,
+      0.9,
+      1.45
+     ],
+     "mean_defenders": 8.3,
+     "lancer_share": 0.3795180722891566,
+     "gun_share": 0.5843373493975904,
+     "flak_share": 0.03614457831325301,
+     "rejection_rate": 0.25925925925925924,
+     "single_type_trivial": 7,
+     "too_hard": 0,
+     "stat_evaluated": 27
+    },
+    "archipelago": {
+     "n": 20,
+     "oracle_score": 0.9031016806722688,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.562401054440915,
+     "single_means": [
+      0.06120154698242934,
+      0.562401054440915,
+      0.45178429094125694,
+      0.2962905281251257,
+      0.0
+     ],
+     "sniper_share_best_single": 0.6333333333333334,
+     "best_single_share": [
+      0.0,
+      0.6333333333333334,
+      0.25833333333333336,
+      0.10833333333333332,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.03607689075630253,
+      "lo95": -0.08795087184873948,
+      "hi95": 0.01465218487394955,
+      "lo_1s": -0.09432965861344543,
+      "hi_1s": 0.021071481092436974
+     },
+     "greedy_score": 0.45178429094125694,
+     "share_oracle_over_12_units": 0.05,
+     "oracle_mean_units": 9.3,
+     "oracle_mean_counts": [
+      1.7,
+      1.55,
+      2.55,
+      1.0,
+      2.5
+     ],
+     "mean_defenders": 9.0,
+     "lancer_share": 0.35555555555555557,
+     "gun_share": 0.55,
+     "flak_share": 0.09444444444444444,
+     "rejection_rate": 0.696969696969697,
+     "single_type_trivial": 46,
+     "too_hard": 0,
+     "stat_evaluated": 66
+    },
+    "bunker_nest": {
+     "n": 20,
+     "oracle_score": 0.8989932567432568,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.3227885864135864,
+     "single_means": [
+      0.09309527972027973,
+      0.3227885864135864,
+      0.026061813186813186,
+      0.0381771978021978,
+      0.0
+     ],
+     "sniper_share_best_single": 0.5991666666666667,
+     "best_single_share": [
+      0.2491666666666667,
+      0.5991666666666667,
+      0.08249999999999999,
+      0.04916666666666667,
+      0.02
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": -0.0154557942057942,
+      "lo95": -0.052212175324675314,
+      "hi95": 0.026463817432567448,
+      "lo_1s": -0.05641594967532468,
+      "hi_1s": 0.03231224400599407
+     },
+     "greedy_score": 0.026061813186813186,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.6,
+     "oracle_mean_counts": [
+      2.0,
+      2.8,
+      1.7,
+      1.35,
+      1.75
+     ],
+     "mean_defenders": 9.0,
+     "lancer_share": 0.37777777777777777,
+     "gun_share": 0.6,
+     "flak_share": 0.022222222222222223,
+     "rejection_rate": 0.16666666666666666,
+     "single_type_trivial": 3,
+     "too_hard": 1,
+     "stat_evaluated": 24
+    },
+    "labyrinth": {
+     "n": 20,
+     "oracle_score": 0.9757142857142856,
+     "oracle_breach": 1.0,
+     "best_single_type": "sniper",
+     "best_single_mean": 0.6432976190476192,
+     "single_means": [
+      0.15999999999999998,
+      0.6432976190476192,
+      0.6197261904761906,
+      0.5829880952380952,
+      0.0
+     ],
+     "sniper_share_best_single": 0.4333333333333333,
+     "best_single_share": [
+      0.0,
+      0.4333333333333333,
+      0.3583333333333333,
+      0.20833333333333334,
+      0.0
+     ],
+     "mender_ban_loss": {
+      "n": 20,
+      "mean": 0.03535714285714285,
+      "lo95": 0.0,
+      "hi95": 0.07643749999999987,
+      "lo_1s": 0.0,
+      "hi_1s": 0.08392857142857142
+     },
+     "greedy_score": 0.6197261904761906,
+     "share_oracle_over_12_units": 0.0,
+     "oracle_mean_units": 9.1,
+     "oracle_mean_counts": [
+      1.6,
+      2.15,
+      2.6,
+      0.85,
+      1.9
+     ],
+     "mean_defenders": 5.1,
+     "lancer_share": 0.4411764705882353,
+     "gun_share": 0.3333333333333333,
+     "flak_share": 0.22549019607843138,
+     "rejection_rate": 0.5,
+     "single_type_trivial": 20,
+     "too_hard": 0,
+     "stat_evaluated": 40
+    }
+   },
+   "sniper_share_best_single_pooled_familiar": 0.6719444444444445
+  }
+ },
+ "selection": {
+  "per_arm": {
+   "A": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": false,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 0
+   },
+   "B": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": false,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 0
+   },
+   "C": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": false,
+     "3_sniper_best_single_share_le_0.60": true,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 1
+   },
+   "D": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": false,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 0
+   },
+   "E": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": true,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 1
+   }
+  },
+  "ranking": [
+   "E",
+   "C",
+   "A",
+   "B",
+   "D"
+  ],
+  "chosen": null,
+  "best_n_met": 1
+ },
+ "selection_sensitivity_3_familiar_families_only": {
+  "per_arm": {
+   "A": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": false,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 0
+   },
+   "B": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": true,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 1
+   },
+   "C": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": true,
+     "3_sniper_best_single_share_le_0.60": true,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 2
+   },
+   "D": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": true,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 1
+   },
+   "E": {
+    "criteria": {
+     "1_oracle_not_saturated": false,
+     "2_best_single_in_0.25_0.65": true,
+     "3_sniper_best_single_share_le_0.60": false,
+     "4_rejection_rate_le_0.40": false,
+     "5_greedy_labyrinth_le_0.45": false
+    },
+    "n_met": 1
+   }
+  },
+  "ranking": [
+   "C",
+   "B",
+   "D",
+   "E",
+   "A"
+  ],
+  "chosen": null,
+  "best_n_met": 2
+ },
+ "criteria_R0_reference": {
+  "1_oracle_not_saturated": false,
+  "2_best_single_in_0.25_0.65": false,
+  "3_sniper_best_single_share_le_0.60": false,
+  "4_rejection_rate_le_0.40": false,
+  "5_greedy_labyrinth_le_0.45": false
+ }
+}
