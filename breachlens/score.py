@@ -11,6 +11,9 @@ may contain the formula (a test greps for it).
 """
 from __future__ import annotations
 
+# Recorded in every evaluator CSV / JSON row (B8). Bump when the score formula or its float conversion changes.
+SCORE_VERSION = "b7-single-rounding"
+
 
 def score_ratio(d_num: int, d_den: int, core_destroyed: bool) -> tuple[int, int]:
     """Exact (numerator, denominator) of the score; the denominator is 10 * max(d_den, 1) (not reduced, so keys compare within one layout)."""
