@@ -43,3 +43,6 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - On TUNE-val the shaped PPO policies breach 0.38-0.48 of layouts vs 0.65 for BestSingle: PPO trades breaches for destruction under the 0.6 / 0.4 score (D 0.48-0.50 vs 0.20). The learner is not better at breaching than the single-unit baseline.
 - The D4 pilot was unshaped and flat (mean 0.4213, slope +0.0030 per 100k); there is no shaped D4 pilot, so the D4 slope entering the step budget is the unshaped one (it does not change T = 1.5M).
 - The shaped plain curve peaks near 225k (0.476) and falls to 0.450 at 300k; its 200k-300k slope (+0.0083 per 100k) is noisy (per-seed -0.031 to +0.030).
+
+## DDQN pilot (B14a)
+- DDQN epsilon decays over 25% of steps: in the 300k pilot that ends inside phase A (100k), in the 1.5M grid at 375k, so the pilot does not reproduce grid exploration.

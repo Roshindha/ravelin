@@ -1,0 +1,16 @@
+DDQN train_freq pilot (rows p / cc; shaped training, TUNE-val true score) -- NON-GATING, no bar applies; H = 300000, evals [250000, 275000, 300000]
+
+arm train_freq 4:
+  seed  mean_last3  | at H: score   breach     D   bought  distinct_armies
+  9301  0.4112      | 0.4232  0.433  0.417  11.38  13
+  9302  0.4360      | 0.4171  0.383  0.440  11.65  12
+  arm mean (last 3 evals, both seeds) = 0.4236
+
+arm train_freq 8:
+  seed  mean_last3  | at H: score   breach     D   bought  distinct_armies
+  9301  0.4534      | 0.4272  0.367  0.468   9.67  23
+  9302  0.4651      | 0.4575  0.433  0.474   8.32  14
+  arm mean (last 3 evals, both seeds) = 0.4592
+
+difference (4 - 8) = -0.0356   rule: higher mean score: |difference| 0.0356 >= 0.01
+CHOSEN train_freq = 8   (row p selection; frozen before the training grid)
