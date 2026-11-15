@@ -178,7 +178,22 @@ class BreachEnv(gym.Env):
         self.observation_space = spaces.Dict({"grid": spaces.Box(0.0, 1.0, (N_GRID_CHANNELS, GRID, GRID), np.float32),
                                               "state": spaces.Box(0.0, 1.0, (N_STATE,), np.float32)})
         self._st = None
+        self._st_idx = None
         self._init_episode_state()
+
+    # ---------------------------------------------------------------- pickling (B10: bit-identical resume of a training run)
+    def __getstate__(self) -> dict:
+        """Episode state + RNG only. The layout caches (up to ~4 MB per layout, results identical with caches on / off) are dropped and rebuilt
+        on load through the same role-guarded loaders; the current layout is re-fetched by its index."""
+        d = self.__dict__.copy()
+        d["_static"] = OrderedDict()
+        d["_st"] = None
+        return d
+
+    def __setstate__(self, d: dict) -> None:
+        self.__dict__.update(d)
+        if self._st_idx is not None:
+            self._st = self._get_static(self._st_idx)
 
     # ---------------------------------------------------------------- layout access (pool loaders, role guards)
     def _resolve_records(self, records, source):
@@ -258,6 +273,7 @@ class BreachEnv(gym.Env):
         if idx is None:
             idx = int(self.np_random.integers(self.n_layouts))
         self._st = self._get_static(int(idx))
+        self._st_idx = int(idx)
         pre = options.get("prebought", self.prebought)
         if isinstance(pre, str):
             pre = [0] * N_UNIT_TYPES

@@ -474,6 +474,36 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Wall time per baseline (4 sets, 7 procs): Oracle 49.7 s; every other baseline <= 1.4 s.
 - Full plain `pytest`: `425 passed in 492.08s (0:08:12)`, exit 0 (the first run failed the B6 AST audit list until `evaluator.py` and `scripts_b8_checks.py` were added to it; the new B8 test pins that the checks script only calls `walk` with "DEV").
 
+### STEP B10 (v2): PPO pipeline + throughput benchmark + determinism -- done; FINAL never touched (ledger 5 build / 0 eval)
+- Item 0 (commit 1f962d0): test that no v2 module imports `rl/augment_v1.py` / `rl/train_ppo.py`; TTA aggregation pinned = mean log-prob over legal actions across the 8 views, then masked argmax (`rl/tta.py`, `aggregate="logprob"` default, `"mean"` for DDQN Q), Gate changelog (n) dated 2026-11-15, "fixed before any trained model exists".
+- New: `rl/train_ppo_v2.py` (trainer; prototype `train_ppo.py` untouched), `rl/eval_ppo_v2.py` (`ModelPolicy` through the B8 evaluator, `masked_probs` TTA adapter, CLI refuses FINAL / LAB-DESIGN), `rl/budget.py` (T_cap + verdict), `BreachEnv.__getstate__/__setstate__` (drops layout caches; behaviour unchanged), `scripts_b10_throughput.py`, `scripts_b10_determinism.py`, `scripts_b10_stage{1,2}.sh`, `tests/test_b10_ppo.py`, `tests/test_b10_hygiene.py`. `rl/features.py` is shape-generic (docstring only). Outputs: `data/v2/b10_throughput.json`, `b10_determinism.json`, `b10_bench/`, `models_v2/` (gitignored).
+- Config (starting values, frozen in B13): MaskablePPO, CNN(9x14x14)+MLP(11) -> 320, pi/vf [256,256], n_envs 10 x n_steps 250 (rollout 2500), batch 250, 10 epochs, lr 3e-4, gamma 1, GAE 0.95, clip 0.2, ent 0.01. Rollout 2500 divides 25k/250k, so val evals and final.zip land exactly on t (prototype used 8 x 256 = 2048, which would overshoot). Phase A = `prebought="random"` for the first T/3, then full game; no best.zip (nothing selected on validation); optional ramp not implemented. Validation through the B8 evaluator every 25k and at t=0 -> `val_eval.csv`, `val_layouts.jsonl` (per-layout score / army = G7 inputs).
+- Resume is bit-identical (differs from the prototype, which reseeded): checkpoint dir at rollout start with model + pickled VecEnv (env RNG, episode state, D4 stream, Monitor) + last obs + torch/numpy/python RNG + callback state. Real config, 10k steps, 1 thread: fresh twice identical; resume after ckpt 2500 (phase A) and 5000 (after switch at 3333) identical to uninterrupted for plain and D4 (policy + Adam hashes, val rows, curriculum log); real SIGKILL then resume identical. Negative control test (no RNG restore) differs. Needs same torch thread count (recorded).
+- Hardware: Apple M2 (4P+4E, 8 GB), Python 3.11.14, torch 2.15.0, SB3 2.9.2. torch default threads 4; used 1.
+- Threads (plain, phase B, steps/s): P=1: 1 thr 348, 2 thr 334, 4 thr 305. P=6 per job: 1 thr 184, 2 thr 104. Chose 1.
+- Throughput (1 thread, 60 s warm-up + 180 s window, TUNE-train, real config; steps/s):
+| | single | 3 parallel (per job) | 6 parallel (per job) |
+|---|---:|---:|---:|
+| plain, full game (B) | 356.5 | 234.9 | 169.4 |
+| D4, full game (B) | 355.5 | - | 179.2 |
+| plain, phase A | 331.5 | - | 183.4 |
+| D4, phase A | 332.1 | - | 176.3 |
+  Aggregate at 6: 1016-1100 steps/s (about 3x one process). Env-only (random masked agent, same VecEnv): A 3,085 / B uniform 5,672 / B buy-until-broke 7,699 (D4 about 2-5 % lower). Inference-only: batch 10 in 0.89 ms = 11,231 steps/s. Time split (single, B): PPO update 92 %, env.step 4.7 %, policy forward 3.2 %, masks 0.1 %. **Bottleneck = the PPO gradient update (100 minibatch steps of 250 per 2,500 steps), not the simulator**; it does not scale with threads. Peak RSS 520 MB single, 390-440 MB per job at 6. Episode length in the window 18.8 steps (B, early policy) / 6.5 (A); a trained policy buys more, but since env.step is under 5 % the rate is insensitive to it (buy-until-broke env is faster per step, not slower).
+- Spec comparison: r = 169.4 per job at P=6 (min over plain / D4, full game) vs the B2-derived minimum 100: **met**; T_cap = 18,000 r = 3.05M (rounds to 3.0M), so the cap does not bind below T_curve = 3.0M; stop rule (<1.0M) not triggered. Blended (1/3 A + 2/3 B) r is 173.8 plain / 178.2 D4.
+- Estimates (labelled estimates; per-job r from the table, 20 PPO runs in waves 6,6,6,2; the last wave of 2 runs at about 330/s; validation adds under 2 %):
+| Item | Estimate |
+|---|---|
+| G7 pilot, 3 plain x 300k, 3 in parallel | 300k / 235 = 21 min (+~1 min val) |
+| G7 pilot as in B13 (3 plain + 3 D4, 6 parallel) | 300k / 175 = 29 min |
+| 600k extension case (3 plain, or 6 jobs) | 43 min (3 jobs) / 57 min (6 jobs) |
+| PPO grid, 20 runs, per 1M steps of T | 3 x 1M/175 + 1M/330 = 5.6 h |
+| ... T = 1.0M / 1.5M / 2.0M / 3.0M | 5.6 / 8.4 / 11.2 / 16.8 h (T "to be set from G7 curves"; SPEC example said 12.5-17 h for 1.5M) |
+| Masked DDQN, 10 runs | not measurable (B11 not built); SPEC 3-5 h stands |
+| Planner N=8/32/128 + RAS-N / RPS-N, B15 eval session | not measurable (B12 not built). Extrapolation: plan = about 5 ms sim (env-only buy-until-broke 7.7k steps/s at 41 steps) + about 20-30 forwards at under 1 ms = 0.02-0.04 s/plan vs SPEC 0.05-0.10; 307,200 planner plans = 1.7-3.4 CPU-h, RAS-N/RPS-N about 0.2 h each; at 7 workers B15 about 0.5-1 h (spec 1.2-2.4). Re-measured in B12 |
+- Parallelism: seeds can run in parallel. Per-job speed falls with P (356 -> 235 -> 169 at P = 1 / 3 / 6, 8 cores incl. 4 efficiency cores) while aggregate rises (356 -> 705 -> 1,016). P = 8 not measured.
+- Deviations / decisions: (1) new trainer file instead of editing `train_ppo.py` (item 0a keeps the prototype files separate); (2) n_envs 10 x n_steps 250 instead of the prototype 8 x 256 (alignment, see above); (3) `BreachEnv` got pickling support (no behaviour change); (4) throughput verdict uses the full-game rate as r (conservative); the blend is recorded; (5) trained-policy rates may differ from the early-policy snapshot (see insensitivity note); (6) no DDQN / planner timings.
+- Full plain `pytest`: `467 passed in 579.19s (0:09:39)`, exit 0 (first run: 2 failures in the B6 guard tests, which forbid `breachlens.pool` imports and the string LAB-DESIGN in rl/; trainer now takes its identity from `evaluator.run_meta`).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -518,7 +548,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2: B9 DONE (D4 augmentation, D4Wrapper, TTA; next is B10, only when told). B8 DONE (baselines + evaluator). B7.1 DONE (LAB-DESIGN guard, score re-verification); B7 DONE (BreachEnv + canonical score + bounded caches; B6.1 tag pool-v1); next is B8, only when told. Before that: B6 DONE (pool frozen, sha 1346536d...). Before that: B5 CLOSED at revision 1 (G2/G3/G8 documented limitations, hash recorded); next is B6 (build the 300-layout pool from stream F), only when told. History: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
+- v2: B10 DONE (PPO pipeline, throughput, determinism; next is B11, only when told). B9 DONE (D4 augmentation, D4Wrapper, TTA). B8 DONE (baselines + evaluator). B7.1 DONE (LAB-DESIGN guard, score re-verification); B7 DONE (BreachEnv + canonical score + bounded caches; B6.1 tag pool-v1); next is B8, only when told. Before that: B6 DONE (pool frozen, sha 1346536d...). Before that: B5 CLOSED at revision 1 (G2/G3/G8 documented limitations, hash recorded); next is B6 (build the 300-layout pool from stream F), only when told. History: B1-B5 in progress: revision 1 (R2a) applied, G2/G3/G8 FAIL (G4 passes under changelog (g)), B5-R3 sweep found no qualifying arm (nothing applied, 2 revisions remain), awaiting owner (B5 gates FAILED at revision 0; B5-R1 and B5-R1b sweeps found no acceptable arm, nothing applied, awaiting owner; generator_hash not recorded); B6 starts only when told AND the gates pass.
 - (STEP 8 evaluation done above.) Next: DDQN, TRPO, then app, explainability, README, only when told.
 - STEP 4: run the full Gym env interface (246 actions: 4 buy + 4 troops x 60 border deploy tiles +
   END_BUY + WAIT) and masks against the frozen DEV pool, plus simple scripted baselines (rangers-only,

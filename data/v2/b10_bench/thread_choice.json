@@ -1,0 +1,20 @@
+{
+ "probe": {
+  "P=1 (plain, phase B, 60 s window after 30 s warm-up)": {
+   "1": 348.1,
+   "2": 333.5,
+   "4": 304.8
+  },
+  "P=6 (plain, phase B, per-job mean, 90 s window after 30 s warm-up)": {
+   "1": 183.9,
+   "2": 104.4
+  },
+  "P=6 aggregate steps/s": {
+   "1": 1103.6,
+   "2": 626.1
+  }
+ },
+ "torch_default_threads": 4,
+ "chosen": 1,
+ "reason": "1 thread is fastest at P=1 (348 vs 334 vs 305 steps/s for 1 / 2 / 4) and far faster at P=6 (184 vs 104 per job); the PPO update (about 92 % of wall time) does not speed up with threads for this network and minibatch size"
+}

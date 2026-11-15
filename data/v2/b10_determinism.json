@@ -1,0 +1,85 @@
+{
+ "threads": 1,
+ "timesteps": 10000,
+ "checkpoint_freq": 2500,
+ "curriculum_boundary": 3333,
+ "rollout_size": 2500,
+ "config": "real PPO config (rl.train_ppo_v2.PPO_CONFIG)",
+ "cases": {
+  "none": {
+   "params_sha256": "72586e23ea0bb9612fab5064531fd74c0877c2e06ee131358b06bbe9fc1b9df0",
+   "params_optimizer_sha256": "19896245b616718911a71a8c6a754bdd2cdea148f776ef93ee9b113bf413caf5",
+   "fresh_twice": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true
+   },
+   "resume_after_checkpoint_2500": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true,
+    "resumed_from": 2500
+   },
+   "resume_after_checkpoint_5000": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true,
+    "resumed_from": 5000
+   },
+   "sigkill_then_resume": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true,
+    "checkpoints_present_at_kill": [
+     "ckpt_2500",
+     "ckpt_5000"
+    ],
+    "resumed_from": 5000
+   }
+  },
+  "d4": {
+   "params_sha256": "642778b593c38ea21bd0429cb6e1d5b4fc31f5cab6da2d83b8fdee26c2ba36f0",
+   "params_optimizer_sha256": "05d26d4e7b1f4fc0e6dc554859047a025d622ab1078a7498e95c9ee19d1ca1fb",
+   "fresh_twice": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true
+   },
+   "resume_after_checkpoint_2500": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true,
+    "resumed_from": 2500
+   },
+   "resume_after_checkpoint_5000": {
+    "params_sha256": true,
+    "params_optimizer_sha256": true,
+    "timesteps": true,
+    "val_rows": true,
+    "val_layouts": true,
+    "curriculum": true,
+    "resumed_from": 5000
+   }
+  }
+ },
+ "all_identical": true,
+ "wall_seconds": 317
+}

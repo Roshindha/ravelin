@@ -1,0 +1,29 @@
+{
+ "mode": "train",
+ "aug": "d4",
+ "phase": "A",
+ "threads": 1,
+ "warmup_s": 60.0,
+ "window_s": 180.7,
+ "window_steps": 60000,
+ "steps_per_s": 332.1,
+ "seconds_by_part_in_window": {
+  "env_step": 20.09,
+  "masks": 0.24,
+  "policy": 5.58,
+  "update": 154.49,
+  "rest": 0.27
+ },
+ "share_by_part": {
+  "env_step": 0.111,
+  "masks": 0.001,
+  "policy": 0.031,
+  "update": 0.855,
+  "rest": 0.001
+ },
+ "peak_rss_mb": 516.1,
+ "rollouts_in_window": 24,
+ "mean_episode_steps_last100": 6.6,
+ "mean_train_score_last100": 0.1888,
+ "total_timesteps_run": 80010
+}

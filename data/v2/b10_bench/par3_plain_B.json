@@ -1,0 +1,32 @@
+{
+ "mode": "parallel",
+ "n": 3,
+ "aug": "none",
+ "phase": "B",
+ "threads": 1,
+ "per_job_steps_per_s": [
+  234.9,
+  234.9,
+  235.0
+ ],
+ "per_job_mean": 234.9,
+ "per_job_min": 234.9,
+ "aggregate_steps_per_s": 704.8,
+ "peak_rss_mb_per_job": [
+  484.5,
+  482.5,
+  485.4
+ ],
+ "share_by_part_job0": {
+  "env_step": 0.05,
+  "masks": 0.001,
+  "policy": 0.034,
+  "update": 0.913,
+  "rest": 0.002
+ },
+ "mean_episode_steps": [
+  18.5,
+  18.5,
+  18.5
+ ]
+}

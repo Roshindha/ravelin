@@ -1,4 +1,6 @@
-"""Custom SB3 features extractor: small CNN on the (8,16,16) grid + MLP on the 9-d state, concatenated."""
+"""Custom SB3 features extractor: small CNN on the (C,H,W) grid + MLP on the state vector, concatenated.
+
+Shape-generic (read from the observation space): prototype (8,16,16) + 9, v2 BreachEnv (9,14,14) + 11 -> features_dim 320."""
 from __future__ import annotations
 
 import gymnasium as gym

@@ -1,0 +1,11 @@
+{
+ "mode": "env",
+ "aug": "d4",
+ "phase": "B",
+ "agent": "buy_all",
+ "steps_per_s": 7341.2,
+ "seconds": 30.0,
+ "share_env_step": 0.938,
+ "share_masks": 0.024,
+ "peak_rss_mb": 310.4
+}

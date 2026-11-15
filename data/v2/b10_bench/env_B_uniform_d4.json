@@ -1,0 +1,11 @@
+{
+ "mode": "env",
+ "aug": "d4",
+ "phase": "B",
+ "agent": "uniform",
+ "steps_per_s": 5539.0,
+ "seconds": 30.0,
+ "share_env_step": 0.958,
+ "share_masks": 0.018,
+ "peak_rss_mb": 297.5
+}

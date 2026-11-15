@@ -1,0 +1,9 @@
+{
+ "mode": "infer",
+ "threads": 1,
+ "batch": 10,
+ "calls_per_s": 1123.1,
+ "steps_per_s": 11230.9,
+ "ms_per_call": 0.89,
+ "peak_rss_mb": 334.6
+}

@@ -17,3 +17,7 @@ results/*
 
 # run logs
 logs_*/
+
+models_v2/*
+!models_v2/.gitkeep
+results_v2/*

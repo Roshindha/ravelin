@@ -1,0 +1,474 @@
+{
+ "hardware": {
+  "python": "3.11.14",
+  "torch": "2.15.0",
+  "stable_baselines3": "2.9.2",
+  "numpy": "2.4.6",
+  "cpu": "Apple M2",
+  "cpu_count": 8,
+  "torch_threads": 4,
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "torch_threads_used": 1
+ },
+ "ppo_config": {
+  "n_envs": 10,
+  "n_steps": 250,
+  "batch_size": 250,
+  "n_epochs": 10,
+  "learning_rate": 0.0003,
+  "gamma": 1.0,
+  "gae_lambda": 0.95,
+  "clip_range": 0.2,
+  "ent_coef": 0.01,
+  "vf_coef": 0.5,
+  "max_grad_norm": 0.5,
+  "net_arch": [
+   256,
+   256
+  ],
+  "rollout_size": 2500,
+  "train_set": "TUNE-train"
+ },
+ "thread_choice": {
+  "probe": {
+   "P=1 (plain, phase B, 60 s window after 30 s warm-up)": {
+    "1": 348.1,
+    "2": 333.5,
+    "4": 304.8
+   },
+   "P=6 (plain, phase B, per-job mean, 90 s window after 30 s warm-up)": {
+    "1": 183.9,
+    "2": 104.4
+   },
+   "P=6 aggregate steps/s": {
+    "1": 1103.6,
+    "2": 626.1
+   }
+  },
+  "torch_default_threads": 4,
+  "chosen": 1,
+  "reason": "1 thread is fastest at P=1 (348 vs 334 vs 305 steps/s for 1 / 2 / 4) and far faster at P=6 (184 vs 104 per job); the PPO update (about 92 % of wall time) does not speed up with threads for this network and minibatch size"
+ },
+ "single_process": {
+  "single_plain_B": {
+   "mode": "train",
+   "aug": "none",
+   "phase": "B",
+   "threads": 1,
+   "warmup_s": 60.0,
+   "window_s": 182.3,
+   "window_steps": 65000,
+   "steps_per_s": 356.5,
+   "seconds_by_part_in_window": {
+    "env_step": 8.64,
+    "masks": 0.14,
+    "policy": 5.92,
+    "update": 167.38,
+    "rest": 0.26
+   },
+   "share_by_part": {
+    "env_step": 0.047,
+    "masks": 0.001,
+    "policy": 0.032,
+    "update": 0.918,
+    "rest": 0.001
+   },
+   "peak_rss_mb": 519.7,
+   "rollouts_in_window": 26,
+   "mean_episode_steps_last100": 18.8,
+   "mean_train_score_last100": 0.3665,
+   "total_timesteps_run": 87510
+  },
+  "single_d4_B": {
+   "mode": "train",
+   "aug": "d4",
+   "phase": "B",
+   "threads": 1,
+   "warmup_s": 60.0,
+   "window_s": 182.9,
+   "window_steps": 65000,
+   "steps_per_s": 355.5,
+   "seconds_by_part_in_window": {
+    "env_step": 9.02,
+    "masks": 0.22,
+    "policy": 5.93,
+    "update": 167.43,
+    "rest": 0.26
+   },
+   "share_by_part": {
+    "env_step": 0.049,
+    "masks": 0.001,
+    "policy": 0.032,
+    "update": 0.916,
+    "rest": 0.001
+   },
+   "peak_rss_mb": 515.4,
+   "rollouts_in_window": 26,
+   "mean_episode_steps_last100": 18.0,
+   "mean_train_score_last100": 0.3238,
+   "total_timesteps_run": 87510
+  },
+  "single_plain_A": {
+   "mode": "train",
+   "aug": "none",
+   "phase": "A",
+   "threads": 1,
+   "warmup_s": 60.0,
+   "window_s": 181.0,
+   "window_steps": 60000,
+   "steps_per_s": 331.5,
+   "seconds_by_part_in_window": {
+    "env_step": 20.27,
+    "masks": 0.17,
+    "policy": 5.57,
+    "update": 154.7,
+    "rest": 0.26
+   },
+   "share_by_part": {
+    "env_step": 0.112,
+    "masks": 0.001,
+    "policy": 0.031,
+    "update": 0.855,
+    "rest": 0.001
+   },
+   "peak_rss_mb": 513.4,
+   "rollouts_in_window": 24,
+   "mean_episode_steps_last100": 6.5,
+   "mean_train_score_last100": 0.2377,
+   "total_timesteps_run": 80010
+  },
+  "single_d4_A": {
+   "mode": "train",
+   "aug": "d4",
+   "phase": "A",
+   "threads": 1,
+   "warmup_s": 60.0,
+   "window_s": 180.7,
+   "window_steps": 60000,
+   "steps_per_s": 332.1,
+   "seconds_by_part_in_window": {
+    "env_step": 20.09,
+    "masks": 0.24,
+    "policy": 5.58,
+    "update": 154.49,
+    "rest": 0.27
+   },
+   "share_by_part": {
+    "env_step": 0.111,
+    "masks": 0.001,
+    "policy": 0.031,
+    "update": 0.855,
+    "rest": 0.001
+   },
+   "peak_rss_mb": 516.1,
+   "rollouts_in_window": 24,
+   "mean_episode_steps_last100": 6.6,
+   "mean_train_score_last100": 0.1888,
+   "total_timesteps_run": 80010
+  }
+ },
+ "env_only": {
+  "env_A_plain": {
+   "mode": "env",
+   "aug": "none",
+   "phase": "A",
+   "agent": "uniform",
+   "steps_per_s": 3084.6,
+   "seconds": 30.0,
+   "share_env_step": 0.979,
+   "share_masks": 0.008,
+   "peak_rss_mb": 302.2
+  },
+  "env_B_uniform_plain": {
+   "mode": "env",
+   "aug": "none",
+   "phase": "B",
+   "agent": "uniform",
+   "steps_per_s": 5671.9,
+   "seconds": 30.0,
+   "share_env_step": 0.964,
+   "share_masks": 0.012,
+   "peak_rss_mb": 297.3
+  },
+  "env_B_buy_all_plain": {
+   "mode": "env",
+   "aug": "none",
+   "phase": "B",
+   "agent": "buy_all",
+   "steps_per_s": 7698.8,
+   "seconds": 30.0,
+   "share_env_step": 0.945,
+   "share_masks": 0.016,
+   "peak_rss_mb": 310.5
+  },
+  "env_A_d4": {
+   "mode": "env",
+   "aug": "d4",
+   "phase": "A",
+   "agent": "uniform",
+   "steps_per_s": 3039.3,
+   "seconds": 30.0,
+   "share_env_step": 0.975,
+   "share_masks": 0.012,
+   "peak_rss_mb": 301.5
+  },
+  "env_B_uniform_d4": {
+   "mode": "env",
+   "aug": "d4",
+   "phase": "B",
+   "agent": "uniform",
+   "steps_per_s": 5539.0,
+   "seconds": 30.0,
+   "share_env_step": 0.958,
+   "share_masks": 0.018,
+   "peak_rss_mb": 297.5
+  },
+  "env_B_buy_all_d4": {
+   "mode": "env",
+   "aug": "d4",
+   "phase": "B",
+   "agent": "buy_all",
+   "steps_per_s": 7341.2,
+   "seconds": 30.0,
+   "share_env_step": 0.938,
+   "share_masks": 0.024,
+   "peak_rss_mb": 310.4
+  }
+ },
+ "inference_only": {
+  "mode": "infer",
+  "threads": 1,
+  "batch": 10,
+  "calls_per_s": 1123.1,
+  "steps_per_s": 11230.9,
+  "ms_per_call": 0.89,
+  "peak_rss_mb": 334.6
+ },
+ "parallel": {
+  "par3_plain_B": {
+   "mode": "parallel",
+   "n": 3,
+   "aug": "none",
+   "phase": "B",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    234.9,
+    234.9,
+    235.0
+   ],
+   "per_job_mean": 234.9,
+   "per_job_min": 234.9,
+   "aggregate_steps_per_s": 704.8,
+   "peak_rss_mb_per_job": [
+    484.5,
+    482.5,
+    485.4
+   ],
+   "share_by_part_job0": {
+    "env_step": 0.05,
+    "masks": 0.001,
+    "policy": 0.034,
+    "update": 0.913,
+    "rest": 0.002
+   },
+   "mean_episode_steps": [
+    18.5,
+    18.5,
+    18.5
+   ]
+  },
+  "par6_plain_B": {
+   "mode": "parallel",
+   "n": 6,
+   "aug": "none",
+   "phase": "B",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    169.3,
+    169.5,
+    169.4,
+    169.5,
+    169.7,
+    169.1
+   ],
+   "per_job_mean": 169.4,
+   "per_job_min": 169.1,
+   "aggregate_steps_per_s": 1016.5,
+   "peak_rss_mb_per_job": [
+    384.3,
+    387.2,
+    385.6,
+    384.9,
+    385.4,
+    390.3
+   ],
+   "share_by_part_job0": {
+    "env_step": 0.056,
+    "masks": 0.001,
+    "policy": 0.039,
+    "update": 0.901,
+    "rest": 0.003
+   },
+   "mean_episode_steps": [
+    19.3,
+    19.3,
+    19.3,
+    19.3,
+    19.3,
+    19.3
+   ]
+  },
+  "par6_d4_B": {
+   "mode": "parallel",
+   "n": 6,
+   "aug": "d4",
+   "phase": "B",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    179.3,
+    179.3,
+    179.1,
+    179.7,
+    179.0,
+    178.9
+   ],
+   "per_job_mean": 179.2,
+   "per_job_min": 178.9,
+   "aggregate_steps_per_s": 1075.3,
+   "peak_rss_mb_per_job": [
+    410.6,
+    408.2,
+    429.3,
+    415.4,
+    409.9,
+    437.5
+   ],
+   "share_by_part_job0": {
+    "env_step": 0.056,
+    "masks": 0.001,
+    "policy": 0.037,
+    "update": 0.903,
+    "rest": 0.002
+   },
+   "mean_episode_steps": [
+    19.3,
+    19.3,
+    19.3,
+    19.3,
+    19.3,
+    19.3
+   ]
+  },
+  "par6_plain_A": {
+   "mode": "parallel",
+   "n": 6,
+   "aug": "none",
+   "phase": "A",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    183.2,
+    183.6,
+    183.2,
+    183.5,
+    183.2,
+    183.6
+   ],
+   "per_job_mean": 183.4,
+   "per_job_min": 183.2,
+   "aggregate_steps_per_s": 1100.3,
+   "peak_rss_mb_per_job": [
+    436.3,
+    439.2,
+    438.9,
+    435.3,
+    438.2,
+    436.3
+   ],
+   "share_by_part_job0": {
+    "env_step": 0.113,
+    "masks": 0.001,
+    "policy": 0.035,
+    "update": 0.849,
+    "rest": 0.002
+   },
+   "mean_episode_steps": [
+    6.4,
+    6.4,
+    6.4,
+    6.4,
+    6.4,
+    6.4
+   ]
+  },
+  "par6_d4_A": {
+   "mode": "parallel",
+   "n": 6,
+   "aug": "d4",
+   "phase": "A",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    176.5,
+    176.5,
+    176.3,
+    176.1,
+    176.5,
+    176.0
+   ],
+   "per_job_mean": 176.3,
+   "per_job_min": 176.0,
+   "aggregate_steps_per_s": 1057.9,
+   "peak_rss_mb_per_job": [
+    434.5,
+    432.5,
+    433.4,
+    433.0,
+    431.1,
+    432.7
+   ],
+   "share_by_part_job0": {
+    "env_step": 0.113,
+    "masks": 0.002,
+    "policy": 0.035,
+    "update": 0.849,
+    "rest": 0.002
+   },
+   "mean_episode_steps": [
+    6.4,
+    6.4,
+    6.4,
+    6.4,
+    6.4,
+    6.4
+   ]
+  }
+ },
+ "six_parallel": {
+  "per_job_steps_per_s_full_game": 169.4,
+  "per_job_blended_one_third_A": {
+   "plain": 173.8,
+   "d4": 178.2
+  },
+  "basis": "min over plain / D4 of the mean per-job rate with 6 simultaneous jobs, phase B (full game)"
+ },
+ "peak_memory_mb": {
+  "single": {
+   "single_plain_B": 519.7,
+   "single_d4_B": 515.4
+  },
+  "per_job_at_6": {
+   "par6_plain_B": 390.3,
+   "par6_d4_B": 437.5,
+   "par6_plain_A": 439.2,
+   "par6_d4_A": 434.5
+  }
+ },
+ "verdict": {
+  "r_per_job_at_6_parallel": 169.4,
+  "spec_minimum": 100,
+  "meets_spec_minimum": true,
+  "t_cap": 3049200.0,
+  "t_cap_rounded_250k": 3000000,
+  "below_90_cap_binds_early": false,
+  "stop_for_user_decision": false
+ }
+}

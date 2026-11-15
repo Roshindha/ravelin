@@ -1,0 +1,41 @@
+{
+ "mode": "parallel",
+ "n": 6,
+ "aug": "d4",
+ "phase": "B",
+ "threads": 1,
+ "per_job_steps_per_s": [
+  179.3,
+  179.3,
+  179.1,
+  179.7,
+  179.0,
+  178.9
+ ],
+ "per_job_mean": 179.2,
+ "per_job_min": 178.9,
+ "aggregate_steps_per_s": 1075.3,
+ "peak_rss_mb_per_job": [
+  410.6,
+  408.2,
+  429.3,
+  415.4,
+  409.9,
+  437.5
+ ],
+ "share_by_part_job0": {
+  "env_step": 0.056,
+  "masks": 0.001,
+  "policy": 0.037,
+  "update": 0.903,
+  "rest": 0.002
+ },
+ "mean_episode_steps": [
+  19.3,
+  19.3,
+  19.3,
+  19.3,
+  19.3,
+  19.3
+ ]
+}
