@@ -50,6 +50,7 @@ from breachlens.score import SCORE_VERSION
 
 from .augment import D4Wrapper
 from .eval_ppo_v2 import ModelPolicy
+from . import valrows as VR
 from .features import SiegeFeaturesExtractor
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -192,9 +193,7 @@ class ValidationCallback(BaseCallback):
 
     Writes val_eval.csv (one row per group: ALL + each family) and val_layouts.jsonl (one row per layout incl. the bought army) = the G7 inputs."""
 
-    FIELDS = ["timestep", "group", "n_layouts", "breach_mean", "breach_lo95", "breach_hi95", "score_mean", "score_lo95", "score_hi95", "d_mean",
-              "mean_n_bought", "mean_n_deployed", "eval_seconds",
-              "score_version", "sim_version", "generator_hash", "pool_sha256", "git_commit", "git_dirty", "seed", "role", "set"]      # provenance (B13a)
+    FIELDS = VR.FIELDS                                                                                       # shared with the DDQN trainer (B14a)
 
     def __init__(self, set_name: str, freq: int, run_dir: Path) -> None:
         super().__init__()
@@ -215,19 +214,7 @@ class ValidationCallback(BaseCallback):
         res = EV.evaluate(ModelPolicy(self.model, name=f"PPO@{t}"), self.set_name, "validation", items=self.items)
         dt = time.perf_counter() - t0
         self.seconds += dt
-        new = not self.csv_path.exists()
-        with self.csv_path.open("a", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=self.FIELDS)
-            if new:
-                w.writeheader()
-            for r in res["summary"]:
-                w.writerow({"timestep": t, **{k: r[k] for k in self.FIELDS if k in r}, "eval_seconds": round(dt, 2)})
-        with self.jsonl_path.open("a") as fh:
-            for r in res["rows"]:
-                ep = res["episodes"][r["id"]][0]
-                fh.write(json.dumps({"timestep": t, "id": r["id"], "family": r["family"], "score": r["score"], "d": r["d"], "breach": r["breach"],
-                                     "army": ep["army"], "n_deployed": ep["n_deployed"]}) + "\n")
-        a = next(r for r in res["summary"] if r["group"] == "ALL")
+        a = VR.write_validation(self.csv_path, self.jsonl_path, t, res, dt)
         self.logger.record("val/score", a["score_mean"])
         self.logger.record("val/breach", a["breach_mean"])
         print(f"[val] t={t} score={a['score_mean']:.4f} breach={a['breach_mean']:.3f} bought={a['mean_n_bought']:.1f} ({dt:.1f}s)", flush=True)
