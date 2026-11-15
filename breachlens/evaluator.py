@@ -39,6 +39,11 @@ def run_meta(seed: int, role: str, set_name: str) -> dict:
             "git_commit": P._git("rev-parse", "HEAD"), "git_dirty": P.git_dirty(), "seed": int(seed), "role": role, "set": set_name}
 
 
+def is_final_layout(rec: dict) -> bool:
+    """True for a FINAL / transfer layout record (family + seed). Lets rl/ modules guard themselves without importing the pool loaders."""
+    return P.is_final(rec["family"], rec["seed"])
+
+
 def check_meta(row: dict) -> None:
     missing = [k for k in REQUIRED_META if k not in row or row[k] is None or row[k] == "" or row[k] == "unknown"]
     if missing:
@@ -67,7 +72,9 @@ def _work(args):
             "score": float(np.mean(sc)), "d": float(np.mean([e["d_num"] / max(e["d_den"], 1) for e in eps])),
             "breach": float(np.mean([e["core"] for e in eps])), "n_bought": float(np.mean([e["n_bought"] for e in eps])),
             "n_deployed": float(np.mean([e["n_deployed"] for e in eps])), "policy_seeds": json.dumps(policy.seeds(rec)),
-            "extra": json.dumps({k: v for k, v in eps[0].items() if k in ("chosen_type", "oracle_sims", "oracle_start", "oracle_gold", "reason", "cached")}),
+            "extra": json.dumps({k: v for k, v in eps[0].items() if k in ("chosen_type", "oracle_sims", "oracle_start", "oracle_gold", "reason", "cached",
+                                                                          "chosen_index", "n_sims", "plan_seconds")}),
+            **(policy.provenance() if hasattr(policy, "provenance") else {}),             # B12: N, method, policy hash of the planner / controls
             "episodes": eps, "seconds": time.perf_counter() - t0}
 
 
@@ -110,6 +117,8 @@ def _evaluate(policy, set_name, role, unlock, items, procs, meta, entry_point) -
         items = load_set(set_name, role, unlock=unlock, entry_point=entry_point)        # FINAL loads write the ledger inside the loaders
     elif role != "eval":
         P.assert_dev_only([r["id"] for r, _ in items], role)                           # a non-eval role never scores FINAL / transfer / LAB-DESIGN ids
+    if hasattr(policy, "precheck"):
+        policy.precheck([r for r, _ in items])                                          # B12: a policy that would refuse a layout does so BEFORE any ledger entry
     if role == "eval":
         P.log_final_access("eval", entry_point, {"action": "evaluate", "set": set_name, "policy": policy.name, "n": len(items)})
     t0 = time.perf_counter()
@@ -125,7 +134,7 @@ def _evaluate(policy, set_name, role, unlock, items, procs, meta, entry_point) -
         rows.append({**r, **meta})
     for r in rows:
         check_meta(r)
-    summary = summarize(rows, meta, policy.name)
+    summary = summarize(rows, {**meta, **(policy.provenance() if hasattr(policy, "provenance") else {})}, policy.name)
     for r in summary:
         check_meta(r)
     return {"rows": rows, "summary": summary, "meta": meta, "episodes": episodes, "seconds": time.perf_counter() - t0}

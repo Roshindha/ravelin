@@ -1,0 +1,333 @@
+{
+ "cpu": "Apple M2",
+ "eval_episode_s": {
+  "DDQN + TTA(8 views, mean)": 0.005984093066642041,
+  "DDQN deterministic": 0.0015688339666363996,
+  "PPO + TTA(8 views, logprob)": 0.02092389861669896,
+  "PPO deterministic": 0.004629236883374688
+ },
+ "git_commit": "58e4fa05f3e2bf01c3b5f331d7b7f1668ae22bdf",
+ "learner_kind": "random-init seeded PPO (not trained)",
+ "learners_measured": 2,
+ "n_layouts": 60,
+ "other_eval": {
+  "cpu_hours": 0.01955306601114191,
+  "note": "PPO plain + PPO+D4 deterministic and +TTA, DDQN deterministic and +TTA, 10 seeds x 120 layouts; Oracle / baselines excluded (spec 12.2 row)",
+  "wall_hours_7_contention": 0.005533096284147783,
+  "wall_hours_7_ideal": 0.0027932951444488443
+ },
+ "parallel_7": {
+  "contention_factor": 1.9808491398210406,
+  "per_plan_mean_s_under_load": 0.006300806305390435,
+  "wall_s": 9.956996165999954
+ },
+ "role": "tuning",
+ "session_projection": {
+  "heavy_maxunits_stub_contention": {
+   "fallback": {
+    "config": {
+     "d4_128_learners": 10,
+     "layouts_128": 120,
+     "plain_128_learners": 10
+    },
+    "fits": true,
+    "label": "full",
+    "projection": {
+     "cpu_hours": {
+      "RAS": 0.08208559158493797,
+      "RPS": 0.05034761588956408,
+      "planner_d4": 0.9933779846155457,
+      "planner_plain": 0.9933779846155457
+     },
+     "total_cpu_hours": 2.1191891767055933,
+     "total_wall_hours": 0.3027413109579419,
+     "wall_hours": {
+      "RAS": 0.011726513083562567,
+      "RPS": 0.007192516555652012,
+      "planner_d4": 0.14191114065936367,
+      "planner_plain": 0.14191114065936367
+     }
+    },
+    "step": 0
+   },
+   "full": {
+    "cpu_hours": {
+     "RAS": 0.08208559158493797,
+     "RPS": 0.05034761588956408,
+     "planner_d4": 0.9933779846155457,
+     "planner_plain": 0.9933779846155457
+    },
+    "total_cpu_hours": 2.1191891767055933,
+    "total_wall_hours": 0.3027413109579419,
+    "wall_hours": {
+     "RAS": 0.011726513083562567,
+     "RPS": 0.007192516555652012,
+     "planner_d4": 0.14191114065936367,
+     "planner_plain": 0.14191114065936367
+    }
+   }
+  },
+  "heavy_maxunits_stub_ideal": {
+   "fallback": {
+    "config": {
+     "d4_128_learners": 10,
+     "layouts_128": 120,
+     "plain_128_learners": 10
+    },
+    "fits": true,
+    "label": "full",
+    "projection": {
+     "cpu_hours": {
+      "RAS": 0.04143959776379234,
+      "RPS": 0.025417188455912766,
+      "planner_d4": 0.50149098416717,
+      "planner_plain": 0.50149098416717
+     },
+     "total_cpu_hours": 1.069838754554045,
+     "total_wall_hours": 0.152834107793435,
+     "wall_hours": {
+      "RAS": 0.005919942537684619,
+      "RPS": 0.0036310269222732524,
+      "planner_d4": 0.07164156916673857,
+      "planner_plain": 0.07164156916673857
+     }
+    },
+    "step": 0
+   },
+   "full": {
+    "cpu_hours": {
+     "RAS": 0.04143959776379234,
+     "RPS": 0.025417188455912766,
+     "planner_d4": 0.50149098416717,
+     "planner_plain": 0.50149098416717
+    },
+    "total_cpu_hours": 1.069838754554045,
+    "total_wall_hours": 0.152834107793435,
+    "wall_hours": {
+     "RAS": 0.005919942537684619,
+     "RPS": 0.0036310269222732524,
+     "planner_d4": 0.07164156916673857,
+     "planner_plain": 0.07164156916673857
+    }
+   }
+  },
+  "measured_random_init_contention": {
+   "fallback": {
+    "config": {
+     "d4_128_learners": 10,
+     "layouts_128": 120,
+     "plain_128_learners": 10
+    },
+    "fits": true,
+    "label": "full",
+    "projection": {
+     "cpu_hours": {
+      "RAS": 0.08208559158493797,
+      "RPS": 0.05034761588956408,
+      "planner_d4": 0.26883440236332523,
+      "planner_plain": 0.26883440236332523
+     },
+     "total_cpu_hours": 0.6701020122011525,
+     "total_wall_hours": 0.09572885888587893,
+     "wall_hours": {
+      "RAS": 0.011726513083562567,
+      "RPS": 0.007192516555652012,
+      "planner_d4": 0.038404914623332176,
+      "planner_plain": 0.038404914623332176
+     }
+    },
+    "step": 0
+   },
+   "full": {
+    "cpu_hours": {
+     "RAS": 0.08208559158493797,
+     "RPS": 0.05034761588956408,
+     "planner_d4": 0.26883440236332523,
+     "planner_plain": 0.26883440236332523
+    },
+    "total_cpu_hours": 0.6701020122011525,
+    "total_wall_hours": 0.09572885888587893,
+    "wall_hours": {
+     "RAS": 0.011726513083562567,
+     "RPS": 0.007192516555652012,
+     "planner_d4": 0.038404914623332176,
+     "planner_plain": 0.038404914623332176
+    }
+   }
+  },
+  "measured_random_init_ideal": {
+   "fallback": {
+    "config": {
+     "d4_128_learners": 10,
+     "layouts_128": 120,
+     "plain_128_learners": 10
+    },
+    "fits": true,
+    "label": "full",
+    "projection": {
+     "cpu_hours": {
+      "RAS": 0.04143959776379234,
+      "RPS": 0.025417188455912766,
+      "planner_d4": 0.13571674740844375,
+      "planner_plain": 0.13571674740844375
+     },
+     "total_cpu_hours": 0.3382902810365926,
+     "total_wall_hours": 0.048327183005227516,
+     "wall_hours": {
+      "RAS": 0.005919942537684619,
+      "RPS": 0.0036310269222732524,
+      "planner_d4": 0.019388106772634823,
+      "planner_plain": 0.019388106772634823
+     }
+    },
+    "step": 0
+   },
+   "full": {
+    "cpu_hours": {
+     "RAS": 0.04143959776379234,
+     "RPS": 0.025417188455912766,
+     "planner_d4": 0.13571674740844375,
+     "planner_plain": 0.13571674740844375
+    },
+    "total_cpu_hours": 0.3382902810365926,
+    "total_wall_hours": 0.048327183005227516,
+    "wall_hours": {
+     "RAS": 0.005919942537684619,
+     "RPS": 0.0036310269222732524,
+     "planner_d4": 0.019388106772634823,
+     "planner_plain": 0.019388106772634823
+    }
+   }
+  }
+ },
+ "set": "TUNE-val",
+ "single_process": {
+  "RAS": {
+   "128": {
+    "max_s": 0.31322900200211734,
+    "mean_s": 0.124318793291377,
+    "median_s": 0.11079278949546278
+   },
+   "32": {
+    "max_s": 0.09832641700086242,
+    "mean_s": 0.034280756924924084,
+    "median_s": 0.03111770450050244
+   },
+   "8": {
+    "max_s": 0.026489247999052168,
+    "mean_s": 0.009627793308421435,
+    "median_s": 0.008034562501052278
+   },
+   "mean_env_steps": 6.536263020833333,
+   "mean_units": 6.536263020833333,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.10843309730003056,
+    "bunker_nest": 0.12658094362591327,
+    "spine_pods": 0.13794233894818717
+   },
+   "per_plan_mean_s": 0.0009712405725888828,
+   "per_plan_p95_s": 0.0032530853998650826
+  },
+  "RPS": {
+   "128": {
+    "max_s": 0.1431375030133495,
+    "mean_s": 0.07625156536773829,
+    "median_s": 0.06897841450427222
+   },
+   "32": {
+    "max_s": 0.03973066300204664,
+    "mean_s": 0.021236789442112543,
+    "median_s": 0.019562896999559598
+   },
+   "8": {
+    "max_s": 0.01458570700197015,
+    "mean_s": 0.006593275025261391,
+    "median_s": 0.006032395000147517
+   },
+   "mean_env_steps": 10.763736979166667,
+   "mean_units": 4.78203125,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.06664063774951501,
+    "bunker_nest": 0.09011656012762614,
+    "spine_pods": 0.07199749822607374
+   },
+   "per_plan_mean_s": 0.0005957153544354554,
+   "per_plan_p95_s": 0.0015902079995612438
+  },
+  "planner": {
+   "128": {
+    "max_s": 0.5024332070006494,
+    "mean_s": 0.40715024222533125,
+    "median_s": 0.4021797469968078
+   },
+   "32": {
+    "max_s": 0.14846087200749025,
+    "mean_s": 0.10415637811694675,
+    "median_s": 0.10320520849927561
+   },
+   "8": {
+    "max_s": 0.04336137500104087,
+    "mean_s": 0.02652216670018485,
+    "median_s": 0.02585491749960056
+   },
+   "mean_env_steps": 10.7232421875,
+   "mean_units": 4.7623046875,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.3961233232027553,
+    "bunker_nest": 0.422932230348988,
+    "spine_pods": 0.4023951731242505
+   },
+   "per_plan_mean_s": 0.0031808612673854004,
+   "per_plan_p95_s": 0.006347673250184016
+  },
+  "planner_heavy_fullarmy_stub (20 layouts, with network)": {
+   "128": {
+    "max_s": 0.8934524139967834,
+    "mean_s": 0.8208040450974294,
+    "median_s": 0.8294419024914532
+   },
+   "32": {
+    "max_s": 0.2510946679976769,
+    "mean_s": 0.21069058154917003,
+    "median_s": 0.20816208200267283
+   },
+   "8": {
+    "max_s": 0.061136166003052494,
+    "mean_s": 0.054998085150236874,
+    "median_s": 0.054788022001048375
+   },
+   "mean_env_steps": 21.3140625,
+   "mean_units": 10.15703125,
+   "per_family_N128_mean_s": {
+    "spine_pods": 0.8208040450974294
+   },
+   "per_plan_mean_s": 0.0064125316023236675,
+   "per_plan_p95_s": 0.008093635700788578
+  },
+  "planner_heavy_maxunits_stub (20 layouts, with network)": {
+   "128": {
+    "max_s": 1.7519205769986002,
+    "mean_s": 1.50447295250151,
+    "median_s": 1.5143434824967699
+   },
+   "32": {
+    "max_s": 0.4419735820047208,
+    "mean_s": 0.3746975585016116,
+    "median_s": 0.36751339749298495
+   },
+   "8": {
+    "max_s": 0.11488554300012765,
+    "mean_s": 0.0969085231502504,
+    "median_s": 0.09588302150132222
+   },
+   "mean_env_steps": 41.0,
+   "mean_units": 20.0,
+   "per_family_N128_mean_s": {
+    "spine_pods": 1.50447295250151
+   },
+   "per_plan_mean_s": 0.011753694941418046,
+   "per_plan_p95_s": 0.013702166350594779
+  }
+ },
+ "torch_threads": 1
+}
