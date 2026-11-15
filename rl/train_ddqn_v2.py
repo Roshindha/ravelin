@@ -272,6 +272,8 @@ def parse_args(argv):
     for k, v in D.DDQN_CONFIG.items():
         if k != "net_arch":
             p.add_argument("--" + k.replace("_", "-"), type=type(v), default=v)
+    p.add_argument("--shaping", choices=["off", "on"], default="off",
+                   help="SPEC 7.4 potential-based shaping (the SAME BreachEnv implementation as the PPO shaped pilot, row z) in the TRAINING envs only; validation never shapes")
     p.add_argument("--threads", type=int, default=DEFAULT_THREADS)
     p.add_argument("--resume", action="store_true")
     p.add_argument("--debug-interrupt-at", type=int, default=None)
@@ -304,7 +306,7 @@ def main(argv: list[str] | None = None) -> Path:
     boundary = 0 if args.curriculum == "off" else (args.phase_a_steps if args.phase_a_steps is not None else args.timesteps // 3)
 
     if ckpt is None:
-        venv = build_venv(train_set, "none", args.seed, hp["n_envs"], "random" if boundary > 0 else None)
+        venv = build_venv(train_set, "none", args.seed, hp["n_envs"], "random" if boundary > 0 else None, shaping=(args.shaping == "on"))
         tr = Trainer(hp, venv, args.seed, args.timesteps, boundary)
         n_resumes, cb_state = 0, {}
     else:
@@ -321,7 +323,7 @@ def main(argv: list[str] | None = None) -> Path:
     env_info = environment_info() | {"torch_threads": th.get_num_threads()}
     if prior is None:
         identity = {"algorithm": "MaskedDoubleDQN", "run_name": args.run_name, "config": cfg, "train_set": train_set, "val_set": val_set, "aug": "none",
-                    "seed": args.seed, "timesteps_requested": args.timesteps, "curriculum": args.curriculum,
+                    "seed": args.seed, "timesteps_requested": args.timesteps, "curriculum": args.curriculum, "shaping": args.shaping,
                     "curriculum_phase_a_army": "random" if args.curriculum == "on" else None,
                     "curriculum_phase_b_start_timestep": boundary if args.curriculum == "on" else None, **repo_identity(), "hyperparameters": hp,
                     "features_extractor": "rl.features.SiegeFeaturesExtractor + MLP head", "observation": "Dict(grid (9,14,14), state (11,))", "n_actions": 267,
