@@ -453,7 +453,7 @@ def main(argv: list[str] | None = None) -> Path:
     val.items = EV.load_set(val_set, "validation", entry_point="rl.train_ppo_v2")          # loaded now (not at the first eval) so the manifest exists before any step
     train_ids = sorted({r["id"] for e in venv.envs for r in e.unwrapped.records})
     manifest = MF.build_manifest(args.run_name, train_set, val_set, train_ids, [r["id"] for r, _ in val.items], git_commit=identity.get("git_commit"))
-    MF.check_manifest(manifest)                                                          # refuses FINAL / transfer / LAB-DESIGN ids or streams before training starts
+    MF.check_manifest(manifest)                                                          # refuses held-out ids or streams (see breachlens.manifest) before training starts
     (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=1))
     cur = CurriculumCallback(boundary, run_dir / "curriculum.log") if args.curriculum == "on" else None
     val.last_eval_t = cb_state.get("val_last_eval_t", -1)
