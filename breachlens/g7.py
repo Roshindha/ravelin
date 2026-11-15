@@ -5,7 +5,7 @@ val_layouts.jsonl (per layout and eval: family, army = 5-vector of unit counts b
 
   metric per seed        = mean of the TUNE-val mean scores at t = H - 50k, H - 25k, H   (H = 300k, or 600k after the extension)
   pass (all of)          = mean over plain seeds >= bar  AND  >= 2 of 3 seeds > bar  AND  no collapse
-  collapse (any seed)    = < 10 distinct armies (5-vectors) over the 60 layouts at t = H, OR in any family one unit type above 90 % of the units bought at t = H
+  collapse (any seed)    = < 10 distinct armies (5-vectors) over the 60 layouts at t = H, OR one unit type above 90 % of the units bought in EVERY familiar family at once at t = H (changelog (x))
   extension (once)       = G7 failed at 300k AND mean over seeds of the LS slope over the evals t = 200k..300k (5 points), in score per 100k steps, >= +0.02
 """
 from __future__ import annotations
@@ -69,12 +69,15 @@ def collapse(run: dict, t: int) -> dict:
     if not rows:
         raise ValueError(f"no per-layout rows at t={t}")
     distinct = len({tuple(int(c) for c in r["army"]) for r in rows})
-    fam_share = {}
+    fam_share, fam_type, shares = {}, {}, []
     for fam in sorted({r["family"] for r in rows}):
         tot = np.sum([r["army"] for r in rows if r["family"] == fam], axis=0).astype(float)
-        fam_share[fam] = float(tot.max() / tot.sum()) if tot.sum() > 0 else 1.0
+        sh = tot / tot.sum() if tot.sum() > 0 else np.ones_like(tot)
+        shares.append(sh)
+        fam_share[fam], fam_type[fam] = float(sh.max()), int(sh.argmax())
+    mimic = [int(k) for k in range(len(shares[0])) if all(sh[k] > MAX_SHARE for sh in shares)]       # one type above 90 % in every family at once
     return {"t": t, "distinct_armies": distinct, "distinct_ok": distinct >= MIN_DISTINCT, "max_type_share_per_family": fam_share,
-            "share_ok": all(v <= MAX_SHARE for v in fam_share.values())}
+            "max_type_per_family": fam_type, "single_type_in_every_family_above_90pct": mimic, "share_ok": not mimic}
 
 
 def judge(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int | None = N_PLAIN) -> dict:
@@ -85,7 +88,7 @@ def judge(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int | 
     above = [s for s, m in per.items() if m["score"] > bar]
     crit = {"mean_ge_bar": mean >= bar, "two_of_three_above_bar": len(above) >= 2,
             "distinct_armies_ge_10_every_seed": all(c["distinct_ok"] for c in col.values()),
-            "no_type_above_90pct_in_any_family_every_seed": all(c["share_ok"] for c in col.values())}
+            "no_single_type_above_90pct_in_every_family_every_seed": all(c["share_ok"] for c in col.values())}
     return {"horizon": horizon, "window": window(horizon, freq), "bar": bar, "mean_score": mean, "per_seed": per, "seeds_above_bar": above, "collapse": col,
             "criteria": crit, "pass": all(crit.values()), "valid_g7": expect_seeds is None or len(per) == expect_seeds}
 

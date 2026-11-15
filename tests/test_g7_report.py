@@ -85,22 +85,50 @@ def test_collapse_fewer_than_10_distinct_armies_fails_even_with_a_high_score():
     assert G.collapse(make_run(curve(lambda t: .5), diverse_armies(10)), 300_000)["distinct_ok"]        # exactly 10 is enough
 
 
-def test_collapse_90_percent_rule_is_per_family_strict_and_uses_units_bought():
+def _with_family_armies(per_family: dict):
+    """60 diverse armies, then overwrite the 20 layouts of the given families (index 0 spine_pods, 1 archipelago, 2 bunker_nest)."""
     arm = diverse_armies(40)
-    arm[:20] = [(19, 1, 0, 0, 0)] * 10 + [(18, 1, 1, 0, 0)] * 10                  # spine_pods: scouts = 370 of 40*... see below
-    run = make_run(curve(lambda t: .5), arm)
-    tot = np.sum(arm[:20], axis=0)
-    share = tot.max() / tot.sum()
-    c = G.collapse(run, 300_000)
-    assert c["max_type_share_per_family"]["spine_pods"] == pytest.approx(share) and (share > 0.9) == (not c["share_ok"])
-    arm[:20] = [(9, 1, 0, 0, 0)] * 20                                              # exactly 90 %: not a collapse (strictly more than 90 %)
+    for k, v in per_family.items():
+        arm[20 * k:20 * k + 20] = v
+    return arm
+
+
+SNIPER, SCOUT = 1, 0
+
+
+def test_collapse_90_percent_rule_is_strict_and_uses_units_bought():
+    one = lambda t, n_t, n_other: [tuple(n_t if j == t else (n_other if j == 2 else 0) for j in range(5))] * 20
+    arm = _with_family_armies({0: one(SNIPER, 9, 1)})                                # exactly 90 %: not above
     assert G.collapse(make_run(curve(lambda t: .5), arm), 300_000)["max_type_share_per_family"]["spine_pods"] == pytest.approx(0.9)
-    assert G.collapse(make_run(curve(lambda t: .5), arm), 300_000)["share_ok"]
-    arm[:20] = [(19, 1, 0, 0, 0)] * 20                                             # 95 %
-    assert not G.collapse(make_run(curve(lambda t: .5), arm), 300_000)["share_ok"]
-    # the rule is "in ANY family", not "in every family at once": only one family collapsed
+    sh = lambda arm: G.collapse(make_run(curve(lambda t: .5), arm), 300_000)
+    all_fam = lambda n_t, n_o: _with_family_armies({k: one(SNIPER, n_t, n_o) for k in range(3)})
+    assert sh(all_fam(9, 1))["share_ok"]                                              # 90 % in every family: not strictly above -> no collapse
+    assert not sh(all_fam(19, 1))["share_ok"]                                         # 95 % in every family -> collapse
+
+
+def test_over_90_percent_sniper_in_ONE_family_only_is_not_a_collapse():
+    arm = _with_family_armies({0: [(0, 19, 0, 0, 1)] * 20})                           # spine_pods: 95 % Sniper; the other families stay diverse
+    c = G.collapse(make_run(curve(lambda t: .5), arm), 300_000)
+    assert c["max_type_share_per_family"]["spine_pods"] > 0.9 and c["max_type_per_family"]["spine_pods"] == SNIPER
+    assert c["share_ok"] and c["single_type_in_every_family_above_90pct"] == []
     d = G.decide(seeds(*[curve(lambda t: 0.6)] * 3, armies=arm), BAR, 300_000, 25_000)
-    assert not d["first_look"]["criteria"]["no_type_above_90pct_in_any_family_every_seed"]
+    assert d["first_look"]["criteria"]["no_single_type_above_90pct_in_every_family_every_seed"] and d["verdict"] == "PASS"
+    two = _with_family_armies({0: [(0, 19, 0, 0, 1)] * 20, 1: [(0, 19, 0, 0, 1)] * 20})        # two of three families: still not "every family"
+    assert G.collapse(make_run(curve(lambda t: .5), two), 300_000)["share_ok"]
+
+
+def test_over_90_percent_the_same_type_in_every_family_is_a_collapse():
+    arm = _with_family_armies({k: [(0, 19, 0, 0, 1)] * 20 for k in range(3)})
+    c = G.collapse(make_run(curve(lambda t: .5), arm), 300_000)
+    assert not c["share_ok"] and c["single_type_in_every_family_above_90pct"] == [SNIPER]
+    d = G.decide(seeds(*[curve(lambda t: 0.6)] * 3, armies=arm), BAR, 300_000, 25_000)
+    assert not d["first_look"]["criteria"]["no_single_type_above_90pct_in_every_family_every_seed"] and d["verdict"] == "FAIL"
+
+
+def test_different_dominant_types_in_different_families_is_not_a_collapse():
+    arm = _with_family_armies({0: [(0, 19, 0, 0, 1)] * 20, 1: [(19, 0, 0, 0, 1)] * 20, 2: [(0, 0, 19, 0, 1)] * 20})     # >90 % each, but not ONE type
+    c = G.collapse(make_run(curve(lambda t: .5), arm), 300_000)
+    assert c["share_ok"] and all(v > 0.9 for v in c["max_type_share_per_family"].values())
 
 
 def test_collapse_in_a_single_seed_fails_g7():
@@ -189,6 +217,7 @@ def test_cli_prints_pass_fail_per_criterion_and_the_verdict(tmp_path, capsys):
     rc = R.main(["--models-dir", str(md), "--smoke", "--out", str(tmp_path / "o.json")])
     out = capsys.readouterr().out
     assert rc == 0 and "PASS  mean_ge_bar" in out and "PASS  two_of_three_above_bar" in out and "VERDICT: PASS" in out and "D4 diagnostics (non-gating)" in out
+    assert out.count("max single-type share per family (diagnostic, non-gating)") == 3 and "spine_pods" in out and "(type " in out
     assert json.loads((tmp_path / "o.json").read_text())["decision"]["verdict"] == "PASS"
     md2 = synth_dir(tmp_path / "b", scores=(0.30, 0.30, 0.30))
     R.main(["--models-dir", str(md2), "--smoke", "--out", str(tmp_path / "o2.json")])

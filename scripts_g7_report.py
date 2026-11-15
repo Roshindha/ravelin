@@ -97,8 +97,9 @@ def main(argv=None) -> int:
     print(f"\nG7 look at t = {judged['window']}: mean score {judged['mean_score']:.4f} vs bar {bar:.4f}")
     for s, m in judged["per_seed"].items():
         c = judged["collapse"][s]
-        print(f"  seed {s}: score {m['score']:.4f}  D {m['d']:.3f}  breach {m['breach']:.3f}  bought {m['n_bought']:.1f}  distinct armies {c['distinct_armies']}  "
-              f"max type share/family {', '.join(f'{k} {v:.2f}' for k, v in c['max_type_share_per_family'].items())}")
+        shares = ", ".join("%s %.2f (type %d)" % (k, v, c["max_type_per_family"][k]) for k, v in c["max_type_share_per_family"].items())
+        print(f"  seed {s}: score {m['score']:.4f}  D {m['d']:.3f}  breach {m['breach']:.3f}  bought {m['n_bought']:.1f}  distinct armies {c['distinct_armies']}")
+        print(f"          max single-type share per family (diagnostic, non-gating): {shares}")
     for k, v in judged["criteria"].items():
         print(f"  {'PASS' if v else 'FAIL'}  {k}")
     print(f"  {'PASS' if judged['pass'] else 'FAIL'}  G7 at H={judged['horizon']}")
