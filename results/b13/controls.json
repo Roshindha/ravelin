@@ -1,0 +1,30 @@
+{
+ "own_x_ppo_vs_val_eval_s9001": {
+  "n": 60,
+  "max_abs_diff_score": 0.0,
+  "max_abs_diff_d": 0.0,
+  "max_abs_diff_breach": 0.0
+ },
+ "own_x_ppo_vs_val_eval_s9002": {
+  "n": 60,
+  "max_abs_diff_score": 0.0,
+  "max_abs_diff_d": 0.0,
+  "max_abs_diff_breach": 0.0
+ },
+ "own_x_ppo_vs_val_eval_s9003": {
+  "n": 60,
+  "max_abs_diff_score": 0.0,
+  "max_abs_diff_d": 0.0,
+  "max_abs_diff_breach": 0.0
+ },
+ "greedy_x_scripted_vs_b8_Greedy": {
+  "n": 60,
+  "max_abs_diff_score": 0.0,
+  "max_abs_diff_d": 0.0
+ },
+ "best_single_x_scripted_vs_b8_BestSingle": {
+  "n": 60,
+  "max_abs_diff_score": 0.0,
+  "max_abs_diff_d": 0.0
+ }
+}
