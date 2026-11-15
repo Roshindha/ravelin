@@ -1,0 +1,57 @@
+{
+ "base_config": "rl/ddqn.py DDQN_CONFIG",
+ "config": {
+  "algorithm": "rl.train_ddqn_v2 (masked Double DQN)",
+  "arms": {
+   "f4": {
+    "train_every": 4
+   },
+   "f8": {
+    "train_every": 8
+   }
+  },
+  "checkpoint_freq": 50000,
+  "curriculum": {
+   "mode": "on",
+   "phase_a": "prebought=random (phase-A generator armies, start in DEPLOY)",
+   "phase_a_steps": 100000,
+   "phase_b": "full BUY->DEPLOY game"
+  },
+  "ddqn": {
+   "batch_size": 64,
+   "buffer_size": 50000,
+   "eps_decay_fraction": 0.25,
+   "eps_end": 0.05,
+   "eps_start": 1.0,
+   "gamma": 1.0,
+   "learning_rate": 0.0001,
+   "learning_starts": 5000,
+   "max_grad_norm": 10.0,
+   "n_envs": 8,
+   "net_arch": [
+    256,
+    256
+   ],
+   "target_update_interval": 1000
+  },
+  "eval_policy": "deterministic masked argmax over legal actions, canonical view, one episode per layout, no TTA (true score, never shaped)",
+  "note": "Row (p) + row (cc) DDQN train_freq pilot, NON-GATING. ddqn = rl.ddqn.DDQN_CONFIG exactly; 'train_freq' of row (p) is the trainer flag --train-every (gradient updates per env steps: 1/4 vs 1/8). Shaping on in TRAINING envs only.",
+  "parallel_processes": 4,
+  "run_names": "ddqn_pilot_f{freq}_s{seed}",
+  "seeds": [
+   9301,
+   9302
+  ],
+  "selection": {
+   "metric": "mean TUNE-val true score over t = 250k/275k/300k and both seeds per arm",
+   "tie_choice_train_every": 8,
+   "tie_margin": 0.01
+  },
+  "shaping": "on (SPEC 7.4 potential-based, training envs only)",
+  "timesteps": 300000,
+  "torch_threads": 1,
+  "train_set": "TUNE-train",
+  "val_freq": 25000,
+  "val_set": "TUNE-val"
+ }
+}
