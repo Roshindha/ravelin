@@ -570,5 +570,34 @@
     "cleared": 21
    }
   }
+ },
+ "g7": {
+  "pass": true,
+  "horizon": 300000,
+  "mean_score": 0.46499066423307456,
+  "bar": 0.436862743301702,
+  "per_seed": {
+   "9201": 0.45436545429525976,
+   "9202": 0.48746026078125615,
+   "9203": 0.45314627762270776
+  },
+  "seeds_above_bar": 3,
+  "collapse_pass": true,
+  "distinct_armies": {
+   "9201": 37,
+   "9202": 24,
+   "9203": 32
+  },
+  "slope_per_100k": 0.0083,
+  "route": "SPEC 7.4 shaped-reward pilot (Gate changelog rows z/aa/bb); the unshaped pilot FAILED (row y, report results/b13/g7_report_300k.txt)",
+  "shaping_adopted_for_grid": true,
+  "run_commit": "f12e93aee44f6d762a350fe1cdf16032a1abce69",
+  "git_dirty": false,
+  "reports": {
+   "results/b13/g7_report_300k.txt": "d01e6ff86ad7f7fa31e00751203b9cf0b5489f9042786a1a0628079f0eb0d3c1",
+   "results/b13/g7_report_shaped_300k.txt": "75baf01cc0a5937cde6d8ddfb4965ca9f8dc83b5981f5e6b7835eb33af416fb3"
+  },
+  "shaped_pilot_config_sha256_file": "a06de66d149a588996e5403433df139d38f92781ff451180dff35491d1e0b20f",
+  "revisions_remaining": 1
  }
 }

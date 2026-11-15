@@ -1,0 +1,19 @@
+G7 SHAPED-REWARD PILOT (SPEC 7.4, Gate changelog (z)): training used shaping, every number below is the TRUE score
+G7 report  models=/Users/roshinisudhakar/base-siege/models_v2  horizon=300000  bar=0.4369  plain seeds=[9201, 9202, 9203]  d4 seeds=[]
+
+G7 look at t = [250000, 275000, 300000]: mean score 0.4650 vs bar 0.4369
+  seed 9201: score 0.4544  D 0.483  breach 0.411  bought 8.6  distinct armies 37
+          max single-type share per family (diagnostic, non-gating): archipelago 0.42 (type 1), bunker_nest 0.43 (type 1), spine_pods 0.53 (type 1)
+  seed 9202: score 0.4875  D 0.494  breach 0.478  bought 8.3  distinct armies 24
+          max single-type share per family (diagnostic, non-gating): archipelago 0.68 (type 1), bunker_nest 0.71 (type 1), spine_pods 0.74 (type 1)
+  seed 9203: score 0.4531  D 0.500  breach 0.383  bought 8.5  distinct armies 32
+          max single-type share per family (diagnostic, non-gating): archipelago 0.64 (type 1), bunker_nest 0.40 (type 1), spine_pods 0.67 (type 1)
+  PASS  mean_ge_bar
+  PASS  two_of_three_above_bar
+  PASS  distinct_armies_ge_10_every_seed
+  PASS  no_single_type_above_90pct_in_every_family_every_seed
+  PASS  G7 at H=300000
+  slope (200k..300k, per 100k steps, mean over plain seeds) = +0.0083  threshold +0.02  <
+
+VERDICT: PASS
+12.1 step-budget slopes (condition-mean curve, 200k..300k): plain +0.0083  per 100k steps
