@@ -36,3 +36,10 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - DEV defender mix (DEV only): Gun share 0.59 / 0.54 / 0.59, Lancer 0.38 / 0.34 / 0.39 (spine_pods / archipelago / bunker_nest); sealed-core share 0.42 / 0.65 / 0.50.
 - FINAL scores, baselines and Oracle results are not stored anywhere; the pool carries accept bits and rule ids only. Pool statistics of FINAL cannot be reported before the final eval.
 - Freeze guarantee: the sha256 test (`test_pool_file_is_read_only_and_sha256_matches`, against `pool_v1.sha256` and the recorded hash), not file permissions, is what guarantees the pool is frozen. The 0444 mode is a convenience; anyone can chmod it. Likewise the ledger is an append-only convention, not an access-control mechanism; its integrity is checked by tests (build entries only, zero eval).
+
+## G7 / learnability (B13d)
+- G7 passed only with potential-based shaping (SPEC 7.4), on the second pre-registered attempt: unshaped pilot FAIL (mean 0.4284 vs bar 0.4369, 1 of 3 seeds above), shaped pilot PASS (mean 0.4650, seeds 0.4544 / 0.4875 / 0.4531, 3 of 3 above). Shaping is a training-only signal and is used for all grid learners; evaluation is always the true score. It consumed the post-G7 revision; 1 spare remains.
+- The shaped-vs-unshaped pilot difference (+0.037, 0.4650 vs 0.4284) is 3 seeds vs 3 different seeds (9201-9203 vs 9001-9003), not a controlled comparison; per-seed spread is 0.40-0.49, so it is not evidence that shaping helps by that amount.
+- On TUNE-val the shaped PPO policies breach 0.38-0.48 of layouts vs 0.65 for BestSingle: PPO trades breaches for destruction under the 0.6 / 0.4 score (D 0.48-0.50 vs 0.20). The learner is not better at breaching than the single-unit baseline.
+- The D4 pilot was unshaped and flat (mean 0.4213, slope +0.0030 per 100k); there is no shaped D4 pilot, so the D4 slope entering the step budget is the unshaped one (it does not change T = 1.5M).
+- The shaped plain curve peaks near 225k (0.476) and falls to 0.450 at 300k; its 200k-300k slope (+0.0083 per 100k) is noisy (per-seed -0.031 to +0.030).

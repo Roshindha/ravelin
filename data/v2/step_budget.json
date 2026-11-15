@@ -1,0 +1,20 @@
+{
+ "s": 0.00828726261618723,
+ "slope_plain": 0.00828726261618723,
+ "slope_d4": 0.0030260323158494175,
+ "T_curve": 1500000,
+ "r": 184.3,
+ "T_cap": 3317400.0,
+ "T": 1500000,
+ "binding": "curve",
+ "stop_for_user_decision": false,
+ "inputs": {
+  "plain": "shaped pilot seeds 9201-9203, condition-mean curve, t=200k..300k (5 points), LS slope per 100k",
+  "d4": "unshaped D4 pilot seeds 9101-9103 (no shaped D4 pilot exists), same window",
+  "r": "min per-job steps/s at P=6, shaped plain, phase B, 60 s warm-up + 180 s window (data/v2/b13d_shaped_throughput.json)"
+ },
+ "sensitivity": {
+  "T_if_r_is_unshaped_B10_169.4": 1500000,
+  "T_if_D4_ignored": 1500000
+ }
+}

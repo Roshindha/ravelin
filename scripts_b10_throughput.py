@@ -33,18 +33,18 @@ def peak_mb() -> float:
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6      # macOS: bytes
 
 
-def make(aug, phase, threads):
+def make(aug, phase, threads, shaping=False):
     from rl import train_ppo_v2 as T
     th.set_num_threads(threads)
     hp = T.PPO_CONFIG | {"net_arch": T.PPO_CONFIG["net_arch"]}
-    venv = T.build_venv("TUNE-train", aug, 0, hp["n_envs"], "random" if phase == "A" else None)
+    venv = T.build_venv("TUNE-train", aug, 0, hp["n_envs"], "random" if phase == "A" else None, shaping=shaping)
     return T, hp, venv
 
 
 def bench_train(a) -> dict:
     from stable_baselines3.common.callbacks import BaseCallback
     import sb3_contrib.ppo_mask.ppo_mask as pm
-    T, hp, venv = make(a.aug, a.phase, a.threads)
+    T, hp, venv = make(a.aug, a.phase, a.threads, shaping=a.shaping == "on")
     model = T.build_model(venv, 0, hp)
     acc = {"env_step": 0.0, "masks": 0.0, "policy": 0.0, "update": 0.0}
 
@@ -90,7 +90,7 @@ def bench_train(a) -> dict:
 
 
 def bench_env(a) -> dict:
-    T, hp, venv = make(a.aug, a.phase, a.threads)
+    T, hp, venv = make(a.aug, a.phase, a.threads, shaping=a.shaping == "on")
     venv.seed(0)
     venv.reset()
     rng = np.random.default_rng(0)
@@ -144,7 +144,7 @@ def bench_parallel(a) -> dict:
     for i in range(a.n):
         f = BENCH / f"_tmp_par_{os.getpid()}_{i}.json"
         outs.append(f)
-        procs.append(subprocess.Popen([sys.executable, __file__, "train", "--aug", a.aug, "--phase", a.phase, "--threads", str(a.threads), "--warmup", str(a.warmup),
+        procs.append(subprocess.Popen([sys.executable, __file__, "train", "--aug", a.aug, "--phase", a.phase, "--threads", str(a.threads), "--shaping", a.shaping, "--warmup", str(a.warmup),
                                        "--seconds", str(a.seconds), "--out", str(f)], cwd=ROOT, env=dict(os.environ, PYTHONPATH=str(ROOT))))
     for p in procs:
         p.wait()
@@ -188,6 +188,7 @@ if __name__ == "__main__":
     p.add_argument("mode", choices=["train", "parallel", "env", "infer", "assemble"])
     p.add_argument("--aug", default="none")
     p.add_argument("--phase", default="B")
+    p.add_argument("--shaping", choices=["off", "on"], default="off", help="B13d: SPEC 7.4 shaping in the training env (throughput only)")
     p.add_argument("--threads", type=int, default=1)
     p.add_argument("--warmup", type=float, default=60)
     p.add_argument("--seconds", type=float, default=180)

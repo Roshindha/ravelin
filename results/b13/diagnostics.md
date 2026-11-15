@@ -18,7 +18,19 @@
 
 Pinned choices (SPEC silent, none depends on a result): forced random army = `random_types(default_rng([crc32(layout id), 7313]))` (one army per layout, the same for all seeds and deployers); forced best-single = per-family type chosen on TUNE-train (B8, Gate changelog (k)): archipelago=bulwark, bunker_nest=sniper, spine_pods=sniper; forced Oracle army = `army_search` result (128 random + 128 hill-climb, scripted deployment, rng [layout seed, 4343], SPEC 3.4 G8(a)); scripted deployer = `place_on_border` in Greedy ranking order from the default start tile; PPO deployer = deterministic masked argmax after the forced buys + END_BUY (a unit left undeployed when the policy plays WAIT is forfeited).
 
-**Oracle-deploy column NOT computed (SPEC ambiguity, owner decision needed):** the table row says `forced Oracle army (army-search result)` with an Oracle-deploy reference cell, but the SPEC defines no deployment-only search for a fixed army. See the options in the report message.
+**Oracle-deploy cell (computed in B13d, Gate changelog (aa) option B; DIAGNOSTIC defined after G7, never used by any gate).** Deployment-only hill-climb on the army-search army (army multiset fixed; moves = start-tile shift of +-7 and order swap; strict improvement by the exact integer key; warm start = scripted deployment; budget 256 simulations per layout; rng `[layout seed, 4444]`; TUNE-val only). Per-layout rows: `results/b13/oracle_deploy.csv`. The scripted warm start reproduces the decomposition's `oracle_army x scripted` cell (0.6715) exactly.
+
+**Completed 7.3 table (TUNE-val, 60 layouts; mean score over the 3 pilot plain seeds; unshaped pilot policies of rows (s)/(y)).**
+
+| army \ deployer | pilot PPO deploy | scripted deploy | Oracle deploy (reference) |
+|---|---|---|---|
+| own buying (policy buys) | 0.441 | 0.399 | - |
+| forced Greedy army | 0.311 | 0.327 | - |
+| forced best-single army | 0.458 | 0.381 | - |
+| forced random army | 0.212 | 0.195 | - |
+| forced Oracle army (army-search result) | 0.299 | 0.672 | **0.734** (D 0.623, breach 0.900) |
+
+Oracle-deploy by family (score, scripted -> deployment search): spine_pods 0.773 -> 0.811, archipelago 0.834 -> 0.855, bunker_nest 0.407 -> 0.535; the search improved 17 of 60 layouts (4 / 4 / 9). Reading: with the army-search army fixed, a 256-simulation deployment search adds only +0.062 over scripted deployment (0.672 -> 0.734), far below the full Oracle (0.892, same armies searched jointly with deployment); the pilot PPO policy deploying the same army scores 0.299. Caveats: the army was selected under the scripted deployer (winner's curse, so the scripted cell is optimistic and the headroom of deployment search is a lower bound under a small budget); a hill-climb with 256 simulations is not an optimum.
 
 Reading caveats: the forced Oracle army is SELECTED by searching armies under the scripted deployer, so the scripted column is optimistic for that row by construction (winner's curse) and the PPO column is not; the forced armies other than `own` are not armies the pilot policy chose, so its deployment on them is partly off-distribution. Differences between rows are armies (buying), differences inside a row are deployers.
 
