@@ -1,0 +1,57 @@
+{
+ "config": {
+  "algorithm": "rl.train_ppo_v2 (sb3_contrib.MaskablePPO / MultiInputPolicy, device cpu)",
+  "aug": "d4",
+  "base_config": "data/v2/g7_pilot_config.json (sha256 of config ef0867e601a74ca8aef16400d377f6ed3ed36373d09d049b3b89a0e0f40497e9), row v",
+  "checkpoint_freq": 50000,
+  "checkpoint_keep": 2,
+  "condition": "ppo_d4",
+  "curriculum": {
+   "mode": "on",
+   "phase_a": "prebought=random (phase-A generator armies, start in DEPLOY)",
+   "phase_a_steps": 500000,
+   "phase_b": "full BUY->DEPLOY game",
+   "ramp": "off"
+  },
+  "eval_policy": "deterministic masked argmax over legal actions, canonical view, one episode per layout, no TTA (true score, never shaped)",
+  "ppo": {
+   "batch_size": 250,
+   "clip_range": 0.2,
+   "ent_coef": 0.01,
+   "gae_lambda": 0.95,
+   "gamma": 1.0,
+   "learning_rate": 0.0003,
+   "max_grad_norm": 0.5,
+   "n_envs": 10,
+   "n_epochs": 10,
+   "n_steps": 250,
+   "net_arch": [
+    256,
+    256
+   ],
+   "vf_coef": 0.5
+  },
+  "run_names": "grid_ppo_d4_s{seed}",
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "selection": "none: the evaluated model is the model at T (final.zip / final.pt); no best checkpoint; validation is monitoring only",
+  "shaping": "on (SPEC 7.4 potential-based, row z, training envs only; evaluation and validation always the true score)",
+  "speed_freq": 10000,
+  "step_budget": "data/v2/step_budget.json T = 1 500 000 (row cc)",
+  "timesteps": 1500000,
+  "torch_threads": 1,
+  "train_set": "DEV-train",
+  "val_freq": 25000,
+  "val_set": "DEV-validation"
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "config": {
+  "algorithm": "rl.train_ddqn_v2 (masked Double DQN)",
+  "aug": "none",
+  "base_config": "rl/ddqn.py DDQN_CONFIG with train_every 8 (row dd)",
+  "checkpoint_freq": 50000,
+  "checkpoint_keep": 2,
+  "condition": "ddqn",
+  "curriculum": {
+   "mode": "on",
+   "phase_a": "prebought=random (phase-A generator armies, start in DEPLOY)",
+   "phase_a_steps": 500000,
+   "phase_b": "full BUY->DEPLOY game",
+   "ramp": "off"
+  },
+  "ddqn": {
+   "batch_size": 64,
+   "buffer_size": 50000,
+   "eps_decay_fraction": 0.25,
+   "eps_end": 0.05,
+   "eps_start": 1.0,
+   "gamma": 1.0,
+   "learning_rate": 0.0001,
+   "learning_starts": 5000,
+   "max_grad_norm": 10.0,
+   "n_envs": 8,
+   "net_arch": [
+    256,
+    256
+   ],
+   "target_update_interval": 1000,
+   "train_every": 8
+  },
+  "eval_policy": "deterministic masked argmax over legal actions, canonical view, one episode per layout, no TTA (true score, never shaped)",
+  "run_names": "grid_ddqn_s{seed}",
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "selection": "none: the evaluated model is the model at T (final.zip / final.pt); no best checkpoint; validation is monitoring only",
+  "shaping": "on (SPEC 7.4 potential-based, row z, training envs only; evaluation and validation always the true score)",
+  "step_budget": "data/v2/step_budget.json T = 1 500 000 (row cc)",
+  "timesteps": 1500000,
+  "torch_threads": 1,
+  "train_set": "DEV-train",
+  "val_freq": 25000,
+  "val_set": "DEV-validation"
+ }
+}

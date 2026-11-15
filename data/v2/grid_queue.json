@@ -1,0 +1,17 @@
+{
+ "config": {
+  "disk": {
+   "refuse_if_free_below": "1.5 x expected peak (remaining growth on a resumed grid)"
+  },
+  "max_restarts_per_job_per_launch": 3,
+  "never_two_copies": "scheduler lock + a process-table scan for the run name before every start",
+  "one_gate": "data/v2/gates.json g7.pass is true and both g7 report hashes match the files",
+  "order": "PPO first, then DDQN (SPEC 12.2 table order). PPO: seed ascending, plain then D4 within a seed (plain s0, D4 s0, plain s1, ...). DDQN: seed ascending. The queue refills a freed slot with the next job in this order.",
+  "per_job_check": "breachlens.manifest.check_manifest_file on the run's manifest.json at the end of every job; failure = job marked manifest_failed",
+  "retention": {
+   "plus": "final model, identity, manifest, val_eval.csv, val_layouts.jsonl, logs",
+   "resumable_checkpoints_kept": 2
+  },
+  "slots": 6
+ }
+}
