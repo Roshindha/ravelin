@@ -1,0 +1,52 @@
+{
+ "base_config": "data/v2/g7_pilot_config.json",
+ "config": {
+  "algorithm": "sb3_contrib.MaskablePPO / MultiInputPolicy, device cpu",
+  "checkpoint_freq": 50000,
+  "curriculum": {
+   "mode": "on",
+   "phase_a": "prebought=random (phase-A generator armies, start in DEPLOY)",
+   "phase_a_steps": 100000,
+   "phase_b": "full BUY->DEPLOY game",
+   "ramp": "off"
+  },
+  "d4_seeds": [],
+  "eval_policy": "deterministic masked argmax, canonical view, one episode per layout, no TTA",
+  "extension_timesteps": null,
+  "features_extractor": "rl.features.SiegeFeaturesExtractor",
+  "note": "B13c shaped-reward pilot (SPEC 7.4). Identical to g7_pilot_config.json (sha ef0867e6...) except: shaping on, seeds, run names, no D4 runs, no extension, P=3.",
+  "parallel_processes": 3,
+  "plain_seeds": [
+   9201,
+   9202,
+   9203
+  ],
+  "ppo": {
+   "batch_size": 250,
+   "clip_range": 0.2,
+   "ent_coef": 0.01,
+   "gae_lambda": 0.95,
+   "gamma": 1.0,
+   "learning_rate": 0.0003,
+   "max_grad_norm": 0.5,
+   "n_envs": 10,
+   "n_epochs": 10,
+   "n_steps": 250,
+   "net_arch": [
+    256,
+    256
+   ],
+   "vf_coef": 0.5
+  },
+  "run_names": {
+   "plain": "shaped_plain_s{seed}"
+  },
+  "shaping": "on (SPEC 7.4 potential-based, training envs only)",
+  "timesteps": 300000,
+  "torch_threads": 1,
+  "train_set": "TUNE-train",
+  "val_freq": 25000,
+  "val_set": "TUNE-val"
+ },
+ "sha256_of_canonical_config": "e43641a19ee333dc07bb9435d3b477053470c398516b6f8049f29c4b5205152e"
+}
