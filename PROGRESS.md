@@ -556,6 +556,10 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Pilot cost estimate (estimate): B10 measured about 169 steps/s per job at 6 parallel => 300k steps about 30 min plus validation (about 1 s per eval x 13) per run; the six runs together about 0.5-0.7 h; the extension, if licensed, about the same again.
 - Full `.venv/bin/python -m pytest -q`: pytest exit code 0 (559 passed; 562 after the pre-launch amendment (x)). Not launched: B13b.
 
+### STEP B13c (v2): G7 pilot RESULT -- **G7 FAILED at 300k** (no extension); the B14 launcher must keep refusing; FINAL never touched (ledger 5 build / 0 eval)
+- Pilot ran at commit 44ae700, git_dirty False (provenance columns in every `val_eval.csv`). G7 FAIL at H=300k: mean 0.4284 vs bar 0.4369; per seed 0.4346 / 0.3986 / 0.4521 (1 of 3 above); collapse checks PASS (distinct armies 34 / 36 / 25); slope +0.0126 per 100k < +0.02, so no extension. D4 non-gating mean 0.4213, slope +0.0030. Recorded as Gate changelog (y); full report in `results/b13/g7_report_300k.txt` (force-added: `results/*` is gitignored).
+- `data/v2/gates.json` has no G7 entry and none is written; the B14 launcher (not yet built) must refuse unless G7 = pass, so it keeps refusing. The grid does not launch (SPEC 3.5 / 7.4).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.

@@ -1,0 +1,20 @@
+G7 report  models=/Users/roshinisudhakar/base-siege/models_v2  horizon=300000  bar=0.4369  plain seeds=[9001, 9002, 9003]  d4 seeds=[9101, 9102, 9103]
+
+G7 look at t = [250000, 275000, 300000]: mean score 0.4284 vs bar 0.4369
+  seed 9001: score 0.4346  D 0.491  breach 0.350  bought 9.0  distinct armies 34
+          max single-type share per family (diagnostic, non-gating): archipelago 0.63 (type 1), bunker_nest 0.35 (type 1), spine_pods 0.65 (type 1)
+  seed 9002: score 0.3986  D 0.453  breach 0.317  bought 8.3  distinct armies 36
+          max single-type share per family (diagnostic, non-gating): archipelago 0.60 (type 1), bunker_nest 0.45 (type 2), spine_pods 0.47 (type 1)
+  seed 9003: score 0.4521  D 0.483  breach 0.406  bought 8.4  distinct armies 25
+          max single-type share per family (diagnostic, non-gating): archipelago 0.69 (type 1), bunker_nest 0.59 (type 1), spine_pods 0.75 (type 1)
+  FAIL  mean_ge_bar
+  FAIL  two_of_three_above_bar
+  PASS  distinct_armies_ge_10_every_seed
+  PASS  no_single_type_above_90pct_in_every_family_every_seed
+  FAIL  G7 at H=300000
+  slope (200k..300k, per 100k steps, mean over plain seeds) = +0.0126  threshold +0.02  <
+
+VERDICT: FAIL
+
+D4 diagnostics (non-gating): seed 9101 0.4421, seed 9102 0.4114, seed 9103 0.4106  mean 0.4213
+12.1 step-budget slopes (condition-mean curve, 200k..300k): plain +0.0126  D4 +0.0030  per 100k steps
