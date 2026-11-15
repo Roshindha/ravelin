@@ -575,6 +575,15 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Dry run (temp dir in the scratchpad, deleted): 4 runs x 12 000 steps through the launcher, exit codes 0, identity shaping on, git_dirty False. Measured at 4 parallel with real-size replay config (rough, includes validation): train_every 4 about 91 steps/s per job, train_every 8 about 153 steps/s.
 - Pilot time estimate (estimate): f4 300k / 91 = about 55 min, f8 300k / 153 = about 33 min; f8 jobs finish first and free cores, so about 1.0 h wall for all four (row cc's 1.5 h was an unshaped estimate at 60 steps/s).
 
+### STEP B14a (v2): DDQN pilot recorded, provenance fixed, grid configs frozen, launcher built and dry-run -- grid NOT launched; FINAL never touched (ledger 5 build / 0 eval)
+- Commit d9a3c39: Gate changelog (dd): shaped DDQN pilot, train_freq 4 mean 0.4236 vs train_freq 8 mean 0.4592 (diff -0.0356) -> **train_freq 8 chosen**; report `results/b13/ddqn_pilot_report.txt` (force-added, sha a6d5bee3...). Pilot provenance from the 4 identity files: commit 899cf82 (full sha in row), git_dirty False, no resumes, versions/pool/generator/sim shas recorded. Gap stated: pilot `val_eval.csv` lacked per-row provenance columns. LIMITATIONS: DDQN epsilon vs phase A.
+- Commit 294d247: `rl/valrows.py` one writer for every trainer's validation rows (provenance columns required, refused if missing); tests/test_b14a_provenance.py (both trainers).
+- Commit b5e7271: Gate changelog (ee) + `data/v2/grid_config_{ppo_plain,ppo_d4,ddqn}.json` + `grid_queue.json`, shas in the row, before any launcher code.
+- Commit 1c5a193 (+2 small): `scripts_b14_grid.py` (plan / launch / run / status / stop), DDQN now writes the run manifest (shared `MF.write_run_manifest`), `scripts/status.py` is a wrapper, tests/test_b14a_launcher.py.
+- Dry run (temp dir, deleted): 2 seeds x 3 conditions, 5k and 20k steps, 6 slots; SIGKILL of one DDQN trainer -> auto-restart from checkpoint; SIGKILL of scheduler + all trainers (reboot sim) -> `launch` resumed all; second `launch` refused a second scheduler; manifests, retention (2 ckpts) and provenance columns verified; all 6 jobs checks ok.
+- Free disk (about 3 GB) is BELOW the 1.5 x peak rule (needs about 15.8 GB): the real `launch` refuses until space is freed.
+- Full `.venv/bin/python -m pytest`: pytest exit code 0 (649 passed).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -623,6 +632,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B14a DONE (grid prepared, NOT launched). Next: free disk (about 16 GB free needed), then `.venv/bin/python scripts_b14_grid.py launch`; B15 only after the grid finished.
 - v2 B13e DONE (shaped DDQN pilot prepared, NOT launched: `.venv/bin/python scripts_b13_ddqn_pilot.py`, then `.venv/bin/python scripts_b13_ddqn_report.py`). Next: owner launches it; then B14 launcher, only when told.
 - v2 B13d DONE (G7 PASSED via shaped pilot; T = 1.5M pinned; no training). Next: add `--shaping` to the DDQN trainer, DDQN train_freq pilot, B14 launcher (must verify `g7.pass` in gates.json and step_budget.json), only when told.
 - v2 B13c DONE (G7 FAILED at 300k; diagnostics written; shaped pilot prepared, NOT launched; B14 must keep refusing). Next: owner decides whether 7.4's skip clause applies and launches `.venv/bin/python scripts_b13_pilot.py --shaped` (or redesigns).
