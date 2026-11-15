@@ -1,0 +1,64 @@
+{
+ "n_layouts": 60,
+ "policy": "random-init seeded PPO (not trained)",
+ "rows": {
+  "RAS": {
+   "all_plans_bought": 6.513,
+   "all_plans_deployed": 6.513,
+   "chosen_N128_bought": 9.0,
+   "chosen_N128_deployed": 9.0,
+   "chosen_N128_score": 0.632,
+   "chosen_N32_bought": 8.928,
+   "chosen_N32_deployed": 8.928,
+   "chosen_N32_score": 0.542,
+   "chosen_N8_bought": 8.411,
+   "chosen_N8_deployed": 8.411,
+   "chosen_N8_score": 0.445
+  },
+  "RPS": {
+   "all_plans_bought": 4.904,
+   "all_plans_deployed": 4.754,
+   "chosen_N128_bought": 8.5,
+   "chosen_N128_deployed": 8.417,
+   "chosen_N128_score": 0.635,
+   "chosen_N32_bought": 8.283,
+   "chosen_N32_deployed": 8.178,
+   "chosen_N32_score": 0.508,
+   "chosen_N8_bought": 7.494,
+   "chosen_N8_deployed": 7.428,
+   "chosen_N8_score": 0.363
+  },
+  "RPS-full": {
+   "all_plans_bought": 10.119,
+   "all_plans_deployed": 10.119,
+   "chosen_N128_bought": 10.022,
+   "chosen_N128_deployed": 10.022,
+   "chosen_N128_score": 0.721,
+   "chosen_N32_bought": 10.011,
+   "chosen_N32_deployed": 10.011,
+   "chosen_N32_score": 0.628,
+   "chosen_N8_bought": 10.067,
+   "chosen_N8_deployed": 10.067,
+   "chosen_N8_score": 0.486
+  },
+  "planner": {
+   "all_plans_bought": 4.901,
+   "all_plans_deployed": 4.75,
+   "chosen_N128_bought": 8.444,
+   "chosen_N128_deployed": 8.417,
+   "chosen_N128_score": 0.621,
+   "chosen_N32_bought": 7.894,
+   "chosen_N32_deployed": 7.844,
+   "chosen_N32_score": 0.494,
+   "chosen_N8_bought": 6.956,
+   "chosen_N8_deployed": 6.867,
+   "chosen_N8_score": 0.334
+  }
+ },
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "set": "TUNE-val"
+}

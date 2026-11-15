@@ -43,6 +43,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 from breachlens import evaluator as EV
+from breachlens import manifest as MF
 from breachlens.config import sim_version
 from breachlens.env import BreachEnv
 from breachlens.score import SCORE_VERSION
@@ -61,7 +62,7 @@ PPO_CONFIG = dict(n_envs=10, n_steps=250, batch_size=250, n_epochs=10, learning_
                   ent_coef=0.01, vf_coef=0.5, max_grad_norm=0.5, net_arch=[256, 256])
 DEFAULT_THREADS = 1
 
-RUNTIME_ONLY = {"resume", "threads", "debug_interrupt_at"}   # CLI options that may differ on resume; everything else comes from the identity
+RUNTIME_ONLY = {"resume", "threads", "debug_interrupt_at", "extend_to", "speed_freq"}   # CLI options that may differ on resume; everything else comes from the identity
 
 
 class Interrupted(RuntimeError):
@@ -190,7 +191,8 @@ class ValidationCallback(BaseCallback):
     Writes val_eval.csv (one row per group: ALL + each family) and val_layouts.jsonl (one row per layout incl. the bought army) = the G7 inputs."""
 
     FIELDS = ["timestep", "group", "n_layouts", "breach_mean", "breach_lo95", "breach_hi95", "score_mean", "score_lo95", "score_hi95", "d_mean",
-              "mean_n_bought", "mean_n_deployed", "eval_seconds"]
+              "mean_n_bought", "mean_n_deployed", "eval_seconds",
+              "score_version", "sim_version", "generator_hash", "pool_sha256", "git_commit", "git_dirty", "seed", "role", "set"]      # provenance (B13a)
 
     def __init__(self, set_name: str, freq: int, run_dir: Path) -> None:
         super().__init__()
@@ -244,6 +246,36 @@ class ValidationCallback(BaseCallback):
         t = int(self.num_timesteps)
         if t % self.freq == 0:
             self.evaluate()
+
+
+class SpeedCallback(BaseCallback):
+    """Thermal check (B13a): every `freq` timesteps append (timestep, wall seconds, steps/s over the last window, steps/s since start) to speed.csv."""
+
+    def __init__(self, run_dir: Path, freq: int) -> None:
+        super().__init__()
+        self.path, self.freq = run_dir / "speed.csv", freq
+        self.t0 = self.last_wall = None
+        self.last_t = 0
+
+    def _on_training_start(self) -> None:
+        self.t0 = self.last_wall = time.perf_counter()
+        self.start_t = self.last_t = int(self.num_timesteps)
+
+    def _on_rollout_start(self) -> None:
+        t = int(self.num_timesteps)
+        if self.freq <= 0 or t <= self.last_t or t % self.freq:
+            return
+        now = time.perf_counter()
+        new = not self.path.exists()
+        with self.path.open("a") as fh:
+            if new:
+                fh.write("timestep,wall_seconds,steps_per_s_window,steps_per_s_since_start\n")
+            fh.write(f"{t},{now - self.t0:.1f},{(t - self.last_t) / (now - self.last_wall):.1f},{(t - self.start_t) / (now - self.t0):.1f}\n")
+        print(f"[speed] t={t} window={(t - self.last_t) / (now - self.last_wall):.0f} steps/s", flush=True)
+        self.last_t, self.last_wall = t, now
+
+    def _on_step(self) -> bool:
+        return True
 
 
 class CheckpointCallback(BaseCallback):
@@ -338,6 +370,8 @@ def parse_args(argv):
         if k != "net_arch":
             p.add_argument("--" + k.replace("_", "-"), type=type(v), default=v)
     p.add_argument("--threads", type=int, default=DEFAULT_THREADS)
+    p.add_argument("--speed-freq", type=int, default=10_000, help="steps/s log interval (thermal check), speed.csv")
+    p.add_argument("--extend-to", type=int, default=None, help="continue a FINISHED run from its latest checkpoint to this many steps (G7 extension, changelog (u)); the curriculum boundary must be explicit")
     p.add_argument("--resume", action="store_true", help="skip if final.zip exists; continue from the latest checkpoint if any; else start fresh")
     p.add_argument("--debug-interrupt-at", type=int, default=None, help="test hook: raise after the first checkpoint at t >= this")
     return p.parse_args(argv)
@@ -348,7 +382,11 @@ def main(argv: list[str] | None = None) -> Path:
     th.set_num_threads(args.threads)
     run_dir = MODELS_DIR / args.run_name
     ident_path = run_dir / "model_identity.json"
-    if args.resume and (run_dir / "final.zip").exists():
+    if args.extend_to is not None:
+        if not (run_dir / "final.zip").exists() or latest_checkpoint(run_dir) is None:
+            raise SystemExit(f"--extend-to needs a finished run with a checkpoint in {run_dir}")
+        args.resume = True
+    elif args.resume and (run_dir / "final.zip").exists():
         print(f"[skip] {args.run_name}: final.zip exists", flush=True)
         return run_dir
     ckpt = latest_checkpoint(run_dir) if args.resume else None
@@ -361,6 +399,13 @@ def main(argv: list[str] | None = None) -> Path:
         for k, v in prior["config"].items():
             if k not in RUNTIME_ONLY:
                 setattr(args, k, v)
+    if args.extend_to is not None:
+        if args.extend_to <= prior["config"]["timesteps"]:
+            raise SystemExit("--extend-to must exceed the original timesteps")
+        if prior["config"]["curriculum"] == "on" and prior["config"]["phase_a_steps"] is None:
+            raise SystemExit("--extend-to needs an explicit --phase-a-steps in the original run (the curriculum boundary must not move)")
+        shutil.copy2(run_dir / "final.zip", run_dir / f"final_{prior['config']['timesteps']}.zip")
+        args.timesteps = args.extend_to
     cfg = {k: v for k, v in vars(args).items()}
     hp = {k: getattr(args, k) for k in PPO_CONFIG if k != "net_arch"} | {"net_arch": PPO_CONFIG["net_arch"]}
     train_set, val_set = args.train_set, TRAIN_TO_VAL[args.train_set]
@@ -395,17 +440,26 @@ def main(argv: list[str] | None = None) -> Path:
     else:
         identity = prior
         identity["status"] = "running"
+        if args.extend_to is not None:
+            identity.setdefault("extensions", []).append({"from_timesteps": prior["timesteps_requested"], "to_timesteps": args.extend_to, "checkpoint": ckpt.name})
+            identity["timesteps_requested"] = args.extend_to
+            identity["config"]["timesteps"] = args.extend_to
         if prior["environment"]["torch_threads"] != th.get_num_threads():
             identity.setdefault("warnings", []).append(f"resume #{n_resumes}: torch threads {prior['environment']['torch_threads']} -> {th.get_num_threads()} (bit-identity not guaranteed)")
         identity.setdefault("resumes", []).append({"checkpoint": ckpt.name, "at_timestep": start_t, **repo_identity()})
     ident_path.write_text(json.dumps(identity, indent=2))
 
     val = ValidationCallback(val_set, args.val_freq, run_dir)
+    val.items = EV.load_set(val_set, "validation", entry_point="rl.train_ppo_v2")          # loaded now (not at the first eval) so the manifest exists before any step
+    train_ids = sorted({r["id"] for e in venv.envs for r in e.unwrapped.records})
+    manifest = MF.build_manifest(args.run_name, train_set, val_set, train_ids, [r["id"] for r, _ in val.items], git_commit=identity.get("git_commit"))
+    MF.check_manifest(manifest)                                                          # refuses FINAL / transfer / LAB-DESIGN ids or streams before training starts
+    (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=1))
     cur = CurriculumCallback(boundary, run_dir / "curriculum.log") if args.curriculum == "on" else None
     val.last_eval_t = cb_state.get("val_last_eval_t", -1)
     if cur is not None:
         cur.switched = cb_state.get("switched", False)
-    callbacks = ([cur] if cur else []) + [val, CheckpointCallback(
+    callbacks = ([cur] if cur else []) + [val, SpeedCallback(run_dir, args.speed_freq), CheckpointCallback(
         run_dir, args.checkpoint_freq, lambda: {"val_last_eval_t": val.last_eval_t, "switched": cur.switched if cur else None},
         interrupt_at=args.debug_interrupt_at)]
     t0 = time.perf_counter()

@@ -320,3 +320,88 @@ def test_fallback_selector_picks_the_pre_registered_option_for_synthetic_timings
 def test_fallback_controls_follow_the_plain_planner_cell():
     c = PL.cost_cells(plain_128_learners=5, d4_128_learners=0, layouts_128=30)
     assert c["RAS"] == c["RPS"] == c["planner_plain"]
+
+
+# ------------------------------------------------------------------------------------------------ B13a: RPS-full-N (Gate changelog (r))
+def _replay(layout, actions):
+    """Replay a stored plan; yields (env, mask, action) before each step."""
+    env = BreachEnv(layouts=[layout], role="train")
+    env.reset(seed=0, options={"layout_index": 0})
+    for a in actions:
+        yield env, env.action_masks(), a
+        env.step(a)
+    yield env, None, None
+
+
+def test_rps_full_masking_rules_hold_at_every_step_of_every_plan(items):
+    from breachlens.constants import BUY_BASE, N_UNIT_TYPES
+    from breachlens.env import UNIT_COST
+    for rec, layout in items[:2]:
+        for p in _plans("RPSfull", rec, layout, 3, 64):
+            for env, mask, a in _replay(layout, p["actions"]):
+                if mask is None:
+                    break
+                if mask[BUY_BASE:BUY_BASE + N_UNIT_TYPES].any():
+                    assert a != END_BUY                                          # END_BUY never while a unit is affordable and the cap is not reached
+                if sum(env.owned) > 0 and (mask & ~np.isin(np.arange(N_ACTIONS), [WAIT])).any():
+                    assert a != WAIT                                             # WAIT never while bought units remain undeployed
+            assert p["n_deployed"] == p["n_bought"]                              # everything bought is deployed (a border tile is always free)
+            assert p["army"] and sum(p["army"]) == p["n_bought"]
+    # the army is "full": nothing affordable was left unbought
+    env = BreachEnv(layouts=[items[0][1]], role="train")
+    for p in _plans("RPSfull", *items[0], 3, 32):
+        env.reset(seed=0, options={"layout_index": 0})
+        for a in p["actions"]:
+            if env.phase == 0 and a == END_BUY:
+                assert not env.action_masks()[:N_UNIT_TYPES].any()
+            env.step(a)
+
+
+def test_rps_full_mask_function_and_fallback_when_nothing_else_is_legal(items):
+    from breachlens.constants import BUY_BASE
+    rec, layout = items[0]
+    env = BreachEnv(layouts=[layout], role="train")
+    env.reset(seed=0, options={"layout_index": 0})
+    env.step(BUY_BASE)                                                           # one unit bought, more affordable
+    m = env.action_masks()
+    assert m[END_BUY] and not PL.rps_full_mask(env, m)[END_BUY]
+    env.step(END_BUY)                                                            # DEPLOY, one unit undeployed
+    m = env.action_masks()
+    assert m[WAIT] and not PL.rps_full_mask(env, m)[WAIT]
+    only_wait = np.zeros(N_ACTIONS, dtype=bool)
+    only_wait[WAIT] = True
+    assert PL.rps_full_mask(env, only_wait)[WAIT]                                # never an empty mask
+
+
+def test_rps_full_is_nested_deterministic_and_uses_exactly_n_simulations(items, monkeypatch):
+    import breachlens.env as BE
+    rec, layout = items[0]
+    p8, p32, p128 = (_plans("RPSfull", rec, layout, 5, n) for n in (8, 32, 128))
+    assert [_sig(p) for p in p8] == [_sig(p) for p in p32[:8]] and [_sig(p) for p in p32] == [_sig(p) for p in p128[:32]]
+    assert [_sig(p) for p in p128] == [_sig(p) for p in _plans("RPSfull", rec, layout, 5, 128)]
+    assert [_sig(p) for p in p8] != [_sig(p) for p in _plans("RPS", rec, layout, 5, 8)]            # its own stream and its own masking
+    assert [_sig(p) for p in p8] != [_sig(p) for p in _plans("RPSfull", rec, layout, 6, 8)]
+    calls = {"n": 0}
+    real = BE.simulate
+    monkeypatch.setattr(BE, "simulate", lambda *a, **k: (calls.__setitem__("n", calls["n"] + 1), real(*a, **k))[1])
+    for n in (1, 8, 32, 128):
+        calls["n"] = 0
+        cell = PL.make_cells("RPSfull", 4, (n,))[0]
+        res = E.evaluate(cell, "TUNE-val", "tuning", items=[(rec, layout)])
+        assert calls["n"] == n and json.loads(res["rows"][0]["extra"])["n_sims"] == n
+        assert res["rows"][0]["method"] == "RPS-full" and res["rows"][0]["N"] == n and cell.name == f"RPS-full-{n}"
+        assert res["summary"][-1]["mean_n_bought"] > 0 and res["summary"][-1]["mean_n_deployed"] > 0     # every control reports army size / units deployed
+
+
+def test_rps_full_refuses_final_unless_eval_and_unlock(items):
+    rec, layout = _final_rec(items)
+    for kw in ({}, {"role": "eval"}):
+        with pytest.raises(PermissionError):
+            PL.RPSFull(8, 0, **kw).episodes(rec, layout, None)
+
+
+def test_rps_full_buys_larger_armies_than_rps(items):
+    rec, layout = items[0]
+    a = np.mean([p["n_bought"] for p in _plans("RPS", rec, layout, 1, 64)])
+    b = np.mean([p["n_bought"] for p in _plans("RPSfull", rec, layout, 1, 64)])
+    assert b > a

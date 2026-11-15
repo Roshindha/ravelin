@@ -9,6 +9,8 @@ Definitions (pinned in Gate changelog (q) before any trained model exists)
     scripted deployer's order (`armies.sort_by_rank`, the Greedy ranking) and placed with `armies.place_on_border` from the default start
     tile (the same scripted deployment as army search / Greedy). No network.
   * RPS-N: plan k = uniformly random LEGAL env action at every step (BUY / END_BUY / DEPLOY / WAIT), through `BreachEnv`. No network.
+  * RPS-full-N (diagnostic, Gate changelog (r)): RPS-N with END_BUY masked while any BUY action is legal (a unit is affordable and the cap is not
+    reached) and WAIT masked while bought units remain undeployed (a mask is applied only if a legal action remains). Same N, seeding, nesting.
   * NESTING: plan k uses its own random stream `default_rng([seed, crc32(layout id), METHOD_TAG, k])`, so it does not depend on N or on any
     other plan; the first 8 plans of the 32 are the 8 plans, the first 32 of the 128 are the 32. One batch is sampled once per
     (method, layout, seed, policy) and N = 8 / 32 / 128 read its prefixes (`PlanCache`).
@@ -39,7 +41,8 @@ from breachlens.sim import simulate
 
 N_VALUES = (8, 32, 128)
 N_MAX = max(N_VALUES)
-METHOD_TAG = {"planner": 1, "RAS": 2, "RPS": 3}
+METHOD_TAG = {"planner": 1, "RAS": 2, "RPS": 3, "RPSfull": 4}
+METHOD_LABEL = {"planner": "planner", "RAS": "RAS", "RPS": "RPS", "RPSfull": "RPS-full"}
 FALLBACK_LIMIT_H = 3.0
 WORKERS = 7
 
@@ -132,6 +135,24 @@ def rps_plan(env: BreachEnv, rng) -> dict:
     return _env_plan(env, pick)
 
 
+def rps_full_mask(env: BreachEnv, mask: np.ndarray) -> np.ndarray:
+    """RPS-full masks (Gate changelog (r)); returns the original mask if the extra masking would leave no legal action."""
+    from breachlens.env import BUY_BASE, END_BUY, WAIT
+    m = np.asarray(mask, dtype=bool).copy()
+    if m[BUY_BASE:BUY_BASE + N_UNIT_TYPES].any():
+        m[END_BUY] = False                                 # still able to buy: keep buying
+    if sum(env.owned) > 0:
+        m[WAIT] = False                                    # bought units remain undeployed: keep deploying
+    return m if m.any() else np.asarray(mask, dtype=bool)
+
+
+def rps_full_plan(env: BreachEnv, rng) -> dict:
+    def pick(obs, mask):
+        legal = np.flatnonzero(rps_full_mask(env, mask))
+        return legal[int(rng.integers(len(legal)))]
+    return _env_plan(env, pick)
+
+
 def ras_plan(layout: dict, Prep, rng) -> dict:
     types = sort_by_rank(random_types(rng))
     r = simulate(Prep, place_on_border(layout, types))
@@ -157,6 +178,8 @@ class PlanCache:
                     p = planner_plan(env, probs_fn, rng)
                 elif method == "RPS":
                     p = rps_plan(env, rng)
+                elif method == "RPSfull":
+                    p = rps_full_plan(env, rng)
                 else:
                     p = ras_plan(layout, Prep, rng)
                 p["seconds"] = time.perf_counter() - t0
@@ -174,14 +197,14 @@ class BestOfN(Policy):
             raise ValueError(f"N must be in 1..{N_MAX}")
         self.N, self.seed, self.role, self.unlock = int(N), int(seed), role, bool(unlock)
         self.cache = cache if cache is not None else PlanCache()
-        self.name = f"{self.method}-{self.N}"
+        self.name = f"{METHOD_LABEL[self.method]}-{self.N}"
         self.probs_fn, self.policy_hash = None, "none"
 
     def seeds(self, rec: dict) -> list:
         return [self.seed]
 
     def provenance(self) -> dict:
-        return {"N": self.N, "method": self.method, "policy_hash": self.policy_hash, "plan_seed": self.seed}
+        return {"N": self.N, "method": METHOD_LABEL[self.method], "policy_hash": self.policy_hash, "plan_seed": self.seed}
 
     def _guard(self, rec: dict) -> None:
         if EV.is_final_layout(rec) and not (self.role == "eval" and self.unlock):
@@ -220,12 +243,16 @@ class RPS(BestOfN):
     method = "RPS"
 
 
+class RPSFull(BestOfN):
+    method = "RPSfull"
+
+
 def make_cells(method: str, seed: int, Ns=N_VALUES, *, probs_fn=None, policy_hash: str | None = None, **kw) -> list:
     """One policy object per N, sharing ONE PlanCache, so the 128 plans are sampled once and N = 8 / 32 are prefixes of them."""
     cache = PlanCache()
     if method == "planner":
         return [Planner(probs_fn, n, seed, policy_hash=policy_hash, cache=cache, **kw) for n in Ns]
-    cls = {"RAS": RAS, "RPS": RPS}[method]
+    cls = {"RAS": RAS, "RPS": RPS, "RPSfull": RPSFull}[method]
     return [cls(n, seed, cache=cache, **kw) for n in Ns]
 
 
