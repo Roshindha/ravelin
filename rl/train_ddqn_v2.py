@@ -33,6 +33,7 @@ import torch as th
 import torch.nn.functional as F
 
 from breachlens import evaluator as EV
+from breachlens import manifest as MF
 
 from . import ddqn as D
 from . import valrows as VR
@@ -326,6 +327,8 @@ def main(argv: list[str] | None = None) -> Path:
 
     val = Validator(val_set, run_dir)
     val.last_eval_t = cb_state.get("val_last_eval_t", -1)
+    val.items = EV.load_set(val_set, "validation", entry_point="rl.train_ddqn_v2")        # loaded now so the manifest exists before any step
+    MF.write_run_manifest(run_dir, args.run_name, train_set, val_set, tr.venv, val.items, git_commit=identity.get("git_commit"))
     cur_log = run_dir / "curriculum.log"
     ckpt_dir = run_dir / "checkpoints"
     ckpt_bucket = tr.t // args.checkpoint_freq

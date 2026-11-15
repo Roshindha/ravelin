@@ -64,3 +64,14 @@ def check_manifest_file(path) -> dict:
     m = json.loads(open(path).read())
     check_manifest(m)
     return m
+
+
+def write_run_manifest(run_dir, run_name: str, train_set: str, val_set: str, venv, val_items, git_commit=None) -> dict:
+    """B14a: the one manifest writer of every trainer. Lists the layout ids handed to the training envs (`venv.envs[i].unwrapped.records`) and to the
+    validator (`val_items` = [(record, layout)]), runs `check_manifest` BEFORE training starts (refuses held-out ids / streams) and writes manifest.json."""
+    from pathlib import Path
+    train_ids = sorted({r["id"] for e in venv.envs for r in e.unwrapped.records})
+    m = build_manifest(run_name, train_set, val_set, train_ids, [r["id"] for r, _ in val_items], git_commit=git_commit)
+    check_manifest(m)
+    Path(run_dir, "manifest.json").write_text(json.dumps(m, indent=1))
+    return m

@@ -47,6 +47,9 @@ def test_validation_csv_of_every_trainer_has_every_provenance_field(algo, tmp_pa
         run = TP.main(["--run-name", "prov_ppo", *PPO_TINY])
     else:
         run = TD.main(["--run-name", "prov_ddqn", *DDQN_TINY])
+    from breachlens import manifest as MF
+    m = MF.check_manifest_file(run / "manifest.json")                                                # every trainer writes and passes the manifest check (B14a)
+    assert m["train_set"] == "TUNE-train" and m["val_set"] == "TUNE-val"
     path = run / "val_eval.csv"
     assert VR.missing_fields(path) == []
     ident = json.loads((run / "model_identity.json").read_text())
