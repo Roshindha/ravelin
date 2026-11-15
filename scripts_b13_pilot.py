@@ -3,9 +3,11 @@
     .venv/bin/python scripts_b13_pilot.py                    # B13b: the real pilot, frozen config only (data/v2/g7_pilot_config.json)
     .venv/bin/python scripts_b13_pilot.py --extend           # only if scripts_g7_report.py says EXTEND (changelog (u))
     .venv/bin/python scripts_b13_pilot.py --print-only       # print the 6 commands, start nothing
+    .venv/bin/python scripts_b13_pilot.py --shaped           # B13c: the SPEC 7.4 shaped-reward pilot (3 plain seeds 9201-9203, frozen shaped config, NO extension)
     .venv/bin/python scripts_b13_pilot.py --smoke --models-dir /tmp/x --logs-dir /tmp/y --steps 5000 --val-freq 2500 --checkpoint-freq 2500 --speed-freq 2500 \\
         --plain-seeds 9001,9002 --d4-seeds '' --wait         # dry run: tiny, outside the repo, never a G7 result
 
+--shaped additionally refuses unless Gate changelog rows (y) and (z) of B13c are in the SPEC and the sha256 of data/v2/g7_shaped_pilot_config.json matches the one recorded in row (z).
 Refuses to start when: the tracked git tree is dirty; a changelog row (r)-(w) or the frozen-config hash is missing / wrong; any pilot or rl.train_ppo_v2
 process is already running; the FINAL ledger has an eval entry; BREACHLENS_STATS_PATH or BREACHLENS_GEN_PARAMS is set. The real mode takes no overrides:
 steps, seeds and frequencies come from the frozen config; --smoke allows overrides but only with a models dir outside models_v2.
@@ -24,9 +26,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SPEC = ROOT / "docs" / "SPEC_V2.md"
 FROZEN = ROOT / "data" / "v2" / "g7_pilot_config.json"
+FROZEN_SHAPED = ROOT / "data" / "v2" / "g7_shaped_pilot_config.json"
 LEDGER = ROOT / "data" / "v2" / "final_access.log"
 REAL_MODELS = ROOT / "models_v2"
 ROWS = ("(r) **B13a", "(s) **B13a", "(t) **B13a", "(u) **B13a", "(v) **B13a", "(w) **B13a")
+ROWS_SHAPED = ROWS + ("(y) **B13c", "(z) **B13c")
 FORBIDDEN_ENV = ("BREACHLENS_STATS_PATH", "BREACHLENS_GEN_PARAMS")
 
 
@@ -34,8 +38,8 @@ def config_sha(cfg: dict) -> str:
     return hashlib.sha256(json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def frozen() -> dict:
-    return json.loads(FROZEN.read_text())["config"]
+def frozen(shaped: bool = False) -> dict:
+    return json.loads((FROZEN_SHAPED if shaped else FROZEN).read_text())["config"]
 
 
 # ------------------------------------------------------------------------------------------------ preflight (each check is a function so tests can drive it)
@@ -44,10 +48,10 @@ def dirty_tracked() -> list:
     return [ln for ln in out.splitlines() if ln.strip()]
 
 
-def missing_item0(spec_text: str, cfg_sha: str) -> list:
-    miss = [r for r in ROWS if r not in spec_text]
+def missing_item0(spec_text: str, cfg_sha: str, shaped: bool = False) -> list:
+    miss = [r for r in (ROWS_SHAPED if shaped else ROWS) if r not in spec_text]
     if cfg_sha not in spec_text:
-        miss.append(f"frozen-config sha256 {cfg_sha[:12]}... not recorded in the changelog")
+        miss.append(f"{'shaped-' if shaped else ''}frozen-config sha256 {cfg_sha[:12]}... not recorded in the changelog")
     return miss
 
 
@@ -74,16 +78,20 @@ def eval_entries(ledger: Path | None = None) -> int:
     return sum(1 for ln in ledger.read_text().splitlines() if ln.strip() and json.loads(ln).get("purpose") == "eval")
 
 
-def preflight(own_pid: int | None = None) -> list:
+def preflight(own_pid: int | None = None, shaped: bool = False) -> list:
     own_pid = os.getpid() if own_pid is None else own_pid
     problems = []
     d = dirty_tracked()
     if d:
         problems.append(f"git tree has {len(d)} modified tracked file(s): {d[:3]}")
-    cfg = frozen()
-    miss = missing_item0(SPEC.read_text(), config_sha(cfg))
+    cfg = frozen(shaped)
+    miss = missing_item0(SPEC.read_text(), config_sha(cfg), shaped)
     if miss:
         problems.append(f"item 0 incomplete: {miss}")
+    if shaped and not str(cfg.get("shaping", "")).startswith("on"):
+        problems.append("the shaped config does not switch shaping on")
+    if not shaped and cfg.get("shaping") != "off":
+        problems.append("the plain G7 config must have shaping off")
     run = running_copies(ps_text(), own_pid)
     if run:
         problems.append(f"a pilot / training process is already running: {run[:2]}")
@@ -101,7 +109,7 @@ def build_commands(cfg: dict, *, steps: int, val_freq: int, checkpoint_freq: int
     """[(run_name, argv)] for the 6 runs. Every PPO hyperparameter is passed explicitly from the frozen config."""
     hp = cfg["ppo"]
     out = []
-    for aug, seeds, tmpl in (("none", plain_seeds, cfg["run_names"]["plain"]), ("d4", d4_seeds, cfg["run_names"]["d4"])):
+    for aug, seeds, tmpl in (("none", plain_seeds, cfg["run_names"]["plain"]), ("d4", d4_seeds, cfg["run_names"].get("d4"))):
         for s in seeds:
             name = tmpl.format(seed=s)
             a = ["caffeinate", "-dimsu", sys.executable, "-m", "rl.train_ppo_v2", "--train-set", cfg["train_set"], "--aug", aug, "--seed", str(s),
@@ -110,6 +118,8 @@ def build_commands(cfg: dict, *, steps: int, val_freq: int, checkpoint_freq: int
             for k, v in hp.items():
                 if k != "net_arch":
                     a += ["--" + k.replace("_", "-"), str(v)]
+            if str(cfg.get("shaping", "off")).startswith("on"):
+                a += ["--shaping", "on"]
             if extend_to is None:
                 a += ["--timesteps", str(steps), "--curriculum", cfg["curriculum"]["mode"], "--phase-a-steps", str(steps // 3)]
             else:
@@ -119,9 +129,11 @@ def build_commands(cfg: dict, *, steps: int, val_freq: int, checkpoint_freq: int
 
 
 def main(argv=None) -> int:
-    cfg = frozen()
+    shaped = "--shaped" in (sys.argv[1:] if argv is None else argv)
+    cfg = frozen(shaped)
     p = argparse.ArgumentParser()
-    p.add_argument("--extend", action="store_true", help=f"continue the finished runs to {cfg['extension_timesteps']} (only after the G7 report says EXTEND)")
+    p.add_argument("--shaped", action="store_true", help="B13c: the SPEC 7.4 shaped-reward pilot (Gate changelog (z)); no extension exists for it")
+    p.add_argument("--extend", action="store_true", help=f"continue the finished runs to {cfg.get('extension_timesteps')} (only after the G7 report says EXTEND; never for --shaped)")
     p.add_argument("--print-only", action="store_true")
     p.add_argument("--wait", action="store_true", help="stay in the foreground until all runs end")
     p.add_argument("--smoke", action="store_true")
@@ -134,6 +146,9 @@ def main(argv=None) -> int:
     p.add_argument("--plain-seeds", default=",".join(map(str, cfg["plain_seeds"])))
     p.add_argument("--d4-seeds", default=",".join(map(str, cfg["d4_seeds"])))
     a = p.parse_args(argv)
+    if a.shaped and a.extend:
+        print("REFUSED: the shaped pilot gets no extension (Gate changelog (z), SPEC 3.4 G7)", file=sys.stderr)
+        return 3
     plain = [int(x) for x in a.plain_seeds.split(",") if x]
     d4 = [int(x) for x in a.d4_seeds.split(",") if x]
     models = Path(a.models_dir).resolve()
@@ -145,10 +160,10 @@ def main(argv=None) -> int:
     if a.smoke and models == REAL_MODELS.resolve():
         print("REFUSED: --smoke must not write into models_v2", file=sys.stderr)
         return 3
-    if json.loads(FROZEN.read_text())["config"]["ppo"] != _ppo_config():
-        print("REFUSED: data/v2/g7_pilot_config.json differs from rl.train_ppo_v2.PPO_CONFIG", file=sys.stderr)
+    if frozen(shaped)["ppo"] != _ppo_config() or frozen(False)["ppo"] != _ppo_config():
+        print("REFUSED: a frozen pilot config differs from rl.train_ppo_v2.PPO_CONFIG", file=sys.stderr)
         return 3
-    problems = preflight()
+    problems = preflight(shaped=shaped)
     if problems:
         print("REFUSED:\n  " + "\n  ".join(problems), file=sys.stderr)
         return 3

@@ -2,7 +2,8 @@
 
     .venv/bin/python scripts_g7_report.py                      # models_v2, H = 300k
     .venv/bin/python scripts_g7_report.py --horizon 600000     # after the extension
-Writes logs_b13/g7_decision.json. It never writes data/v2/gates.json: recording the gate result is a separate, explicit step.
+    .venv/bin/python scripts_g7_report.py --shaped             # B13c: the SPEC 7.4 shaped pilot (seeds 9201-9203), separate section and output file, never EXTEND
+Writes logs_b13/g7_decision.json (logs_b13/g7_shaped_decision.json with --shaped). It never writes data/v2/gates.json: recording the gate result is a separate, explicit step.
 D4 runs are printed as non-gating diagnostics; the step-budget slopes of 12.1 (200k-300k) are printed for both conditions.
 """
 from __future__ import annotations
@@ -20,17 +21,18 @@ from breachlens import manifest as MF
 
 ROOT = Path(__file__).resolve().parent
 FROZEN = ROOT / "data" / "v2" / "g7_pilot_config.json"
+FROZEN_SHAPED = ROOT / "data" / "v2" / "g7_shaped_pilot_config.json"
 
 
-def frozen() -> dict:
-    return json.loads(FROZEN.read_text())["config"]
+def frozen(shaped: bool = False) -> dict:
+    return json.loads((FROZEN_SHAPED if shaped else FROZEN).read_text())["config"]
 
 
 def config_sha(cfg: dict) -> str:
     return hashlib.sha256(json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def provenance_problems(run_dirs: list, models_dir: Path, smoke: bool) -> list:
+def provenance_problems(run_dirs: list, models_dir: Path, smoke: bool, shaped: bool = False) -> list:
     """Manifest checker on every run; identity finished; provenance columns equal across all runs and rows; not dirty."""
     import csv
     problems, commits, shas = [], set(), set()
@@ -44,10 +46,12 @@ def provenance_problems(run_dirs: list, models_dir: Path, smoke: bool) -> list:
             problems.append(f"{d.name}: run not finished (status {ident.get('status')})")
         if ident["val_set"] != "TUNE-val" or ident["train_set"] != "TUNE-train":
             problems.append(f"{d.name}: wrong sets {ident['train_set']} -> {ident['val_set']}")
+        if ident.get("shaping", "off") != ("on" if shaped else "off"):
+            problems.append(f"{d.name}: run was trained with shaping {ident.get('shaping', 'off')!r}, this report expects {'on' if shaped else 'off'!r}")
         if ident["environment"]["torch_threads"] != 1:
             problems.append(f"{d.name}: torch threads {ident['environment']['torch_threads']} != 1")
         if not smoke:
-            c = dict(frozen())
+            c = dict(frozen(shaped))
             hp = ident["hyperparameters"]
             if {k: hp[k] for k in c["ppo"] if k != "net_arch"} != {k: v for k, v in c["ppo"].items() if k != "net_arch"} or hp["net_arch"] != c["ppo"]["net_arch"]:
                 problems.append(f"{d.name}: PPO hyperparameters differ from the frozen config")
@@ -70,14 +74,16 @@ def provenance_problems(run_dirs: list, models_dir: Path, smoke: bool) -> list:
 
 
 def main(argv=None) -> int:
-    cfg = frozen()
+    shaped = "--shaped" in (sys.argv[1:] if argv is None else argv)
+    cfg = frozen(shaped)
     p = argparse.ArgumentParser()
+    p.add_argument("--shaped", action="store_true", help="B13c: judge the SPEC 7.4 shaped-reward pilot (separate runs, no extension); the metric is still the TRUE score")
     p.add_argument("--models-dir", default=str(ROOT / "models_v2"))
     p.add_argument("--horizon", type=int, default=cfg["timesteps"], help="300000, or 600000 after the extension")
     p.add_argument("--freq", type=int, default=cfg["val_freq"])
     p.add_argument("--plain-seeds", default=",".join(map(str, cfg["plain_seeds"])))
     p.add_argument("--d4-seeds", default=",".join(map(str, cfg["d4_seeds"])))
-    p.add_argument("--out", default=str(ROOT / "logs_b13" / "g7_decision.json"))
+    p.add_argument("--out", default=str(ROOT / "logs_b13" / ("g7_shaped_decision.json" if shaped else "g7_decision.json")))
     p.add_argument("--smoke", action="store_true", help="dry-run output: any seed count and step horizon; the verdict is NOT a G7 result")
     a = p.parse_args(argv)
     md = Path(a.models_dir)
@@ -86,13 +92,16 @@ def main(argv=None) -> int:
     ds = [int(x) for x in a.d4_seeds.split(",") if x]
     plain_dirs = [md / cfg["run_names"]["plain"].format(seed=s) for s in ps]
     d4_dirs = [md / cfg["run_names"]["d4"].format(seed=s) for s in ds]
-    problems = provenance_problems(plain_dirs + d4_dirs, md, a.smoke)
-    print(f"G7 report  models={md}  horizon={a.horizon}  bar={bar:.4f}  plain seeds={ps}  d4 seeds={ds}")
+    problems = provenance_problems(plain_dirs + d4_dirs, md, a.smoke, shaped)
+    print(("G7 SHAPED-REWARD PILOT (SPEC 7.4, Gate changelog (z)): training used shaping, every number below is the TRUE score\n" if shaped else "") + f"G7 report  models={md}  horizon={a.horizon}  bar={bar:.4f}  plain seeds={ps}  d4 seeds={ds}")
     for pr in problems:
         print(f"  PROBLEM  {pr}")
     plain = {s: G.read_run(d) for s, d in zip(ps, plain_dirs)}
     d4 = {s: G.read_run(d) for s, d in zip(ds, d4_dirs)}
-    dec = G.decide(plain, bar, a.horizon, a.freq, expect_seeds=None if a.smoke else G.N_PLAIN)
+    if shaped and a.horizon != 300_000 and not a.smoke:
+        print("REFUSED: the shaped pilot is judged at 300000 only (no extension)", file=sys.stderr)
+        return 3
+    dec = G.decide(plain, bar, a.horizon, a.freq, expect_seeds=None if a.smoke else G.N_PLAIN, allow_extension=not shaped)
     judged = dec.get("second_look", dec["first_look"])
     print(f"\nG7 look at t = {judged['window']}: mean score {judged['mean_score']:.4f} vs bar {bar:.4f}")
     for s, m in judged["per_seed"].items():

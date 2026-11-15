@@ -113,17 +113,19 @@ def repo_identity() -> dict:
 
 
 # ---------------------------------------------------------------------------------------------------- envs
-def make_env(train_set: str, aug: str, seed: int, rank: int, prebought):
+def make_env(train_set: str, aug: str, seed: int, rank: int, prebought, shaping: bool = False):
+    """`shaping` (SPEC 7.4, B13c) is a TRAINING-env signal only: the validation / evaluation envs (rl.eval_ppo_v2.ModelPolicy) never shape and score
+    from the integer battle outcome through breachlens.score."""
     def _init():
-        env = BreachEnv(source=train_set, role="train", prebought=prebought)
+        env = BreachEnv(source=train_set, role="train", prebought=prebought, shaping=shaping)
         if aug == "d4":
             env = D4Wrapper(env, seed=seed * 1000 + rank)
         return Monitor(env)
     return _init
 
 
-def build_venv(train_set: str, aug: str, seed: int, n_envs: int, prebought) -> DummyVecEnv:
-    return DummyVecEnv([make_env(train_set, aug, seed, i, prebought) for i in range(n_envs)])
+def build_venv(train_set: str, aug: str, seed: int, n_envs: int, prebought, shaping: bool = False) -> DummyVecEnv:
+    return DummyVecEnv([make_env(train_set, aug, seed, i, prebought, shaping) for i in range(n_envs)])
 
 
 def build_model(venv: DummyVecEnv, seed: int, hp: dict) -> MaskablePPO:
@@ -369,6 +371,7 @@ def parse_args(argv):
     for k, v in PPO_CONFIG.items():
         if k != "net_arch":
             p.add_argument("--" + k.replace("_", "-"), type=type(v), default=v)
+    p.add_argument("--shaping", choices=["off", "on"], default="off", help="SPEC 7.4 potential-based shaping in the TRAINING envs only (B13c shaped pilot); evaluation never shapes")
     p.add_argument("--threads", type=int, default=DEFAULT_THREADS)
     p.add_argument("--speed-freq", type=int, default=10_000, help="steps/s log interval (thermal check), speed.csv")
     p.add_argument("--extend-to", type=int, default=None, help="continue a FINISHED run from its latest checkpoint to this many steps (G7 extension, changelog (u)); the curriculum boundary must be explicit")
@@ -413,7 +416,7 @@ def main(argv: list[str] | None = None) -> Path:
     boundary = 0 if args.curriculum == "off" else (args.phase_a_steps if args.phase_a_steps is not None else args.timesteps // 3)
 
     if ckpt is None:
-        venv = build_venv(train_set, args.aug, args.seed, hp["n_envs"], "random" if boundary > 0 else None)
+        venv = build_venv(train_set, args.aug, args.seed, hp["n_envs"], "random" if boundary > 0 else None, shaping=(args.shaping == "on"))
         model = build_model(venv, args.seed, hp)
         n_resumes, cb_state = 0, {}
     else:
@@ -433,7 +436,7 @@ def main(argv: list[str] | None = None) -> Path:
     if prior is None:
         identity = {"algorithm": "MaskablePPO", "run_name": args.run_name, "config": cfg, "train_set": train_set, "val_set": val_set, "aug": args.aug,
                     "seed": args.seed, "timesteps_requested": args.timesteps, "rollout_size": rollout, "curriculum": args.curriculum,
-                    "curriculum_phase_a_army": "random" if args.curriculum == "on" else None,
+                    "shaping": args.shaping, "curriculum_phase_a_army": "random" if args.curriculum == "on" else None,
                     "curriculum_phase_b_start_timestep": boundary if args.curriculum == "on" else None, **repo_identity(), "hyperparameters": hp,
                     "features_extractor": "rl.features.SiegeFeaturesExtractor", "observation": "Dict(grid (9,14,14), state (11,))", "n_actions": 267,
                     "environment": env_info, "status": "running"}

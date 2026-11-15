@@ -93,8 +93,11 @@ def judge(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int | 
             "criteria": crit, "pass": all(crit.values()), "valid_g7": expect_seeds is None or len(per) == expect_seeds}
 
 
-def decide(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int | None = N_PLAIN) -> dict:
-    """Full decision. horizon = 300k (first look; may return EXTEND) or 600k (after the extension; the 300k look must have licensed it)."""
+def decide(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int | None = N_PLAIN, allow_extension: bool = True) -> dict:
+    """Full decision. horizon = 300k (first look; may return EXTEND) or 600k (after the extension; the 300k look must have licensed it).
+    `allow_extension=False` (the SPEC 7.4 shaped pilot, Gate changelog (z)): the 300k look is final, EXTEND is never returned, the slope is reported only."""
+    if not allow_extension and horizon > 300_000:
+        raise ValueError("the shaped pilot gets no extension (Gate changelog (z))")
     first_h = horizon if horizon <= 300_000 else 300_000
     first = judge(plain, bar, first_h, freq, expect_seeds)
     slopes = {s: slope_per_100k(r, first_h, freq) for s, r in plain.items()}
@@ -102,7 +105,7 @@ def decide(plain: dict, bar: float, horizon: int, freq: int, expect_seeds: int |
     out = {"first_look": first, "slopes_per_100k": slopes, "mean_slope_per_100k": mean_slope, "slope_threshold": SLOPE_THRESHOLD,
            "slope_ge_threshold": mean_slope >= SLOPE_THRESHOLD}
     if horizon == first_h:
-        out["verdict"] = "PASS" if first["pass"] else ("EXTEND" if out["slope_ge_threshold"] else "FAIL")
+        out["verdict"] = "PASS" if first["pass"] else ("EXTEND" if (out["slope_ge_threshold"] and allow_extension) else "FAIL")
         return out
     if first["pass"] or not out["slope_ge_threshold"]:
         out["verdict"] = "INVALID: the extension was not licensed by the 300k look (G7 passed, or mean slope < +0.02)"
