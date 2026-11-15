@@ -47,7 +47,7 @@ ROWS = ("(bb) **B13d item 0", "(cc) **B13d items", "(dd) **B14a item 0", "(ee) *
 REAL_LOGS = ROOT / "logs_b14"
 TRAINER = {"ppo": "rl.train_ppo_v2", "ddqn": "rl.train_ddqn_v2"}
 FINAL_FILE = {"ppo": "final.zip", "ddqn": "final.pt"}
-CODE_PATHS = ["rl", "breachlens", "scripts_b14_grid.py", "scripts_b13_pilot.py", "data/v2/pool_v1.json", "data/v2/pool_v1.sha256",
+CODE_PATHS = ["rl", "breachlens", "scripts_b14_grid.py", "scripts_b13_pilot.py",
               *[f"data/v2/{f}" for f in (*CONFIG_FILES.values(), QUEUE_FILE)]]
 CKPT_KEEP = 2
 # Measured on the pilots (bytes): PPO checkpoint dir 9 643 204 (D4 9 643 204 at 250k), DDQN checkpoint dir with the full 50 000-transition buffer 378 791 591;
