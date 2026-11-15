@@ -564,6 +564,8 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - B13c item 3: `scripts_b13_pilot.py --shaped`, `scripts_g7_report.py --shaped` (separate section / output `logs_b13/g7_shaped_decision.json`, never EXTEND), `rl.train_ppo_v2 --shaping {off,on}` (default off; recorded in model_identity), `tests/test_b13c_shaped.py` (14). Dry run (temp dir, deleted): 3 shaped seeds x 10 000 steps through the launcher, exit codes 0, identity shaping on, git clean, ~250 steps/s each; report prints the shaped section and a smoke verdict. Env-only microbenchmark: shaping costs 1.4x (phase B) to 1.8x (phase A) env time; training is network-bound, so the pilot is estimated at well under the SPEC's 1.5-3.5 h (estimate).
 - Full `.venv/bin/python -m pytest`: pytest exit code 0 (576 passed). Shaped pilot NOT launched.
 
+- B13c decisions, Gate changelog (aa): 7.4 skip clause NOT invoked (default 7.4 protocol applies); Oracle-deploy cell = option B diagnostic (`scripts_b13_diag.py --oracle-deploy`, 256 sims, rng [seed, 4444], TUNE-val), implemented + determinism test, NOT run until the shaped pilot has finished; shaped pilot has no extension (z). The shaped launcher now also requires row (aa). Nothing launched.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.

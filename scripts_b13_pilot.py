@@ -30,7 +30,7 @@ FROZEN_SHAPED = ROOT / "data" / "v2" / "g7_shaped_pilot_config.json"
 LEDGER = ROOT / "data" / "v2" / "final_access.log"
 REAL_MODELS = ROOT / "models_v2"
 ROWS = ("(r) **B13a", "(s) **B13a", "(t) **B13a", "(u) **B13a", "(v) **B13a", "(w) **B13a")
-ROWS_SHAPED = ROWS + ("(y) **B13c", "(z) **B13c")
+ROWS_SHAPED = ROWS + ("(y) **B13c", "(z) **B13c", "(aa) **B13c")
 FORBIDDEN_ENV = ("BREACHLENS_STATS_PATH", "BREACHLENS_GEN_PARAMS")
 
 

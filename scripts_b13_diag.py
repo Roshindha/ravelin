@@ -301,8 +301,46 @@ SPEC_73_QUOTE = (
     "no hyperparameter is changed because of it.")
 
 
+ORACLE_DEPLOY_TAG = 4444          # Gate changelog (aa): rng [layout seed, 4444]
+ORACLE_DEPLOY_SIMS = 256          # warm start (scripted placement) + 255 proposal draws
+
+
+def oracle_deploy_search(layout, P, types, layout_seed: int, sims: int = ORACLE_DEPLOY_SIMS) -> O.SearchResult:
+    """DIAGNOSTIC (Gate changelog (aa), defined after G7, used by no gate): deployment-only hill-climb on a FIXED army. The army (multiset of types) never changes;
+    moves are start-tile shift (+-7) and order swap, strict improvement by the exact integer key, warm start = the scripted deployment (Greedy ranking order,
+    default start tile), so the result is never below the scripted deployer. Budget `sims` simulations (1 warm start + sims - 1 draws; an inapplicable draw
+    wastes its slot), rng = oracle_rng(layout_seed, 4444)."""
+    rng = O.oracle_rng(layout_seed, ORACLE_DEPLOY_TAG)
+    ev = O._Eval(layout, P)
+    types = sort_by_rank(list(types))
+    ev.run(types, default_start(layout))
+    allowed = tuple(sorted(set(types)))
+    for _ in range(sims - 1):
+        _, bt, bs, _ = ev.best
+        prop = O._mutate(bt, bs, rng, allowed, 10 ** 9, len(types), ("shift", "swap"))
+        if prop is not None:
+            ev.run(*prop)
+    return ev.final()
+
+
+def run_oracle_deploy(out: Path, items=None) -> list:
+    """Run ONLY on request (`--oracle-deploy`); not part of the default run. TUNE-val, army-search armies (same as the decomposition)."""
+    items = items if items is not None else EV.load_set(SET, ROLE, entry_point="scripts_b13_diag")
+    rows = []
+    for rec, layout in items:
+        P = Prepared(layout)
+        army = O.army_search(layout, O.oracle_rng(rec["seed"], O.ARMY_SEARCH_TAG), prepared=P)
+        scr = scripted(layout, P, counts_of(army.types))
+        res = oracle_deploy_search(layout, P, army.types, rec["seed"])
+        rows.append({"id": rec["id"], "family": rec["family"], "scripted_score": scr["score"], "oracle_deploy_score": res.score, "oracle_deploy_d": res.d,
+                     "oracle_deploy_breach": float(res.breach), "sims": res.sims, "start": res.start})
+    write_csv(rows, out / "oracle_deploy.csv")
+    return rows
+
+
 def main(argv=None) -> dict:
     p = argparse.ArgumentParser()
+    p.add_argument("--oracle-deploy", action="store_true", help="ONLY the Gate changelog (aa) deployment-only diagnostic; do not run before the shaped pilot has finished")
     p.add_argument("--out", default=str(ROOT / "results" / "b13"))
     p.add_argument("--models-dir", default=str(ROOT / "models_v2"))
     p.add_argument("--seeds", default=",".join(map(str, SEEDS)))
@@ -310,6 +348,9 @@ def main(argv=None) -> dict:
     seeds = tuple(int(x) for x in a.seeds.split(","))
     out, models = Path(a.out), Path(a.models_dir)
     out.mkdir(parents=True, exist_ok=True)
+    if a.oracle_deploy:
+        run_oracle_deploy(out)
+        return {}
     r = run(models, seeds)
     cells, items, bs = r["cells"], r["items"], r["best_single"]
     b8 = load_b8()

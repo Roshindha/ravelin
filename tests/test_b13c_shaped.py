@@ -222,3 +222,30 @@ def test_shaped_report_flags_runs_trained_without_shaping(tmp_path, capsys):
     rc = R.main(["--shaped", "--models-dir", str(md), "--smoke", "--out", str(tmp_path / "o.json")])
     assert rc == 2 and "trained with shaping 'off'" in capsys.readouterr().out
     np.testing.assert_equal(rc, 2)
+
+
+# ------------------------------------------------------------------------------------------------ Gate changelog (aa): Oracle-deploy diagnostic
+def test_oracle_deploy_search_is_deterministic_budgeted_and_never_below_scripted():
+    import scripts_b13_diag as D
+    from breachlens import oracle as O
+    from breachlens.sim import Prepared
+    items = EV.load_set("TUNE-val", "validation", entry_point="tests")[::20]
+    for rec, layout in items:
+        Pp = Prepared(layout)
+        army = O.army_search(layout, O.oracle_rng(rec["seed"], O.ARMY_SEARCH_TAG), n_random=8, n_refine=8, prepared=Pp)
+        a = D.oracle_deploy_search(layout, Pp, army.types, rec["seed"])
+        b = D.oracle_deploy_search(layout, Pp, army.types, rec["seed"])
+        assert (a.key, a.types, a.start, a.sims) == (b.key, b.types, b.start, b.sims)
+        assert a.sims <= D.ORACLE_DEPLOY_SIMS and sorted(a.types) == sorted(army.types)
+        assert a.score >= D.scripted(layout, Pp, D.counts_of(army.types))["score"]
+
+
+def test_oracle_deploy_is_not_part_of_the_default_run_and_row_aa_gates_the_shaped_launcher(clean, monkeypatch, tmp_path):
+    src = (ROOT / "scripts_b13_diag.py").read_text()
+    assert src.count("run_oracle_deploy(") == 2 and "if a.oracle_deploy:" in src            # definition + the one flagged call
+    spec = L.SPEC.read_text()
+    assert "(aa) **B13c" in spec and "7.4 skip clause NOT invoked" in spec and "[layout seed, 4444]" in spec
+    f = tmp_path / "s.md"
+    f.write_text(spec.replace("(aa) **B13c", "(zz) **gone"))
+    monkeypatch.setattr(L, "SPEC", f)
+    assert any("(aa) **B13c" in p for p in L.preflight(shaped=True))
