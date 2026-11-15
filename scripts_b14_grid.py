@@ -518,12 +518,12 @@ class Scheduler:
         argv = self.argv_fn(job)
         n = self.attempts.get(job.name, 0)
         lf = open(self.logs / f"{job.name}.log", "ab")
-        lf.write(f"\n=== {time.strftime('%Y-%m-%d %H:%M:%S')} start (attempt {n + 1}, t={progress_t(self.models, job)}): {' '.join(argv)}\n".encode())
+        lf.write(f"\n=== {time.strftime('%Y-%m-%d %H:%M:%S')} start (attempt {n + 1}, resumes from checkpoint t={(latest_ckpts(run_dir(self.models, job)) or [0])[-1]}): {' '.join(argv)}\n".encode())
         lf.flush()
         env = dict(os.environ, BREACHLENS_MODELS_DIR=str(self.models), OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", PYTHONUNBUFFERED="1")
         self.mark_segment(job)
         self.procs[job.name] = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=lf, stderr=subprocess.STDOUT, start_new_session=True)
-        self.log(f"[start] {job.name} pid {self.procs[job.name].pid} (resumable from t={progress_t(self.models, job)})")
+        self.log(f"[start] {job.name} pid {self.procs[job.name].pid} (resumes from checkpoint t={(latest_ckpts(run_dir(self.models, job)) or [0])[-1]})")
         return True
 
     def finish(self, job: Job, code) -> None:
