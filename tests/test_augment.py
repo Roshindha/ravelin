@@ -219,26 +219,26 @@ def test_tta_with_identity_only_equals_the_plain_policy():
     pol = _random_policy()
     for i in range(4):
         obs, mask = _obs_mask(i)
-        assert (tta_scores(pol, obs, mask, syms=[0]) == pol(obs, mask)).all()
-        assert tta_action(pol, obs, mask, syms=[0]) == int(np.argmax(pol(obs, mask)))
+        assert (tta_scores(pol, obs, mask, syms=[0], aggregate="mean") == pol(obs, mask)).all()
+        assert tta_action(pol, obs, mask, syms=[0], aggregate="mean") == int(np.argmax(pol(obs, mask)))
 
 
 def test_tta_of_an_equivariant_policy_equals_the_policy_and_tta_is_itself_equivariant():
     base = _random_policy(1)
 
     def equivariant(obs, mask):                      # symmetrise: average of the 8 mapped-back views (an exactly D4-equivariant policy)
-        return tta_scores(base, obs, mask)
+        return tta_scores(base, obs, mask, aggregate="mean")
 
     for i in range(3):
         obs, mask = _obs_mask(i, steps=4)
-        p = tta_scores(base, obs, mask)
+        p = tta_scores(base, obs, mask, aggregate="mean")
         assert abs(p.sum() - 1.0) < 1e-9 and (p[~mask] == 0).all()
         for s in (1, 4, 7):
-            ps = tta_scores(base, transform_obs(obs, s), transform_mask(mask, s))
+            ps = tta_scores(base, transform_obs(obs, s), transform_mask(mask, s), aggregate="mean")
             np.testing.assert_allclose(ps, _apply(p, s), atol=1e-12)   # TTA(view_s) = view_s of TTA
             # a TTA-symmetrised policy is a fixed point of TTA
-            np.testing.assert_allclose(tta_scores(equivariant, obs, mask), p, atol=1e-12)
-        assert int(np.argmax(np.where(mask, p, -1))) == tta_action(base, obs, mask)
+            np.testing.assert_allclose(tta_scores(equivariant, obs, mask, aggregate="mean"), p, atol=1e-12)
+        assert int(np.argmax(np.where(mask, p, -1))) == tta_action(base, obs, mask, aggregate="mean")
 
 
 def _apply(p, s):
@@ -257,10 +257,10 @@ def test_tta_maps_q_values_back_through_the_inverse_permutation():
     def true_equivariant_q(o, m):                    # knows the true Q in original coordinates; answers in the view it is shown
         return _apply(q, _sym_of(o, obs))
 
-    np.testing.assert_allclose(tta_scores(true_equivariant_q, obs, mask), q, atol=1e-12)
-    assert tta_action(true_equivariant_q, obs, mask) == int(np.argmax(np.where(mask, q, -np.inf)))
+    np.testing.assert_allclose(tta_scores(true_equivariant_q, obs, mask, aggregate="mean"), q, atol=1e-12)
+    assert tta_action(true_equivariant_q, obs, mask, aggregate="mean") == int(np.argmax(np.where(mask, q, -np.inf)))
     with pytest.raises(ValueError):
-        tta_scores(true_equivariant_q, obs, mask, syms=[])
+        tta_scores(true_equivariant_q, obs, mask, syms=[], aggregate="mean")
 
 
 def _sym_of(o, obs):
@@ -268,3 +268,40 @@ def _sym_of(o, obs):
         if (transform_grid(obs["grid"], s) == o["grid"]).all():
             return s
     raise AssertionError
+
+
+# ---- TTA aggregation pinned (Gate changelog (n)): mean log-probability over legal actions across the 8 views, then masked argmax
+def test_tta_default_is_mean_logprob_over_legal_actions_then_masked_argmax():
+    pol = _random_policy(3)
+    for i in range(4):
+        obs, mask = _obs_mask(i, steps=4)
+        manual = 0.0
+        for s in ALL:                                             # independent restatement: views -> inverse permutation -> log -> mean
+            p = pol(transform_obs(obs, s), transform_mask(mask, s))
+            manual = manual + np.log(np.where(mask, p[ACTION_PERM[s]], 1.0))
+        manual = np.where(mask, manual / 8, -np.inf)
+        sc = tta_scores(pol, obs, mask)
+        np.testing.assert_allclose(sc[mask], manual[mask], atol=1e-12)
+        assert np.isneginf(sc[~mask]).all()
+        assert tta_action(pol, obs, mask) == int(np.argmax(manual))
+        assert mask[tta_action(pol, obs, mask)]
+        # identity-only logprob TTA == the plain policy's masked argmax
+        assert tta_action(pol, obs, mask, syms=[0]) == int(np.argmax(np.where(mask, pol(obs, mask), -np.inf)))
+
+
+def test_tta_logprob_differs_from_probability_mean_on_a_constructed_case_and_zero_prob_legal_is_minus_inf():
+    obs, mask = _obs_mask(0, steps=2)
+    a, b = np.flatnonzero(mask)[:2]
+    # view-dependent outputs in ORIGINAL coordinates: action a gets 0.9 in 4 views and 0.001 in the other 4; action b a steady 0.3
+    def probs_in_view(o, m):
+        s = _sym_of(o, obs)
+        out = np.zeros(N_ACTIONS)
+        pa = 0.9 if s < 4 else 0.001
+        out[ACTION_PERM[s][a]], out[ACTION_PERM[s][b]] = pa, 0.3
+        return out
+    assert tta_action(probs_in_view, obs, mask, aggregate="mean") == a          # arithmetic mean: 0.4505 > 0.3
+    assert tta_action(probs_in_view, obs, mask) == b                            # geometric: sqrt(0.9*0.001)=0.03 < 0.3
+    sc = tta_scores(probs_in_view, obs, mask)
+    others = [x for x in np.flatnonzero(mask) if x not in (a, b)]
+    if others:
+        assert np.isneginf(sc[others]).all()                                     # legal but p = 0 in every view -> -inf
