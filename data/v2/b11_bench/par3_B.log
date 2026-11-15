@@ -1,0 +1,118 @@
+{
+ "mode": "train",
+ "phase": "B",
+ "threads": 1,
+ "warmup_s": 60.0,
+ "window_s": 180.0,
+ "window_steps": 12744,
+ "steps_per_s": 70.8,
+ "updates_in_window": 3186,
+ "seconds_by_part_in_window": {
+  "act": 1.85,
+  "env_step": 4.69,
+  "masks": 0.06,
+  "update": 173.33,
+  "rest": 0.11
+ },
+ "share_by_part": {
+  "act": 0.01,
+  "env_step": 0.026,
+  "masks": 0.0,
+  "update": 0.963,
+  "rest": 0.001
+ },
+ "peak_rss_mb": 480.1,
+ "replay_size_at_end": 23128,
+ "replay_full": false,
+ "mean_episode_score_last100": 0.1079,
+ "total_timesteps_run": 23128
+}
+{
+ "mode": "train",
+ "phase": "B",
+ "threads": 1,
+ "warmup_s": 60.0,
+ "window_s": 180.0,
+ "window_steps": 12712,
+ "steps_per_s": 70.6,
+ "updates_in_window": 3178,
+ "seconds_by_part_in_window": {
+  "act": 1.88,
+  "env_step": 4.66,
+  "masks": 0.06,
+  "update": 173.29,
+  "rest": 0.09
+ },
+ "share_by_part": {
+  "act": 0.01,
+  "env_step": 0.026,
+  "masks": 0.0,
+  "update": 0.963,
+  "rest": 0.001
+ },
+ "peak_rss_mb": 474.2,
+ "replay_size_at_end": 23072,
+ "replay_full": false,
+ "mean_episode_score_last100": 0.1047,
+ "total_timesteps_run": 23072
+}
+{
+ "mode": "train",
+ "phase": "B",
+ "threads": 1,
+ "warmup_s": 60.0,
+ "window_s": 180.0,
+ "window_steps": 12712,
+ "steps_per_s": 70.6,
+ "updates_in_window": 3178,
+ "seconds_by_part_in_window": {
+  "act": 1.83,
+  "env_step": 4.66,
+  "masks": 0.06,
+  "update": 173.39,
+  "rest": 0.09
+ },
+ "share_by_part": {
+  "act": 0.01,
+  "env_step": 0.026,
+  "masks": 0.0,
+  "update": 0.963,
+  "rest": 0.0
+ },
+ "peak_rss_mb": 473.1,
+ "replay_size_at_end": 23064,
+ "replay_full": false,
+ "mean_episode_score_last100": 0.1047,
+ "total_timesteps_run": 23064
+}
+{
+ "mode": "parallel",
+ "n": 3,
+ "phase": "B",
+ "threads": 1,
+ "per_job_steps_per_s": [
+  70.8,
+  70.6,
+  70.6
+ ],
+ "per_job_mean": 70.7,
+ "per_job_min": 70.6,
+ "aggregate_steps_per_s": 212.0,
+ "peak_rss_mb_per_job": [
+  480.1,
+  473.1,
+  474.2
+ ],
+ "share_by_part_job0": {
+  "act": 0.01,
+  "env_step": 0.026,
+  "masks": 0.0,
+  "update": 0.963,
+  "rest": 0.001
+ },
+ "replay_full": [
+  false,
+  false,
+  false
+ ]
+}

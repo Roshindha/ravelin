@@ -1,0 +1,171 @@
+{
+ "hardware": {
+  "python": "3.11.14",
+  "torch": "2.15.0",
+  "stable_baselines3": "2.9.2",
+  "numpy": "2.4.6",
+  "cpu": "Apple M2",
+  "cpu_count": 8,
+  "torch_threads": 4,
+  "platform": "macOS-26.2-arm64-arm-64bit"
+ },
+ "ddqn_config": {
+  "n_envs": 8,
+  "buffer_size": 50000,
+  "batch_size": 64,
+  "learning_rate": 0.0001,
+  "gamma": 1.0,
+  "train_every": 4,
+  "learning_starts": 5000,
+  "target_update_interval": 1000,
+  "eps_start": 1.0,
+  "eps_end": 0.05,
+  "eps_decay_fraction": 0.25,
+  "max_grad_norm": 10.0,
+  "net_arch": [
+   256,
+   256
+  ],
+  "train_set": "TUNE-train"
+ },
+ "single": {
+  "mode": "train",
+  "phase": "B",
+  "threads": 1,
+  "warmup_s": 60,
+  "window_s": 180.0,
+  "window_steps": 20272,
+  "steps_per_s": 112.6,
+  "updates_in_window": 5068,
+  "seconds_by_part_in_window": {
+   "act": 1.78,
+   "env_step": 4.39,
+   "masks": 0.06,
+   "update": 173.68,
+   "rest": 0.11
+  },
+  "share_by_part": {
+   "act": 0.01,
+   "env_step": 0.024,
+   "masks": 0.0,
+   "update": 0.965,
+   "rest": 0.001
+  },
+  "peak_rss_mb": 553.8,
+  "replay_size_at_end": 31848,
+  "replay_full": false,
+  "mean_episode_score_last100": 0.1383,
+  "total_timesteps_run": 31848,
+  "checkpoint": {
+   "seconds_to_write": 1.97,
+   "size_mb": 244.4,
+   "buffer_mb": 235.1,
+   "nets_mb": 8.7,
+   "state_pkl_mb": 0.6,
+   "replay_len": 31848,
+   "peak_rss_mb_after_save": 553.8
+  }
+ },
+ "single_phase_A": {
+  "mode": "train",
+  "phase": "A",
+  "threads": 1,
+  "warmup_s": 60,
+  "window_s": 180.0,
+  "window_steps": 19960,
+  "steps_per_s": 110.9,
+  "updates_in_window": 4990,
+  "seconds_by_part_in_window": {
+   "act": 1.78,
+   "env_step": 7.12,
+   "masks": 0.07,
+   "update": 170.92,
+   "rest": 0.1
+  },
+  "share_by_part": {
+   "act": 0.01,
+   "env_step": 0.04,
+   "masks": 0.0,
+   "update": 0.95,
+   "rest": 0.001
+  },
+  "peak_rss_mb": 578.3,
+  "replay_size_at_end": 31384,
+  "replay_full": false,
+  "mean_episode_score_last100": 0.1585,
+  "total_timesteps_run": 31384
+ },
+ "parallel": {
+  "par3_B": {
+   "mode": "parallel",
+   "n": 3,
+   "phase": "B",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    70.8,
+    70.6,
+    70.6
+   ],
+   "per_job_mean": 70.7,
+   "per_job_min": 70.6,
+   "aggregate_steps_per_s": 212.0,
+   "peak_rss_mb_per_job": [
+    480.1,
+    473.1,
+    474.2
+   ],
+   "share_by_part_job0": {
+    "act": 0.01,
+    "env_step": 0.026,
+    "masks": 0.0,
+    "update": 0.963,
+    "rest": 0.001
+   },
+   "replay_full": [
+    false,
+    false,
+    false
+   ]
+  },
+  "par6_B": {
+   "mode": "parallel",
+   "n": 6,
+   "phase": "B",
+   "threads": 1,
+   "per_job_steps_per_s": [
+    43.2,
+    43.2,
+    43.2,
+    43.1,
+    43.2,
+    43.2
+   ],
+   "per_job_mean": 43.2,
+   "per_job_min": 43.1,
+   "aggregate_steps_per_s": 259.1,
+   "peak_rss_mb_per_job": [
+    315.1,
+    322.9,
+    313.9,
+    311.4,
+    318.2,
+    322.7
+   ],
+   "share_by_part_job0": {
+    "act": 0.011,
+    "env_step": 0.025,
+    "masks": 0.0,
+    "update": 0.963,
+    "rest": 0.001
+   },
+   "replay_full": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  }
+ }
+}

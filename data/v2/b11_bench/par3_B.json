@@ -1,0 +1,31 @@
+{
+ "mode": "parallel",
+ "n": 3,
+ "phase": "B",
+ "threads": 1,
+ "per_job_steps_per_s": [
+  70.8,
+  70.6,
+  70.6
+ ],
+ "per_job_mean": 70.7,
+ "per_job_min": 70.6,
+ "aggregate_steps_per_s": 212.0,
+ "peak_rss_mb_per_job": [
+  480.1,
+  473.1,
+  474.2
+ ],
+ "share_by_part_job0": {
+  "act": 0.01,
+  "env_step": 0.026,
+  "masks": 0.0,
+  "update": 0.963,
+  "rest": 0.001
+ },
+ "replay_full": [
+  false,
+  false,
+  false
+ ]
+}

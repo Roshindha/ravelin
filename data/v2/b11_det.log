@@ -1,0 +1,65 @@
+{
+ "threads": 1,
+ "timesteps": 12000,
+ "checkpoint_freq": 2000,
+ "curriculum_boundary": 4000,
+ "config": "real DDQN config (rl.ddqn.DDQN_CONFIG)",
+ "learning_starts": 5000,
+ "first_target_sync_at_timestep": 9000,
+ "all_identical": true,
+ "negative_control_differs": true,
+ "wall_seconds": 508
+}
+{
+ "params_sha256": "207c29157be1b8886b2bf7c94f91c8f9e9f3dfc9b37e8e3689fded7cfef197cf",
+ "params_optimizer_sha256": "cee9e331ad0c48df288065b032d344ce09f4ba041859c2b24a293b3039da9f8f",
+ "updates": 1752,
+ "fresh_twice": {
+  "params_sha256": true,
+  "params_optimizer_sha256": true,
+  "updates": true,
+  "timesteps": true,
+  "val_rows": true,
+  "val_layouts": true,
+  "curriculum": true
+ },
+ "resume_after_checkpoint_2000": {
+  "params_sha256": true,
+  "params_optimizer_sha256": true,
+  "updates": true,
+  "timesteps": true,
+  "val_rows": true,
+  "val_layouts": true,
+  "curriculum": true
+ },
+ "resume_after_checkpoint_6000": {
+  "params_sha256": true,
+  "params_optimizer_sha256": true,
+  "updates": true,
+  "timesteps": true,
+  "val_rows": true,
+  "val_layouts": true,
+  "curriculum": true
+ },
+ "resume_after_checkpoint_10000": {
+  "params_sha256": true,
+  "params_optimizer_sha256": true,
+  "updates": true,
+  "timesteps": true,
+  "val_rows": true,
+  "val_layouts": true,
+  "curriculum": true
+ },
+ "sigkill_then_resume": {
+  "params_sha256": true,
+  "params_optimizer_sha256": true,
+  "updates": true,
+  "timesteps": true,
+  "val_rows": true,
+  "val_layouts": true,
+  "curriculum": true
+ },
+ "negative_control_no_rng_restore": {
+  "differs_from_uninterrupted": true
+ }
+}

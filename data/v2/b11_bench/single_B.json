@@ -1,0 +1,38 @@
+{
+ "mode": "train",
+ "phase": "B",
+ "threads": 1,
+ "warmup_s": 60,
+ "window_s": 180.0,
+ "window_steps": 20272,
+ "steps_per_s": 112.6,
+ "updates_in_window": 5068,
+ "seconds_by_part_in_window": {
+  "act": 1.78,
+  "env_step": 4.39,
+  "masks": 0.06,
+  "update": 173.68,
+  "rest": 0.11
+ },
+ "share_by_part": {
+  "act": 0.01,
+  "env_step": 0.024,
+  "masks": 0.0,
+  "update": 0.965,
+  "rest": 0.001
+ },
+ "peak_rss_mb": 553.8,
+ "replay_size_at_end": 31848,
+ "replay_full": false,
+ "mean_episode_score_last100": 0.1383,
+ "total_timesteps_run": 31848,
+ "checkpoint": {
+  "seconds_to_write": 1.97,
+  "size_mb": 244.4,
+  "buffer_mb": 235.1,
+  "nets_mb": 8.7,
+  "state_pkl_mb": 0.6,
+  "replay_len": 31848,
+  "peak_rss_mb_after_save": 553.8
+ }
+}
