@@ -632,6 +632,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B14b DONE (disk reduction; grid NOT launched). DDQN checkpoint format 2 (lossless, ~378.8 MB -> ~11.2 MB per checkpoint), disk rule = remaining peak + 10 GB (row (ff)), pilot intermediate checkpoints deleted, LIMITATIONS epsilon note corrected. Next: free enough disk for `scripts_b14_grid.py plan` to pass, then launch; B15 only after the grid finished.
 - v2 B14a DONE (grid prepared, NOT launched). Next: free disk (about 16 GB free needed), then `.venv/bin/python scripts_b14_grid.py launch`; B15 only after the grid finished.
 - v2 B13e DONE (shaped DDQN pilot prepared, NOT launched: `.venv/bin/python scripts_b13_ddqn_pilot.py`, then `.venv/bin/python scripts_b13_ddqn_report.py`). Next: owner launches it; then B14 launcher, only when told.
 - v2 B13d DONE (G7 PASSED via shaped pilot; T = 1.5M pinned; no training). Next: add `--shaping` to the DDQN trainer, DDQN train_freq pilot, B14 launcher (must verify `g7.pass` in gates.json and step_budget.json), only when told.

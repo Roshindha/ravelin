@@ -202,11 +202,12 @@ def test_refuses_when_code_changed_since_the_first_launch(clean):
     assert pf(clean) == []
 
 
-def test_refuses_when_free_disk_is_below_1_5x_the_remaining_peak(clean, monkeypatch):
+def test_refuses_when_free_disk_is_below_the_remaining_peak_plus_10_gb(clean, monkeypatch):
     pk = G.peak_bytes({"ppo": 20, "ddqn": 10})["total"]
-    monkeypatch.setattr(G.shutil, "disk_usage", lambda p: type("U", (), {"free": int(1.5 * pk) - 1})())
+    need = pk + 10_000_000_000
+    monkeypatch.setattr(G.shutil, "disk_usage", lambda p: type("U", (), {"free": need - 1})())
     assert any("free disk" in p for p in pf(clean, check_disk=True))
-    monkeypatch.setattr(G.shutil, "disk_usage", lambda p: type("U", (), {"free": int(1.5 * pk) + 1})())
+    monkeypatch.setattr(G.shutil, "disk_usage", lambda p: type("U", (), {"free": need + 1})())
     assert pf(clean, check_disk=True) == []
 
 
@@ -214,13 +215,14 @@ def test_refuses_when_free_disk_is_below_1_5x_the_remaining_peak(clean, monkeypa
 def test_peak_formula_and_the_numbers_for_the_real_grid():
     assert G.peak_bytes({"ppo": 0, "ddqn": 0})["total"] == 0
     c = G.SIZES["ddqn_ckpt"]
-    assert G.peak_bytes({"ddqn": 10}, slots=6)["ddqn"] == (2 * 10 + 6) * c + 10 * G.SIZES["ddqn_other"]       # 4 finished x 2 + 6 running x 3 = 26 dirs
-    assert G.peak_bytes({"ddqn": 4}, slots=6)["ddqn"] == (2 * 4 + 4) * c + 4 * G.SIZES["ddqn_other"]
+    assert G.peak_bytes({"ddqn": 10}, slots=6)["ddqn"] == (2 * 10 + 6) * c + 10 * (G.SIZES["ddqn_other"] + G.SIZES["ddqn_final"])       # 4 finished x 2 + 6 running x 3 = 26 dirs
+    assert G.peak_bytes({"ddqn": 4}, slots=6)["ddqn"] == (2 * 4 + 4) * c + 4 * (G.SIZES["ddqn_other"] + G.SIZES["ddqn_final"])
     pk = G.peak_bytes({"ppo": 20, "ddqn": 10})
-    assert 10.0e9 < pk["total"] < 11.0e9 and pk["ppo"] < 1e9
-    assert G.ckpt_bytes("ddqn", 50_000) == G.SIZES["ddqn_ckpt"] and G.ckpt_bytes("ddqn", 2_000) < 0.1 * G.SIZES["ddqn_ckpt"]
-    assert G.disk_problem(10_000, 0, 14_999) and not G.disk_problem(10_000, 0, 15_000)
-    assert G.disk_problem(10_000, 4_000, 8_999) and not G.disk_problem(10_000, 4_000, 9_000)                  # resume: only the remaining growth counts
+    assert 0.9e9 < pk["total"] < 1.2e9 and pk["ppo"] < 1e9 and pk["ddqn"] < 0.5e9      # B14b: DDQN checkpoints are ~12 MB, not ~380 MB
+    assert G.ckpt_bytes("ddqn", 50_000) == G.SIZES["ddqn_ckpt"] and G.ckpt_bytes("ddqn", 2_000) < G.SIZES["ddqn_ckpt"]
+    h = G.DISK_HEADROOM
+    assert G.disk_problem(10_000, 0, h + 9_999) and not G.disk_problem(10_000, 0, h + 10_000)
+    assert G.disk_problem(10_000, 4_000, h + 5_999) and not G.disk_problem(10_000, 4_000, h + 6_000)                  # resume: only the remaining growth counts
     t = G.time_estimate()
     assert 7.5 < t["ppo_h"] < 8.5 and 9 < t["ddqn_h"] < 10.5 and t["total_low_h"] < t["total_h"] < t["total_high_h"]
 

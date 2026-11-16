@@ -45,4 +45,4 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - The shaped plain curve peaks near 225k (0.476) and falls to 0.450 at 300k; its 200k-300k slope (+0.0083 per 100k) is noisy (per-seed -0.031 to +0.030).
 
 ## DDQN pilot (B14a)
-- DDQN epsilon decays over 25% of steps: in the 300k pilot that ends inside phase A (100k), in the 1.5M grid at 375k, so the pilot does not reproduce grid exploration.
+- DDQN epsilon decays over 25% of steps, i.e. inside curriculum phase A (first T/3) in both the 300k pilot (75k < 100k) and the 1.5M grid (375k < 500k); the pilot is representative in this respect.

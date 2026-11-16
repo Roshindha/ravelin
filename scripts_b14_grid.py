@@ -10,10 +10,10 @@ DEV-validation every 25k, final model at T (nothing selected). Queue: 6 slots, P
 job in that order. Every job is `... --resume`: it skips a finished run, continues from the latest checkpoint, or starts fresh. A reboot / sleep / kill loses at
 most the steps since the last checkpoint; `launch` again continues.
 
-Safety: refuses unless data/v2/gates.json g7.pass is true and both report hashes match their files; rows (bb), (cc), (dd), (ee) and every config sha are in the
+Safety: refuses unless data/v2/gates.json g7.pass is true and both report hashes match their files; rows (bb), (cc), (dd), (ee), (ff) and every config sha are in the
 SPEC; the configs equal the code constants; the tracked tree is clean; no foreign trainer / pilot / second scheduler is running; the FINAL ledger has no eval
 entry; no stats / generator override is set; code under rl/ breachlens/ has not changed since the first launch (unless --accept-code-change); free disk is at
-least 1.5 x the remaining expected peak. One scheduler (flock) and a process-table scan before every start: a running job is never started twice (orphans of a
+least the remaining expected peak + 10 GB headroom (row (ff)). One scheduler (flock) and a process-table scan before every start: a running job is never started twice (orphans of a
 dead scheduler are adopted, not duplicated). At the end of every job the layout manifest is checked (breachlens.manifest: FINAL / transfer / LAB-DESIGN ids or
 streams fail it), the evaluated layout ids must be inside the manifest, and checkpoint retention (latest 2 + final) is verified; results in logs_b14/<run>.result.json.
 
@@ -43,17 +43,19 @@ GATES = DATA / "gates.json"
 STEP_BUDGET = DATA / "step_budget.json"
 CONFIG_FILES = {"ppo_plain": "grid_config_ppo_plain.json", "ppo_d4": "grid_config_ppo_d4.json", "ddqn": "grid_config_ddqn.json"}
 QUEUE_FILE = "grid_queue.json"
-ROWS = ("(bb) **B13d item 0", "(cc) **B13d items", "(dd) **B14a item 0", "(ee) **B14a item 2")
+ROWS = ("(bb) **B13d item 0", "(cc) **B13d items", "(dd) **B14a item 0", "(ee) **B14a item 2", "(ff) **B14b")
 REAL_LOGS = ROOT / "logs_b14"
 TRAINER = {"ppo": "rl.train_ppo_v2", "ddqn": "rl.train_ddqn_v2"}
 FINAL_FILE = {"ppo": "final.zip", "ddqn": "final.pt"}
 CODE_PATHS = ["rl", "breachlens", "scripts_b14_grid.py", "scripts_b13_pilot.py",
               *[f"data/v2/{f}" for f in (*CONFIG_FILES.values(), QUEUE_FILE)]]
 CKPT_KEEP = 2
-# Measured on the pilots (bytes): PPO checkpoint dir 9 643 204 (D4 9 643 204 at 250k), DDQN checkpoint dir with the full 50 000-transition buffer 378 791 591;
-# per-run files other than checkpoints: PPO 8.7 MB (final.zip 8.1 MB + csv / jsonl), DDQN 2.3 MB. Rounded up.
-SIZES = {"ppo_ckpt": 9_700_000, "ppo_other": 9_500_000, "ddqn_ckpt": 380_000_000, "ddqn_other": 3_500_000, "ddqn_buffer_ref": 50_000, "ddqn_ckpt_fixed": 14_000_000}
-DISK_FACTOR = 1.5
+# Measured on the pilots (bytes). PPO checkpoint dir 9 643 204 (D4 9 643 204 at 250k). DDQN checkpoint dir, B14b format (compressed buffer, row (ff)), measured at
+# 250k with a full 50 000-transition buffer: nets.pt 8 694 389 + state.pkl 1 039 331 + buffer 1 477 636 = 11 211 356 (was 378 791 591). Final models (kept for every run):
+# PPO final.zip 8.1 MB, DDQN final.pt 2.17 MB. Per-run files other than checkpoint and final model (csv / jsonl / identity): PPO 0.6 MB, DDQN 0.3 MB. All rounded up.
+SIZES = {"ppo_ckpt": 9_700_000, "ppo_final": 8_500_000, "ppo_other": 1_500_000, "ddqn_ckpt": 12_000_000, "ddqn_final": 2_500_000, "ddqn_other": 1_500_000,
+         "ddqn_buffer_ref": 50_000, "ddqn_ckpt_fixed": 10_500_000}
+DISK_HEADROOM = 10_000_000_000       # row (ff): free >= remaining expected peak + 10 GB (macOS swap), replacing the 1.5 x rule
 # Rates (steps/s per job) used for the wall-time ESTIMATE only. PPO: row (cc) r = 184.3 at P=6 (shaped); last wave of 2 at ~330. DDQN train_every 8: pilot 123.2
 # (4 processes, then 2; includes validation); at P=6 scaled from B11 (43.2 at P=6, train_every 4) x the measured f8/f4 pilot ratio 123.2 / 73.6 = 1.67.
 RATES = {"ppo_p6": 184.3, "ppo_p2": 330.0, "ddqn_p6": 72.0, "ddqn_p4": 105.0, "ddqn_pilot": 123.2}
@@ -240,13 +242,13 @@ def ckpt_bytes(algo: str, buffer_size: int | None = None) -> int:
 def peak_bytes(n: dict, slots: int = 6, ddqn_buffer: int | None = None) -> dict:
     """Upper bound on grid disk use, per algorithm: with N runs of an algorithm, F finished (each keeps 2 checkpoints) and R running (up to 3 checkpoint dirs
     each while a new one is being written: 2 kept + the new one), F + R <= N, R <= slots  =>  max (2F + 3R) = 2N + R checkpoint dirs, R = min(slots, N); plus the
-    non-checkpoint files of all N runs. PPO and DDQN peaks are SUMMED (conservative: they overlap only in the queue's tail)."""
+    final model and other files of all N runs. PPO and DDQN peaks are SUMMED (conservative: they overlap only in the queue's tail)."""
     out = {}
     for algo, key in (("ppo", "ppo"), ("ddqn", "ddqn")):
         N = n.get(algo, 0)
         R = min(slots, N)
         ck = ckpt_bytes(algo, ddqn_buffer if algo == "ddqn" else None)
-        out[algo] = (2 * N + R) * ck + N * SIZES[f"{key}_other"]
+        out[algo] = (2 * N + R) * ck + N * (SIZES[f"{key}_other"] + SIZES[f"{key}_final"])
     out["total"] = out["ppo"] + out["ddqn"]
     return out
 
@@ -257,9 +259,9 @@ def dir_bytes(path: Path) -> int:
 
 def disk_problem(total_peak: int, used_by_grid: int, free: int) -> str | None:
     need = max(0, total_peak - used_by_grid)
-    if free < DISK_FACTOR * need:
-        return (f"free disk {free / 1e9:.1f} GB < {DISK_FACTOR} x remaining expected peak {need / 1e9:.1f} GB "
-                f"(= {DISK_FACTOR * need / 1e9:.1f} GB; expected peak {total_peak / 1e9:.1f} GB, already used by the grid {used_by_grid / 1e9:.1f} GB)")
+    if free < need + DISK_HEADROOM:
+        return (f"free disk {free / 1e9:.1f} GB < remaining expected peak {need / 1e9:.1f} GB + {DISK_HEADROOM / 1e9:.0f} GB swap headroom "
+                f"(= {(need + DISK_HEADROOM) / 1e9:.1f} GB; expected peak {total_peak / 1e9:.1f} GB, already used by the grid {used_by_grid / 1e9:.1f} GB)")
     return None
 
 
@@ -711,7 +713,7 @@ def cmd_plan(a) -> int:
         for j in jobs:
             print(f"BREACHLENS_MODELS_DIR={models} " + " ".join(build_argv(j, cfgs, ov)) + f"  >> {logs}/{j.name}.log")
     print(f"expected peak disk (upper bound, checkpoints kept = {CKPT_KEEP} + one in flight): PPO {pk['ppo'] / 1e9:.2f} GB + DDQN {pk['ddqn'] / 1e9:.2f} GB = {pk['total'] / 1e9:.2f} GB; "
-          f"required free (x{DISK_FACTOR}) {DISK_FACTOR * pk['total'] / 1e9:.2f} GB; free now {free / 1e9:.2f} GB")
+          f"required free (peak + {DISK_HEADROOM / 1e9:.0f} GB headroom) {(pk['total'] + DISK_HEADROOM) / 1e9:.2f} GB; free now {free / 1e9:.2f} GB")
     print(f"wall-time ESTIMATE: PPO {te['ppo_h']:.1f} h + DDQN {te['ddqn_h']:.1f} h = {te['total_h']:.1f} h (range {te['total_low_h']:.1f}-{te['total_high_h']:.1f} h)")
     pf = preflight(models, logs, jobs, ov, a.smoke, a.accept_code_change)
     print("PREFLIGHT: " + ("OK, `launch` would start" if not pf else "REFUSED\n  " + "\n  ".join(pf)))

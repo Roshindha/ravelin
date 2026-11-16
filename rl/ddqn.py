@@ -9,7 +9,7 @@ The replay buffer therefore stores the legal-action mask of the NEXT state with 
 Replay memory layout (memory, not semantics): per-env ring buffers. The next observation of slot s is slot s+1 of the same env (the envs
 are stepped in lock-step, so each env's stream is contiguous); only the newest slot's next observation is kept separately (`last_next_*`).
 For a terminal transition the stored next-state mask is all False and the next observation is never read (no bootstrap).
-Checkpoint arrays are written with np.save (exact round trip).
+Checkpoints are written losslessly (compressed, exact re-encodings; see ReplayBuffer.save).
 """
 from __future__ import annotations
 
@@ -150,29 +150,80 @@ class ReplayBuffer:
         return {"obs": to_tensors(b["obs"]), "next_obs": to_tensors(b["next_obs"]), "action": th.as_tensor(b["action"]), "reward": th.as_tensor(b["reward"]),
                 "done": th.as_tensor(b["done"]), "next_mask": th.as_tensor(b["next_mask"])}
 
-    # -- persistence (exact)
+    # -- persistence (exact). Format 2 (B14b): one compressed buffer.npz. The in-memory arrays are unchanged (float32 grid / state, bool masks), so training
+    # math and sha256() are untouched; only the files shrink, by exact re-encodings: grid -> uint8 codes + a per-channel codebook of the distinct float32 values
+    # (each grid channel takes <= 7 distinct values; if a channel ever had > 256 the raw float32 grid is stored instead), next_mask -> np.packbits (bool is 1 bit of
+    # information), everything else as is. Format 1 (no "format" key in meta.json: one .npy per array) is still read.
     _ARRAYS = ("grid", "state", "action", "reward", "done", "next_mask", "last_next_grid", "last_next_state")
+    _PER_SLOT = ("grid", "state", "action", "reward", "done", "next_mask")
+    FORMAT = 2
+
+    @staticmethod
+    def _encode_grid(g: np.ndarray):
+        """-> (codes uint8 same shape, codebook float32 (C, 256) padded with NaN) or None if some channel has > 256 distinct values."""
+        n_ch = g.shape[-3]
+        book = np.full((n_ch, 256), np.nan, np.float32)
+        codes = np.empty(g.shape, np.uint8)
+        for c in range(n_ch):
+            ch = g[..., c, :, :]
+            u = np.unique(ch)                                              # sorted; NaN-free (asserted by the round trip below)
+            if len(u) > 256 or np.isnan(u).any():
+                return None
+            book[c, :len(u)] = u
+            codes[..., c, :, :] = np.searchsorted(u, ch).astype(np.uint8)
+        return codes, book
+
+    @staticmethod
+    def _decode_grid(codes: np.ndarray, book: np.ndarray) -> np.ndarray:
+        out = np.empty(codes.shape, np.float32)
+        for c in range(codes.shape[-3]):
+            out[..., c, :, :] = book[c][codes[..., c, :, :]]
+        return out
 
     def save(self, d: Path) -> None:
         d.mkdir(parents=True, exist_ok=True)
+        pay = {}
         for name in self._ARRAYS:
             a = getattr(self, name)
-            np.save(d / f"{name}.npy", a[:, :self.n] if name in ("grid", "state", "action", "reward", "done", "next_mask") else a)
-        (d / "meta.json").write_text(f'{{"pos": {self.pos}, "n": {self.n}, "cap": {self.cap}, "n_envs": {self.n_envs}}}')
+            a = np.ascontiguousarray(a[:, :self.n] if name in self._PER_SLOT else a)
+            if name in ("next_mask",):
+                pay[name + "_bits"] = np.packbits(a, axis=-1)
+            elif name in ("grid", "last_next_grid"):
+                enc = self._encode_grid(a)
+                if enc is None:
+                    pay[name] = a
+                else:
+                    pay[name + "_codes"], pay[name + "_book"] = enc
+            else:
+                pay[name] = a
+        np.savez_compressed(d / "buffer.npz", **pay)
+        (d / "meta.json").write_text(f'{{"format": {self.FORMAT}, "pos": {self.pos}, "n": {self.n}, "cap": {self.cap}, "n_envs": {self.n_envs}}}')
 
     @classmethod
     def load(cls, d: Path, capacity: int, n_envs: int, grid_shape, state_dim: int, n_actions: int) -> "ReplayBuffer":
         import json
         meta = json.loads((d / "meta.json").read_text())
+        fmt = meta.get("format", 1)
+        if fmt not in (1, cls.FORMAT):
+            raise ValueError(f"replay buffer checkpoint {d} has unknown format {fmt!r} (this code reads formats 1 and {cls.FORMAT}); refusing to load")
         b = cls(capacity, n_envs, grid_shape, state_dim, n_actions)
-        assert meta["cap"] == b.cap and meta["n_envs"] == n_envs, (meta, b.cap)
+        if not (meta["cap"] == b.cap and meta["n_envs"] == n_envs):
+            raise ValueError(f"replay buffer checkpoint {d} does not match the configured buffer (cap/n_envs {meta['cap']}/{meta['n_envs']} vs {b.cap}/{n_envs})")
         b.pos, b.n = meta["pos"], meta["n"]
-        for name in cls._ARRAYS:
-            a = np.load(d / f"{name}.npy")
-            if name in ("grid", "state", "action", "reward", "done", "next_mask"):
-                getattr(b, name)[:, :b.n] = a
-            else:
-                getattr(b, name)[:] = a
+        if fmt == 1:
+            for name in cls._ARRAYS:
+                a = np.load(d / f"{name}.npy")
+                (getattr(b, name)[:, :b.n] if name in cls._PER_SLOT else getattr(b, name)[:])[...] = a
+            return b
+        with np.load(d / "buffer.npz") as z:
+            for name in cls._ARRAYS:
+                if name == "next_mask":
+                    a = np.unpackbits(z["next_mask_bits"], axis=-1, count=n_actions).astype(bool)
+                elif name in ("grid", "last_next_grid"):
+                    a = z[name] if name in z.files else cls._decode_grid(z[name + "_codes"], z[name + "_book"])
+                else:
+                    a = z[name]
+                (getattr(b, name)[:, :b.n] if name in cls._PER_SLOT else getattr(b, name)[:])[...] = a
         return b
 
     def sha256(self) -> str:
