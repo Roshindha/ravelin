@@ -130,6 +130,13 @@ def row_gg(spec_path: Path = SPEC) -> str:
     return rows[0]
 
 
+def row_hh(spec_path: Path = SPEC) -> str:
+    rows = [ln for ln in Path(spec_path).read_text().splitlines() if ln.startswith("| 2026-11-17 | (hh)")]
+    if len(rows) != 1:
+        raise Refusal(f"{spec_path}: expected exactly one row (hh), found {len(rows)}")
+    return rows[0]
+
+
 def pinned(spec_path: Path = SPEC) -> dict:
     r = row_gg(spec_path)
 
@@ -139,19 +146,22 @@ def pinned(spec_path: Path = SPEC) -> dict:
             raise Refusal(f"row (gg) does not contain the pattern {rx!r}")
         return m.groups()
     pool_pre, pool_suf = one(r"the pool sha256 is `([0-9a-f]{8})\.\.\.([0-9a-f]{6})`")
-    gen_pre, gen_suf = one(r"the generator hash `([0-9a-f]{8})\.\.\.([0-9a-f]{6})`")
+    gen = re.search(r"the correct value is ([0-9a-f]{64})", row_hh(spec_path))
+    if not gen:
+        raise Refusal("row (hh) does not contain the full generator hash")
     return {"audit_sha256": one(r"sha256 of that file ([0-9a-f]{64})")[0], "seen_rows_sha256": one(r"seen_layout_rows\.csv` sha256 ([0-9a-f]{64})")[0],
-            "pool": (pool_pre, pool_suf), "generator": (gen_pre, gen_suf)}
+            "pool": (pool_pre, pool_suf), "generator": gen.group(1)}
 
 
 # ---------------------------------------------------------------------------------------------------------------- preconditions (row (gg) (e)(2))
 def check_head_has_row(ctx: Ctx) -> str:
     row_gg(ctx.spec_path)
+    row_hh(ctx.spec_path)
     if ctx.mode == "real":
         from breachlens import pool as P
         txt = P._git("show", "HEAD:docs/SPEC_V2.md")
-        if txt == "unknown" or not any(ln.startswith("| 2026-11-17 | (gg)") for ln in txt.splitlines()):
-            raise Refusal("HEAD does not contain row (gg) in docs/SPEC_V2.md")
+        if txt == "unknown" or not all(any(ln.startswith(f"| 2026-11-17 | ({r})") for ln in txt.splitlines()) for r in ("gg", "hh")):
+            raise Refusal("HEAD does not contain rows (gg) and (hh) in docs/SPEC_V2.md")
     return "row (gg) present"
 
 
@@ -168,13 +178,10 @@ def check_pool_and_generator(ctx: Ctx) -> str:
     if not (sha.startswith(pn["pool"][0]) and sha.endswith(pn["pool"][1])):
         raise Refusal(f"pool sha256 {sha} does not match row (gg) {pn['pool'][0]}...{pn['pool'][1]}")
     gh = json.loads(P.GENERATOR_HASH_PATH.read_text())["generator_hash"]
-    if not gh.startswith(pn["generator"][0]):
-        raise Refusal(f"generator hash {gh} does not match row (gg) {pn['generator'][0]}...{pn['generator'][1]}")
-    # NOTE (B15a report): row (gg) writes the generator hash as `49b8a18c...2042b4`, but the frozen hash (data/v2/generator_hash.json, B5) ends `...ec42095`. The
-    # row's suffix is a transcription error. Only the 8-hex prefix of the row is enforced; the FULL hash is enforced by check_frozen() against the B5 record.
-    note = "" if gh.endswith(pn["generator"][1]) else f" (row (gg) suffix {pn['generator'][1]} != actual ...{gh[-7:]}: row typo, owner to confirm; full hash verified against the B5 record)"
-    P.check_frozen()
-    return f"pool {sha[:8]}...{sha[-6:]}, generator {gh[:8]}...{gh[-6:]}{note}"
+    if gh != pn["generator"]:                                      # the FULL hash: row (hh) and the B5 record must agree
+        raise Refusal(f"generator hash {gh} (B5 record) != row (hh) {pn['generator']}")
+    P.check_frozen()                                               # and the generator source must still hash to the B5 record
+    return f"pool {sha[:8]}...{sha[-6:]}, generator {gh} (row (hh) = B5 record = source)"
 
 
 def check_ledger(ctx: Ctx, restart: bool = False, session_id: str | None = None) -> str:
@@ -603,7 +610,7 @@ def _set_state(ctx: Ctx, **kw) -> None:
     (ctx.out / "run_state.json").write_text(json.dumps(kw, indent=1))
 
 
-def run_session(ctx: Ctx, restart: bool = False, cause: str | None = None) -> dict:
+def run_session(ctx: Ctx, restart: bool = False, cause: str | None = None, defect_agreed: bool = False) -> dict:
     """The whole session. Returns a summary. Refusals raise `Refusal` before anything is loaded."""
     from breachlens import pool as P
     if ctx.mode == "real" and not ctx.unlock:
@@ -626,6 +633,8 @@ def run_session(ctx: Ctx, restart: bool = False, cause: str | None = None) -> di
         head, last_commit = _git_head(), (list(read_manifest(ctx).values())[-1:] or [{"commit": sess["commit"]}])[0]["commit"]
         if cause == "machine" and head != last_commit:
             raise Refusal(f"--cause machine but HEAD {head[:7]} differs from the commit of the last completed cell {last_commit[:7]}")
+        if cause == "code-fix" and not defect_agreed:
+            raise Refusal("--cause code-fix only after the defect is reported to the user and agreed (--defect-agreed)")
         if cause == "code-fix" and head == last_commit:
             raise Refusal("--cause code-fix but HEAD equals the commit of the last completed cell: a fix is a new commit")
     log = run_preconditions(ctx, restart, session_id)
@@ -837,6 +846,7 @@ def main(argv: list | None = None) -> int:
     ap.add_argument("--unlock-final", action="store_true", help="REAL run: load FINAL through the loaders (needs a clean commit and 0 eval entries in the ledger)")
     ap.add_argument("--restart", action="store_true", help="continue a crashed real session (same session_id)")
     ap.add_argument("--cause", choices=("machine", "code-fix"), help="with --restart: what killed the session (row (gg) (e)(5))")
+    ap.add_argument("--defect-agreed", action="store_true", help="with --cause code-fix: the defect was reported to the user and the fix agreed (row (hh))")
     ap.add_argument("--procs", type=int, default=7)
     ap.add_argument("--keep", action="store_true", help="rehearsal: keep the temp dir")
     ap.add_argument("--crash-at", type=int, default=None, help="rehearsal: index of the cell whose write is 'killed' (default: the middle)")
@@ -852,7 +862,7 @@ def main(argv: list | None = None) -> int:
         return 2
     ctx = Ctx(mode="real", out=REAL_OUT, unlock=True, procs=a.procs)
     try:
-        s = run_session(ctx, restart=a.restart, cause=a.cause)
+        s = run_session(ctx, restart=a.restart, cause=a.cause, defect_agreed=a.defect_agreed)
     except (Refusal, CorruptCell) as e:
         print(f"REFUSED: {e}", file=sys.stderr)
         return 2

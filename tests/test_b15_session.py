@@ -127,7 +127,8 @@ def test_pinned_values_match_repo_files():
     pn = F.pinned()
     ctx = F.Ctx(mode="real", unlock=True, out=Path("/nonexistent"))
     assert pn["audit_sha256"].startswith("7cbe0d69") and pn["seen_rows_sha256"].startswith("7278b43c")
-    assert "row typo" in F.check_pool_and_generator(ctx)                           # row (gg) generator-hash suffix is a typo; flagged, not silent
+    assert "row (hh) = B5 record" in F.check_pool_and_generator(ctx)               # FULL hash: row (hh) == B5 record == source
+    assert F.pinned()["generator"] == json.loads(P.GENERATOR_HASH_PATH.read_text())["generator_hash"]
     F.check_seen_rows(ctx)
     F.check_best_single(ctx)
     if F.AUDIT_JSON.exists():
@@ -412,3 +413,32 @@ def test_restart_preconditions_accept_the_sessions_own_eval_entries(tmp_path, te
     with pytest.raises(F.Refusal, match="eval entries"):
         F.run_preconditions(mk(), restart=False)                                                   # a fresh start with eval entries in the ledger is refused
     assert json.loads((tmp_path / "preconditions.json").read_text())["checks"][3]["ok"] is False
+
+
+def test_generator_hash_is_checked_in_full(tmp_path):
+    spec = tmp_path / "SPEC.md"
+    txt = F.SPEC.read_text()
+    good = F.pinned()["generator"]
+    spec.write_text(txt.replace(good, good[:-1] + ("0" if good[-1] != "0" else "1")))        # one wrong final character in row (hh)
+    with pytest.raises(F.Refusal, match="generator hash"):
+        F.check_pool_and_generator(F.Ctx(mode="real", unlock=True, out=tmp_path, spec_path=spec))
+    spec.write_text("\n".join(ln for ln in txt.splitlines() if not ln.startswith("| 2026-11-17 | (hh)")))
+    with pytest.raises(F.Refusal, match=r"\(hh\)"):
+        F.pinned(spec)
+
+
+def test_pinned_by_hh_constant_matches_row_hh():
+    row = F.row_hh()
+    assert C.PINNED_BY_HH and not hasattr(C, "UNPINNED")
+    for k, v in C.PINNED_BY_HH.items():
+        assert f"{k}: {v}" in row, k
+    assert row.count(" § ") + 1 == len(C.PINNED_BY_HH)                                     # no entry left out, none merged
+    assert "code-fix only after the defect is reported to the user and agreed" in row and "disclosed in LIMITATIONS" in row
+    assert "|" not in "".join(C.PINNED_BY_HH.values())                                      # a pipe would break the changelog table
+
+
+def test_code_fix_restart_needs_the_agreed_defect_flag(tmp_path):
+    (tmp_path / "session.json").write_text(json.dumps({"session_id": "s", "commit": "a" * 40}))
+    (tmp_path / "run_state.json").write_text(json.dumps({"status": "crashed"}))
+    with pytest.raises(F.Refusal, match="defect-agreed"):
+        F.run_session(F.Ctx(mode="rehearse", out=tmp_path), restart=True, cause="code-fix")

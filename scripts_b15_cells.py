@@ -3,7 +3,7 @@
 Standard library only (no numpy, torch, simulator or pool import), so the analysis script can import it without being able to call a model or the
 simulator. The session script (`scripts_b15_final.py`) and the analysis script (`scripts_b15_analysis.py`) both take the cell list from here.
 
-Cell granularity (UNPINNED by (gg), chosen here, see UNPINNED): one cell = one (condition, seed) pair for everything that has seeds, one cell per
+Cell granularity (not fixed by (gg); pinned by row (hh), see PINNED_BY_HH): one cell = one (condition, seed) pair for everything that has seeds, one cell per
 deterministic baseline. A control or planner cell holds the three nested prefixes N = 8 / 32 / 128 of ONE 128-plan batch (rows per layout and N).
 Total 116 cells: 6 baselines + 30 learners + 30 learners with TTA + 30 controls (RAS / RPS / RPS-full x 10 seeds) + 20 planners.
 """
@@ -100,13 +100,13 @@ RAW_COLUMNS = ("cell", "condition", "N", "learner_seed", "tta", "group", "set", 
                "score", "d", "breach", "n_bought", "n_deployed", *ARMY_COLS, "chosen_type", "model_sha256", "policy_hash", "extra",
                "session_id", "score_version", "sim_version", "generator_hash", "pool_sha256", "git_commit", "git_dirty", "seed", "role")
 
-# Rules the code needs that row (gg) does not pin. Each was settled with the smallest mechanical choice that keeps (gg) intact and is listed in the
-# B15a report for the owner. None of them changes a pinned rule, the cell list, N, seeds, layouts, budgets or the primary comparison list.
-UNPINNED = {
+# Rules the code needs that row (gg) did not pin. Row (hh) (docs/SPEC_V2.md) copies every entry below in full and pins it; a test checks that this
+# constant and row (hh) say the same. None of them changes a rule of (gg), the cell list, N, seeds, layouts, budgets or the primary comparison list.
+PINNED_BY_HH = {
     "cell granularity": "one cell = one (condition, seed); control / planner cells hold the nested N = 8 / 32 / 128 rows of one 128-plan batch (116 cells)",
     "raw file schema": "columns in RAW_COLUMNS (one row per cell, layout and N); `seed` is the evaluator seed 8080 (REQUIRED_META), the learner / control seed is `learner_seed`",
     "partial raw file": "an unfinished cell file (no manifest line) is moved to results/b15/discarded/ and logged, not deleted; a manifest line whose file is missing or does not hash is NOT recomputed: the session stops (corruption, not a crash)",
-    "restart interface": "`--restart --cause machine|code-fix`; machine requires HEAD == the commit of the last manifest line, code-fix requires HEAD to differ; both require a clean tree, session.json and an eval ledger that holds only this session",
+    "restart interface": "`--restart --cause machine` or `--restart --cause code-fix`; machine requires HEAD == the commit of the last manifest line, code-fix requires HEAD to differ AND `--defect-agreed` (only after the defect is reported to the user and agreed; cells from different commits are disclosed in LIMITATIONS); both require a clean tree, session.json and an eval ledger that holds only this session",
     "full suite precondition": "the real run executes `.venv/bin/python -m pytest` itself and logs its exit code (the pinned wording 'a green full suite' has no other checkable form); it must exit 0",
     "BestSingle-hindsight": "per FINAL group and per family, the best of the 5 single-unit types by mean score on that group's FINAL layouts (B8 definition, ties -> lowest type index); the five single-unit rows are computed inside the cell and only the chosen rows are written",
     "strongest control tie": "highest mean TRUE SCORE at (group, N) among RAS, RPS, RPS-full; an exact tie goes to the earlier of that order",
