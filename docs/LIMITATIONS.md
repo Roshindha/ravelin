@@ -46,3 +46,17 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 
 ## DDQN pilot (B14a)
 - DDQN epsilon decays over 25% of steps, i.e. inside curriculum phase A (first T/3) in both the 300k pilot (75k < 100k) and the 1.5M grid (375k < 500k); the pilot is representative in this respect.
+
+## B15 FINAL evaluation (session 3ccef86e0e2349d4af22e210d4b46a07; results in docs/RESULTS.md)
+- One FINAL session, one commit (`7e3aa42`) for all 116 cells; no crash, no restart, no cell recomputed, no cell discarded. Tagged `b15-final`.
+- Ledger `dirty` flags: the session's first ledger entry records `dirty: false`; the later 237 entries (the per-layout loads and cell records) record `dirty: true`. The likely cause is that the tracked ledger file itself was already modified by the first append when the later entries were written; `session.json` records `git_dirty: false` at session start. This was not investigated further and no result depends on it.
+- 10 seeds per learner and 60 layouts per group: intervals are wide (a primary interval is about +/-0.08 to +/-0.12 on a breach rate), and per-family rows rest on 20 layouts. "Not established" is not "no effect".
+- 64 primary checks without multiplicity correction: about 3 would hold by chance at the 5 % level. 27 hold; they cluster in TTA (12), planner vs strongest equal-N control (12) and learners vs Greedy on familiar score (3). Everything outside P1-P5 is exploratory and labelled so.
+- The primary interval is hierarchical (seeds, then layouts), wider than the section 7 learner-only interval, which is reported as secondary only. The two disagree on some cells (e.g. P1 familiar score, learner-only intervals above 0); only the primary decides "holds".
+- On breach rate no learned policy beats BestSingle. BestSingle is also a poor reference on FINAL-transfer (breach 1.000, a ceiling) and on bunker_nest (0.30), so breach cannot discriminate on those slices; score is used there.
+- Breach rate saturates for BestSingle, RAS-N and Oracle on labyrinth, so the planner-vs-RAS comparison on breach there is uninformative at the ceiling.
+- The planner has privileged simulator access (SPEC 7, row r); its gains over the learner (E1) and over RAS-N / RPS-N measure a search procedure, not the policy. P4 is judged against the strongest control by *score*; on FINAL-familiar RAS-N has the higher breach rate than the control used.
+- FINAL-transfer is a single family (labyrinth), easier in absolute terms (every baseline scores higher there); learner-vs-baseline gaps on transfer are not a controlled measure of generalisation.
+- Generalisation gap uses DEV-train in-sample scores from B14c (seen data); it is descriptive. PPO plain and DDQN lose about 0.27-0.29 in score from DEV-train to FINAL-familiar; PPO+D4 loses 0.03 but starts lower.
+- The 3 TTA rows reuse the same 30 models as the no-TTA rows; TTA adds 8 forward passes per decision and is not a separate training result. Planners were not run on DDQN or on TTA rows (pinned in (gg)).
+- Oracle is a fixed-budget search (about 400 simulations), a lower bound on the optimum.

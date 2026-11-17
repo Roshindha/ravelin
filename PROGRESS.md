@@ -648,6 +648,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B15 DONE (FINAL session 3ccef86e, single session, commit tagged `b15-final`; analysis reproduced byte for byte; docs/RESULTS.md written from results/b15/tables only). Headlines: no learner beats BestSingle on breach; planner beats equal-N controls on FINAL-familiar; TTA holds 12/12; D4 vs plain not established; 27/64 primary checks hold. Next: explainability, only when told. The FINAL set must not be touched again.
 - v2 B15a DONE (session + analysis scripts, rehearsal, tests; FINAL never loaded). Next: owner runs the real session from a clean commit (`scripts_b15_final.py --unlock-final`), only when told.
 - v2 B14c DONE (row (gg) pins the B15 protocol). Next: B15 code (evaluator session, cells, statistics), only when told; the real FINAL session needs a clean commit.
 - v2 B14b DONE (disk reduction; grid NOT launched). DDQN checkpoint format 2 (lossless, ~378.8 MB -> ~11.2 MB per checkpoint), disk rule = remaining peak + 10 GB (row (ff)), pilot intermediate checkpoints deleted, LIMITATIONS epsilon note corrected. Next: free enough disk for `scripts_b14_grid.py plan` to pass, then launch; B15 only after the grid finished.
