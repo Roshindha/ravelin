@@ -584,6 +584,13 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Free disk (about 3 GB) is BELOW the 1.5 x peak rule (needs about 15.8 GB): the real `launch` refuses until space is freed.
 - Full `.venv/bin/python -m pytest`: pytest exit code 0 (649 passed).
 
+### STEP B14c (v2): grid audit, seen-data summary, planner cost re-measured -- row (gg) NOT written (SPEC conflict, owner decision needed); no training; FINAL never touched (ledger 5 build / 0 eval)
+- Item 1 `scripts_b14_audit.py` -> `results/b14/grid_audit.md/.json` (force-added): **PASS, 0 deviations.** All 30 runs finished at exactly T = 1,500,000, 0 resumes (identity list empty AND one scheduler start per run log), manifest checker re-run 30/30 ok, one git commit `284873f` in every identity file and validation row (= HEAD), git_dirty False 30/30, config files hash to row (ee), identity hyperparameters = frozen files, shaping on 30/30, 61 validation evals each, final model sha256 per run listed. Ledger 5 build / 0 eval.
+- Item 2 `scripts_b14_seen.py` -> `results/b14/seen_summary.md/.csv`, `seen_layout_rows.csv`, `dev_validation_curves.png`, `dev_validation_curves_per_seed.png` (SEEN, never headline; monitoring only). Final models re-evaluated on DEV-train / DEV-validation reproduce the trainers' logged t = 1.5M validation eval exactly (max diff 0). Hierarchical bootstrap (seeds, then layouts; 10 000; rng 8080).
+- Item 3 `scripts_b14_cost.py` -> `results/b14/planner_cost.md/.json`: real grid models (plain s0, D4 s0) x 20 DEV-validation layouts: planner 5.3 / 6.0 ms per plan (8.0 / 9.5 units), RAS 0.9, RPS 0.55, RPS-full 1.2 ms; contention x1.90 at 7 workers; B15 planner session (768,000 plans incl. RPS-full-N) about 0.16-0.17 h wall; 3 h fallback NOT needed.
+- Full `.venv/bin/python -m pytest -q`: pytest exit code 0.
+- Item 4: Gate changelog row (gg) is NOT written: the SPEC (section 7) says bootstrap over learners, the step asks for a hierarchical (seeds, then layouts) bootstrap, and the step says to stop on a conflict. Options are in the step report.
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -632,6 +639,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B14c DONE except row (gg): owner picks the B15 bootstrap definition (and confirms TTA for PPO plain), then (gg) is written and committed before any B15 code.
 - v2 B14b DONE (disk reduction; grid NOT launched). DDQN checkpoint format 2 (lossless, ~378.8 MB -> ~11.2 MB per checkpoint), disk rule = remaining peak + 10 GB (row (ff)), pilot intermediate checkpoints deleted, LIMITATIONS epsilon note corrected. Next: free enough disk for `scripts_b14_grid.py plan` to pass, then launch; B15 only after the grid finished.
 - v2 B14a DONE (grid prepared, NOT launched). Next: free disk (about 16 GB free needed), then `.venv/bin/python scripts_b14_grid.py launch`; B15 only after the grid finished.
 - v2 B13e DONE (shaped DDQN pilot prepared, NOT launched: `.venv/bin/python scripts_b13_ddqn_pilot.py`, then `.venv/bin/python scripts_b13_ddqn_report.py`). Next: owner launches it; then B14 launcher, only when told.

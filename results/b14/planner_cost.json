@@ -1,0 +1,231 @@
+{
+ "cpu": "Apple M2",
+ "eval_episode_s": {
+  "grid_ddqn_s0 + TTA": 0.034870293601852606,
+  "grid_ddqn_s0 deterministic": 0.006602475099498406,
+  "grid_ppo_d4_s0 + TTA": 0.0434402876002423,
+  "grid_ppo_d4_s0 deterministic": 0.007060541698592715,
+  "grid_ppo_plain_s0 + TTA": 0.03706790840078611,
+  "grid_ppo_plain_s0 deterministic": 0.006222927201451967
+ },
+ "fallback_selector_on_measured_times": {
+  "config": {
+   "d4_128_learners": 10,
+   "layouts_128": 120,
+   "plain_128_learners": 10
+  },
+  "fits": true,
+  "label": "full",
+  "projection": {
+   "cpu_hours": {
+    "RAS": 0.07276043866217063,
+    "RPS": 0.044929316197703496,
+    "planner_d4": 0.4595748013032248,
+    "planner_plain": 0.4595748013032248
+   },
+   "total_cpu_hours": 1.0368393574663237,
+   "total_wall_hours": 0.14811990820947482,
+   "wall_hours": {
+    "RAS": 0.01039434838031009,
+    "RPS": 0.006418473742529071,
+    "planner_d4": 0.06565354304331783,
+    "planner_plain": 0.06565354304331783
+   }
+  },
+  "step": 0
+ },
+ "git_commit": "284873fb140bf2e6d0be68a8743eb2251c960f20",
+ "models": [
+  "grid_ppo_plain_s0",
+  "grid_ppo_d4_s0"
+ ],
+ "n_layouts": 20,
+ "parallel_7": {
+  "contention_factor": 1.899981574063943,
+  "note": "7 processes each plan a 2-3 layout slice with the plain model; the other 3 methods are CPU-light and are scaled by the same factor",
+  "per_plan_mean_s_under_load": 0.010065081229916879,
+  "wall_s": 6.8476517500093905
+ },
+ "role": "validation",
+ "session_projection": {
+  "deterministic_and_TTA_eval": {
+   "cpu_hours": 0.045088144534141374,
+   "note": "30 runs x 120 FINAL layouts: PPO plain, PPO+D4, DDQN, each deterministic and +TTA",
+   "wall_hours_7_contention": 0.012238091974800072
+  },
+  "ideal": {
+   "cpu_hours": {
+    "RAS": 0.038295339099810616,
+    "RPS": 0.023647237852734784,
+    "RPSfull": 0.05011411421352629,
+    "planner_d4": 0.24188382012580406,
+    "planner_plain": 0.24188382012580406
+   },
+   "total_cpu_hours": 0.5958243314176799,
+   "wall_hours_7_workers": 0.08511776163109712
+  },
+  "mean_plan_s": {
+   "RAS": 0.0008975470101518113,
+   "RPS": 0.0005542321371734716,
+   "RPSfull": 0.0011745495518795223,
+   "planner": 0.005669152034198532
+  },
+  "planner_worst_model_plan_s": 0.006040841520700724,
+  "plans_total": 768000,
+  "with_contention": {
+   "cpu_hours": {
+    "RAS": 0.07276043866217062,
+    "RPS": 0.04492931619770349,
+    "RPSfull": 0.09521589360623589,
+    "planner_d4": 0.4595748013032248,
+    "planner_plain": 0.4595748013032248
+   },
+   "total_cpu_hours": 1.1320552510725597,
+   "wall_hours_7_workers": 0.1617221787246514
+  },
+  "worst_model_with_contention": {
+   "cpu_hours": {
+    "RAS": 0.07276043866217062,
+    "RPS": 0.04492931619770349,
+    "RPSfull": 0.09521589360623589,
+    "planner_d4": 0.48970613679666275,
+    "planner_plain": 0.48970613679666275
+   },
+   "total_cpu_hours": 1.1923179220594355,
+   "wall_hours_7_workers": 0.1703311317227765
+  }
+ },
+ "set": "DEV-validation",
+ "single_process": {
+  "RAS": {
+   "128": {
+    "max_s": 0.32694058504421264,
+    "mean_s": 0.11488601729943185,
+    "median_s": 0.09233498349931324
+   },
+   "32": {
+    "max_s": 0.08267741800227668,
+    "mean_s": 0.03100835384502716,
+    "median_s": 0.024041391981882043
+   },
+   "8": {
+    "max_s": 0.026489082985790446,
+    "mean_s": 0.008897300851822365,
+    "median_s": 0.007144853509089444
+   },
+   "mean_env_steps": 6.497265625,
+   "mean_units": 6.497265625,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.09002943385192859,
+    "bunker_nest": 0.13614663832170967,
+    "spine_pods": 0.12151921129926839
+   },
+   "per_plan_mean_s": 0.0008975470101518113,
+   "per_plan_p95_s": 0.0033232350971957227
+  },
+  "RPS": {
+   "128": {
+    "max_s": 0.12541032598528545,
+    "mean_s": 0.07094171355820436,
+    "median_s": 0.06324987398693338
+   },
+   "32": {
+    "max_s": 0.030399874987779185,
+    "mean_s": 0.019171512376851753,
+    "median_s": 0.017171396502817515
+   },
+   "8": {
+    "max_s": 0.008484749036142603,
+    "mean_s": 0.0054777376015408665,
+    "median_s": 0.005305811995640397
+   },
+   "mean_env_steps": 10.643359375,
+   "mean_units": 4.722265625,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.06039580257597014,
+    "bunker_nest": 0.08717774831772356,
+    "spine_pods": 0.06757102331799356
+   },
+   "per_plan_mean_s": 0.0005542321371734716,
+   "per_plan_p95_s": 0.0014970645883295231
+  },
+  "RPSfull": {
+   "128": {
+    "max_s": 0.28910471078415867,
+    "mean_s": 0.15034234264057886,
+    "median_s": 0.13222981797298416
+   },
+   "32": {
+    "max_s": 0.06659820704953745,
+    "mean_s": 0.041241979676487975,
+    "median_s": 0.037018356037151534
+   },
+   "8": {
+    "max_s": 0.01809774797584396,
+    "mean_s": 0.011829825950917439,
+    "median_s": 0.011264290995313786
+   },
+   "mean_env_steps": 21.16640625,
+   "mean_units": 10.083203125,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.1254331555506464,
+    "bunker_nest": 0.191761839461833,
+    "spine_pods": 0.13974910388372205
+   },
+   "per_plan_mean_s": 0.0011745495518795223,
+   "per_plan_p95_s": 0.0022035788533685268
+  },
+  "planner (PPO plain s0)": {
+   "128": {
+    "max_s": 0.8179418778890977,
+    "mean_s": 0.6780752061051316,
+    "median_s": 0.6676232909521786
+   },
+   "32": {
+    "max_s": 0.21271820993570145,
+    "mean_s": 0.1757882549383794,
+    "median_s": 0.1716670429741498
+   },
+   "8": {
+    "max_s": 0.05935012597183231,
+    "mean_s": 0.045930702090845446,
+    "median_s": 0.04494508448988199
+   },
+   "mean_env_steps": 17.0296875,
+   "mean_units": 8.01171875,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.6586904651734845,
+    "bunker_nest": 0.7129597898189483,
+    "spine_pods": 0.6675588752820788
+   },
+   "per_plan_mean_s": 0.005297462547696341,
+   "per_plan_p95_s": 0.006862166657083433
+  },
+  "planner (PPO+D4 s0)": {
+   "128": {
+    "max_s": 0.998412129963981,
+    "mean_s": 0.7732277146496926,
+    "median_s": 0.7509925810154527
+   },
+   "32": {
+    "max_s": 0.2473845049389638,
+    "mean_s": 0.19783885230717715,
+    "median_s": 0.20114378953439882
+   },
+   "8": {
+    "max_s": 0.06744762498419732,
+    "mean_s": 0.05271750410247478,
+    "median_s": 0.053637147502740845
+   },
+   "mean_env_steps": 20.047265625,
+   "mean_units": 9.519921875,
+   "per_family_N128_mean_s": {
+    "archipelago": 0.7132342331294369,
+    "bunker_nest": 0.822578325503855,
+    "spine_pods": 0.7909206725806663
+   },
+   "per_plan_mean_s": 0.006040841520700724,
+   "per_plan_p95_s": 0.008101249703759094
+  }
+ }
+}
