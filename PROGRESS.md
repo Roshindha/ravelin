@@ -589,7 +589,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Item 2 `scripts_b14_seen.py` -> `results/b14/seen_summary.md/.csv`, `seen_layout_rows.csv`, `dev_validation_curves.png`, `dev_validation_curves_per_seed.png` (SEEN, never headline; monitoring only). Final models re-evaluated on DEV-train / DEV-validation reproduce the trainers' logged t = 1.5M validation eval exactly (max diff 0). Hierarchical bootstrap (seeds, then layouts; 10 000; rng 8080).
 - Item 3 `scripts_b14_cost.py` -> `results/b14/planner_cost.md/.json`: real grid models (plain s0, D4 s0) x 20 DEV-validation layouts: planner 5.3 / 6.0 ms per plan (8.0 / 9.5 units), RAS 0.9, RPS 0.55, RPS-full 1.2 ms; contention x1.90 at 7 workers; B15 planner session (768,000 plans incl. RPS-full-N) about 0.16-0.17 h wall; 3 h fallback NOT needed.
 - Full `.venv/bin/python -m pytest -q`: pytest exit code 0.
-- Item 4: Gate changelog row (gg) is NOT written: the SPEC (section 7) says bootstrap over learners, the step asks for a hierarchical (seeds, then layouts) bootstrap, and the step says to stop on a conflict. Options are in the step report.
+- Item 4: Gate changelog row (gg) (2026-11-17) written and committed on its own, before any B15 code, after the owner chose option A: hierarchical bootstrap supersedes the section 7 'over learners' wording (learner-only interval kept as SECONDARY), TTA for PPO plain / PPO+D4 / DDQN, 16 primary comparisons x 2 groups x 2 metrics, generalisation gap as a descriptive item, single-session order and crash rule. No B15 code yet.
 
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
@@ -639,7 +639,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
-- v2 B14c DONE except row (gg): owner picks the B15 bootstrap definition (and confirms TTA for PPO plain), then (gg) is written and committed before any B15 code.
+- v2 B14c DONE (row (gg) pins the B15 protocol). Next: B15 code (evaluator session, cells, statistics), only when told; the real FINAL session needs a clean commit.
 - v2 B14b DONE (disk reduction; grid NOT launched). DDQN checkpoint format 2 (lossless, ~378.8 MB -> ~11.2 MB per checkpoint), disk rule = remaining peak + 10 GB (row (ff)), pilot intermediate checkpoints deleted, LIMITATIONS epsilon note corrected. Next: free enough disk for `scripts_b14_grid.py plan` to pass, then launch; B15 only after the grid finished.
 - v2 B14a DONE (grid prepared, NOT launched). Next: free disk (about 16 GB free needed), then `.venv/bin/python scripts_b14_grid.py launch`; B15 only after the grid finished.
 - v2 B13e DONE (shaped DDQN pilot prepared, NOT launched: `.venv/bin/python scripts_b13_ddqn_pilot.py`, then `.venv/bin/python scripts_b13_ddqn_report.py`). Next: owner launches it; then B14 launcher, only when told.
