@@ -15,7 +15,8 @@ from rl.train_ppo_v2 import PPO_CONFIG  # noqa: E402
 
 
 @pytest.fixture
-def clean(monkeypatch):
+def clean(monkeypatch, build_only_ledger):
+    monkeypatch.setattr(L, "LEDGER", build_only_ledger)                       # B15d: the real ledger now has a finished eval session; "would start" paths use a synthetic one
     monkeypatch.setattr(L, "dirty_tracked", lambda: [])
     monkeypatch.setattr(L, "ps_text", lambda: "  101 /bin/zsh -c eval 'python -m rl.train_ppo_v2 scripts_b13_pilot.py'\n  102 /usr/bin/vim notes.txt\n")
     for k in L.FORBIDDEN_ENV:
@@ -23,7 +24,14 @@ def clean(monkeypatch):
 
 
 def test_clean_preflight_passes_on_the_committed_tree_state(clean):
-    assert L.preflight() == []                                    # real SPEC rows, real ledger (5 build / 0 eval), shell text is not a running copy
+    assert L.preflight() == []                                    # real SPEC rows, synthetic 5 build / 0 eval ledger, shell text is not a running copy
+
+
+def test_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch, capsys):
+    monkeypatch.setattr(L, "LEDGER", L.ROOT / "data" / "v2" / "final_access.log")             # the real, post-B15 ledger
+    assert L.eval_entries() == 238
+    assert any("238 eval entries" in p for p in L.preflight())
+    assert L.main(["--print-only"]) == 3 and "REFUSED" in capsys.readouterr().err
 
 
 def test_refuses_dirty_tracked_tree(clean, monkeypatch):

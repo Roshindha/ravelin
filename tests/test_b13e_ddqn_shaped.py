@@ -199,7 +199,8 @@ import scripts_b13_ddqn_report as R  # noqa: E402
 
 
 @pytest.fixture
-def clean(monkeypatch):
+def clean(monkeypatch, build_only_ledger):
+    monkeypatch.setattr(L.B, "LEDGER", build_only_ledger)                     # B15d: synthetic build-only ledger for "would start" paths
     monkeypatch.setattr(L.B, "dirty_tracked", lambda: [])
     monkeypatch.setattr(L.B, "ps_text", lambda: "  102 /usr/bin/vim notes.txt\n")
     for k in L.B.FORBIDDEN_ENV:
@@ -255,6 +256,12 @@ def test_ddqn_launcher_refuses_overrides_without_smoke_and_smoke_in_real_models_
     assert L.main(["--steps", "1000"]) == 3
     assert L.main(["--smoke", "--steps", "1000"]) == 3
     assert L.main(["--print-only"]) == 0
+
+
+def test_ddqn_launcher_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch, capsys):
+    monkeypatch.setattr(L.B, "LEDGER", L.B.ROOT / "data" / "v2" / "final_access.log")
+    assert any("eval entr" in p for p in L.preflight())
+    assert L.main(["--print-only"]) == 3 and "REFUSED" in capsys.readouterr().err
 
 
 def test_ddqn_cfg_tampering_changes_the_hash(clean):

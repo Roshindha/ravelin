@@ -28,8 +28,12 @@ needs_models = pytest.mark.skipif(not HAVE_MODELS, reason="grid models not prese
 
 @pytest.fixture
 def temp_ledger(tmp_path, monkeypatch):
+    """B15d: a synthetic PRE-session ledger (the 5 build entries only). The real ledger now holds the finished B15 session, so the "would start" paths
+    below run against this copy; the real-ledger refusals are tested separately (test_real_mode_refuses_a_second_session_on_the_real_ledger)."""
     p = tmp_path / "final_access.log"
-    shutil.copy(P.LEDGER_PATH, p)
+    real = [ln for ln in P.LEDGER_PATH.read_text().splitlines() if ln.strip() and json.loads(ln)["purpose"] == "build"]
+    assert len(real) == 5
+    p.write_text("\n".join(real) + "\n")
     monkeypatch.setattr(P, "LEDGER_PATH", p)
     return p
 
@@ -81,6 +85,20 @@ def test_real_mode_refuses_without_unlock(tmp_path, capsys):
     with pytest.raises(F.Refusal):
         F.run_session(F.Ctx(mode="real", unlock=False, out=tmp_path))
     assert not (tmp_path / "session.json").exists()
+
+
+def test_real_mode_refuses_a_second_session_on_the_real_ledger(tmp_path):
+    """Permanent after B15: the REAL ledger holds exactly one finished session, so every real-mode path refuses a new one (no monkeypatching of the ledger)."""
+    assert P.LEDGER_PATH == ROOT / "data" / "v2" / "final_access.log" and P.count_eval_sessions() == 1
+    ctx = F.Ctx(mode="real", unlock=True, out=tmp_path)
+    with pytest.raises(F.Refusal, match="238 eval entries"):
+        F.check_ledger(ctx)
+    with pytest.raises(F.Refusal, match="outside session"):
+        F.check_ledger(ctx, restart=True, session_id="not-the-b15-session")
+    assert "238 eval" in F.check_ledger(ctx, restart=True, session_id="3ccef86e0e2349d4af22e210d4b46a07")      # only the finished session's own restart is not a new session
+    with pytest.raises(F.Refusal):
+        F.run_session(F.Ctx(mode="real", unlock=True, out=tmp_path, log=lambda *_: None))                        # a fresh real run: refused by the preconditions
+    assert not (tmp_path / "session.json").exists() and P.count_eval_sessions() == 1
 
 
 def test_real_mode_refuses_with_eval_entries_or_session_json_or_dirty(tmp_path, temp_ledger):
@@ -136,7 +154,7 @@ def test_pinned_values_match_repo_files():
 
 
 @needs_models
-def test_audit_rerun_is_read_only():
+def test_audit_rerun_is_read_only(temp_ledger):
     import scripts_b14_audit as AU
     before = F.sha256_file(F.AUDIT_JSON), F.sha256_file(F.AUDIT_JSON.with_suffix(".md"))
     out, _, dev = AU.run(write=False)

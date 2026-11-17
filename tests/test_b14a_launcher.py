@@ -102,7 +102,8 @@ def test_overrides_only_touch_known_hyperparameters_and_scale_phase_a():
 
 # ------------------------------------------------------------------------------------------------ preflight
 @pytest.fixture
-def clean(monkeypatch, tmp_path):
+def clean(monkeypatch, tmp_path, build_only_ledger):
+    monkeypatch.setattr(G.B, "LEDGER", build_only_ledger)                     # B15d: synthetic build-only ledger for "would start" paths
     monkeypatch.setattr(G.B, "dirty_tracked", lambda: [])
     monkeypatch.setattr(G.B, "ps_text", lambda: "  101 /bin/zsh -c eval 'python -m rl.train_ppo_v2 --run-name zzz'\n  102 /usr/bin/vim notes.txt\n")
     for k in G.B.FORBIDDEN_ENV:
@@ -120,6 +121,11 @@ def pf(tmp, **kw):
 
 def test_clean_preflight_passes_on_the_committed_state(clean):
     assert pf(clean) == []
+
+
+def test_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch):
+    monkeypatch.setattr(G.B, "LEDGER", G.B.ROOT / "data" / "v2" / "final_access.log")
+    assert any("238 eval entries" in p for p in pf(clean))
 
 
 def test_refuses_dirty_tree(clean, monkeypatch):

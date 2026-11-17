@@ -127,7 +127,8 @@ def test_role_guards_without_loading_final():
         E.load_set("DEV-train", "eval")
     with pytest.raises(PermissionError):
         E.evaluate(B.Greedy(), "FINAL-familiar", "eval", unlock=False, items=[])
-    assert all(e["purpose"] == "build" for e in P.read_ledger())
+    es = P.read_ledger()
+    assert len(es) == 243 and sum(e["purpose"] == "eval" for e in es) == 238                  # refused loads wrote nothing: still the frozen post-B15 ledger
 
 
 def test_final_path_writes_eval_entry_only_to_monkeypatched_ledger(tmp_path, monkeypatch, items):
@@ -142,7 +143,7 @@ def test_final_path_writes_eval_entry_only_to_monkeypatched_ledger(tmp_path, mon
     monkeypatch.undo()
     assert P.LEDGER_PATH.read_text() == real_before                 # the real ledger is untouched
     led = P.read_ledger()
-    assert sum(e["purpose"] == "build" for e in led) == 5 and sum(e["purpose"] == "eval" for e in led) == 0
+    assert sum(e["purpose"] == "build" for e in led) == 5 and sum(e["purpose"] == "eval" for e in led) == 238   # frozen post-B15 state
 
 
 def test_non_eval_role_refuses_final_ids_in_items(items):

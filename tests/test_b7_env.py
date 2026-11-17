@@ -526,7 +526,7 @@ def test_env_role_split_matrix_and_eval_needs_unlock():
         BreachEnv(source="DEV-train", role="build")
     with pytest.raises(ValueError):
         BreachEnv(source="DEV-train", layouts=[hand_layout()])
-    assert P.LEDGER_PATH.read_bytes() == ledger and P.read_ledger() == [e for e in P.read_ledger() if e["purpose"] == "build"]
+    assert P.LEDGER_PATH.read_bytes() == ledger and sum(e["purpose"] == "eval" for e in P.read_ledger()) == 238
 
 
 def test_env_module_never_generates_layouts_itself():

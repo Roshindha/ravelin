@@ -206,7 +206,8 @@ def test_design_sets_are_disjoint_from_stream_F_every_pool_and_the_ledger_is_emp
     ledger = DATA / "final_access.log"
     # B6: the ledger now holds the pool-build entries; it must hold no agent evaluation (purpose "eval")
     _e = [json.loads(x) for x in (ledger.read_text().splitlines() if ledger.exists() else []) if x.strip()]
-    assert {e["purpose"] for e in _e} <= {"build"} and sum(e["purpose"] == "eval" for e in _e) == 0 and sum(e["purpose"] == "build" for e in _e) == 5
+    assert {e["purpose"] for e in _e} == {"build", "eval"} and sum(e["purpose"] == "build" for e in _e) == 5 and sum(e["purpose"] == "eval" for e in _e) == 238   # B15d: frozen post-B15 state
+    assert {e.get("session_id") for e in _e if e["purpose"] == "eval"} == {"3ccef86e0e2349d4af22e210d4b46a07"}
     src = (ROOT / "breachlens" / "acceptance.py").read_text() + (ROOT / "breachlens" / "gates.py").read_text()
     assert 'assert stream in ("T", "L")' in src
 

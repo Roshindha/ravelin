@@ -35,7 +35,8 @@ def _ledger_unchanged():
 
 
 @pytest.fixture
-def clean(monkeypatch):
+def clean(monkeypatch, build_only_ledger):
+    monkeypatch.setattr(L, "LEDGER", build_only_ledger)                       # B15d: synthetic build-only ledger for "would start" paths
     monkeypatch.setattr(L, "dirty_tracked", lambda: [])
     monkeypatch.setattr(L, "ps_text", lambda: "  102 /usr/bin/vim notes.txt\n")
     for k in L.FORBIDDEN_ENV:
@@ -115,6 +116,11 @@ def test_default_trainer_shaping_is_off_and_the_frozen_plain_pilot_is_unchanged(
 def test_shaped_preflight_passes_on_the_committed_state_and_plain_is_unaffected(clean):
     assert L.preflight(shaped=True) == []
     assert L.preflight() == []
+
+
+def test_shaped_preflight_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch):
+    monkeypatch.setattr(L, "LEDGER", L.ROOT / "data" / "v2" / "final_access.log")
+    assert any("eval entr" in p for p in L.preflight(shaped=True)) and any("eval entr" in p for p in L.preflight())
 
 
 @pytest.mark.parametrize("marker", ["(y) **B13c", "(z) **B13c"])

@@ -283,7 +283,7 @@ def test_unlocked_eval_on_synthetic_final_layouts_writes_only_the_temp_ledger(it
     assert len(led) == 3 and all(e["purpose"] == "eval" for e in led)
     monkeypatch.undo()
     led = P.read_ledger()
-    assert sum(e["purpose"] == "build" for e in led) == 5 and sum(e["purpose"] == "eval" for e in led) == 0
+    assert sum(e["purpose"] == "build" for e in led) == 5 and sum(e["purpose"] == "eval" for e in led) == 238 and P.count_eval_sessions(led) == 1   # frozen post-B15 state, untouched
 
 
 def test_no_dev_side_planner_run_touches_final(items, model):
