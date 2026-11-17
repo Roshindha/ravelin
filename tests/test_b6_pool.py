@@ -438,15 +438,14 @@ def test_count_eval_sessions_synthetic(tmp_ledger):
     assert "session_id" not in es[0]
 
 
-def test_real_ledger_is_5_build_plus_one_eval_session_of_238_and_append_only_vs_b15_final():
+def test_real_ledger_is_5_build_plus_one_eval_session_of_238_and_byte_identical_to_b15_final():
     es = P.read_ledger()
     assert sum(e["purpose"] == "build" for e in es) == 5
     assert sum(e["purpose"] == "eval" for e in es) == 238 and P.count_eval_sessions(es) == 1
     assert {e["session_id"] for e in es if e["purpose"] == "eval"} == {B15_SESSION}
     import subprocess
     tagged = subprocess.run(["git", "show", "b15-final:data/v2/final_access.log"], cwd=ROOT, capture_output=True, check=True).stdout
-    now = P.LEDGER_PATH.read_bytes()
-    assert now.startswith(tagged), "the ledger is not append-only versus tag b15-final"
+    assert P.LEDGER_PATH.read_bytes() == tagged, "the ledger differs from tag b15-final"          # frozen: equality, not prefix
 
 
 def test_git_dirty_ignores_gitignored_untracked_files(tmp_path, monkeypatch):

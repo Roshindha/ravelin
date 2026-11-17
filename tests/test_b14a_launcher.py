@@ -123,9 +123,12 @@ def test_clean_preflight_passes_on_the_committed_state(clean):
     assert pf(clean) == []
 
 
-def test_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch):
+def test_refuses_on_the_real_ledger_permanently_after_b15(clean, monkeypatch, capsys):
     monkeypatch.setattr(G.B, "LEDGER", G.B.ROOT / "data" / "v2" / "final_access.log")
     assert any("238 eval entries" in p for p in pf(clean))
+    monkeypatch.setattr(G.subprocess, "Popen", lambda *a, **k: pytest.fail("started"))
+    assert G.main(["plan"]) == 3 and "238 eval entries" in capsys.readouterr().out          # `plan` prints REFUSED and exits 3
+    assert G.main(["launch"]) == 3 and "238 eval entries" in capsys.readouterr().err        # `launch` refuses and starts nothing
 
 
 def test_refuses_dirty_tree(clean, monkeypatch):
