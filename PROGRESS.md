@@ -648,6 +648,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B15d DONE (suite green after B15, no guard weakened; commits 2efcfab and a18d612). Real ledger frozen at 5 build + one eval session (3ccef86e, 238 entries), byte-identical to tag `b15-final`; launchers (B13/B14) and the B15 runner refuse on it permanently (tested); dirty-flag evidence in docs/LIMITATIONS.md. Next: explainability, only when told.
 - v2 B15 DONE (FINAL session 3ccef86e, single session, commit tagged `b15-final`; analysis reproduced byte for byte; docs/RESULTS.md written from results/b15/tables only). Headlines: no learner beats BestSingle on breach; planner beats equal-N controls on FINAL-familiar; TTA holds 12/12; D4 vs plain not established; 27/64 primary checks hold. Next: explainability, only when told. The FINAL set must not be touched again.
 - v2 B15a DONE (session + analysis scripts, rehearsal, tests; FINAL never loaded). Next: owner runs the real session from a clean commit (`scripts_b15_final.py --unlock-final`), only when told.
 - v2 B14c DONE (row (gg) pins the B15 protocol). Next: B15 code (evaluator session, cells, statistics), only when told; the real FINAL session needs a clean commit.
