@@ -45,7 +45,8 @@ def row_ee_shas() -> dict:
             "queue": re.search(r"`data/v2/grid_queue.json` = \*\*([0-9a-f]{64})", row).group(1)}
 
 
-def main() -> int:
+def run(write: bool = True) -> tuple:
+    """The audit itself. write=False (B15 precondition): nothing under results/ is touched, so the tracked audit file keeps its pinned sha256."""
     cfgs = {c: G.load_config(c) for c in G.CONFIG_FILES}
     shas, want = G.config_shas(), row_ee_shas()
     dev = []                                           # deviations
@@ -116,8 +117,9 @@ def main() -> int:
     head = P._git("rev-parse", "HEAD")
     out = {"n_runs": len(runs), "T": T, "commit_set": sorted(commits), "head_at_audit": head, "ledger": {"build": n_build, "eval": n_eval},
            "config_shas": shas, "row_ee_shas": want, "deviations": dev, "runs": runs}
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "grid_audit.json").write_text(json.dumps(out, indent=1, sort_keys=True))
+    if write:
+        OUT.mkdir(parents=True, exist_ok=True)
+        (OUT / "grid_audit.json").write_text(json.dumps(out, indent=1, sort_keys=True))
     L = ["# B14c item 1: grid integrity audit", "",
          f"Verdict: **{'PASS: no deviations' if not dev else 'FAIL: ' + str(len(dev)) + ' deviation(s)'}**", "",
          f"- Runs audited: {len(runs)} (PPO plain x10, PPO+D4 x10, DDQN x10), T = {T:,}; produced by `scripts_b14_audit.py` (read-only; no training, no FINAL access).",
@@ -134,7 +136,13 @@ def main() -> int:
     for r in runs:
         L.append(f"| {r['run']} | {r['status']} | {r['timesteps_trained']:,} | {r['resumes_identity']} | {r['scheduler_starts']} | {'ok' if r['checker_ok'] else 'FAIL'} | "
                  f"`{r['identity_commit'][:7]}` | {r['identity_dirty']} | {r['shaping']} | {r['final_file']} | `{r['final_sha256']}` |")
-    (OUT / "grid_audit.md").write_text("\n".join(L) + "\n")
+    if write:
+        (OUT / "grid_audit.md").write_text("\n".join(L) + "\n")
+    return out, L, dev
+
+
+def main() -> int:
+    out, L, dev = run(write=True)
     print("\n".join(L[:20]))
     return 1 if dev else 0
 
