@@ -1,0 +1,62 @@
+{
+ "time": "2026-11-17T13:23:43+00:00",
+ "mode": "real",
+ "restart": false,
+ "checks": [
+  {
+   "check": "row (gg) in HEAD",
+   "ok": true,
+   "detail": "row (gg) present"
+  },
+  {
+   "check": "clean tree",
+   "ok": true,
+   "detail": "git_dirty False"
+  },
+  {
+   "check": "pool and generator hashes",
+   "ok": true,
+   "detail": "pool 1346536d...f834e4, generator 49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095 (row (hh) = B5 record = source)"
+  },
+  {
+   "check": "ledger",
+   "ok": true,
+   "detail": "ledger 5 build / 0 eval"
+  },
+  {
+   "check": "session.json",
+   "ok": true,
+   "detail": "session.json absent (fresh)"
+  },
+  {
+   "check": "grid audit",
+   "ok": true,
+   "detail": "grid audit re-run 30/30 pass; audit file sha256 ok"
+  },
+  {
+   "check": "model files",
+   "ok": true,
+   "detail": "30 model files present, sha256 equal to the audit file"
+  },
+  {
+   "check": "seen rows",
+   "ok": true,
+   "detail": "seen_layout_rows.csv sha256 ok"
+  },
+  {
+   "check": "BestSingle types",
+   "ok": true,
+   "detail": "BestSingle = Sniper in every family and pooled"
+  },
+  {
+   "check": "full suite",
+   "ok": true,
+   "detail": "full suite pytest exit code 0 (679 passed in 954.95s (0:15:54))"
+  },
+  {
+   "check": "clean tree after the suite",
+   "ok": true,
+   "detail": "git_dirty False"
+  }
+ ]
+}
