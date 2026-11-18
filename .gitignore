@@ -21,3 +21,6 @@ logs_*/
 models_v2/*
 !models_v2/.gitkeep
 results_v2/*
+
+# B17 duel: local human demo runs, never reported as results
+results_v2/duel_human_runs.jsonl
