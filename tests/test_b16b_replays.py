@@ -31,8 +31,8 @@ def page_data(path: Path) -> dict:
 @pytest.fixture(scope="module")
 def runs(tmp_path_factory):
     a, b = tmp_path_factory.mktemp("run_a"), tmp_path_factory.mktemp("run_b")
-    rows_a = M.generate(a)
-    rows_b = M.generate(b)
+    rows_a = M.write_replays(a)
+    rows_b = M.write_replays(b)
     return a, b, rows_a, rows_b
 
 
@@ -45,11 +45,11 @@ def test_generator_refuses_non_dev_splits(tmp_path):
     before = ledger_sha()
     for split in ("FINAL-familiar", "FINAL-transfer", "LAB-DESIGN", "TUNE-val", "TUNE-train", "nonsense"):
         with pytest.raises(PermissionError):
-            M.generate(tmp_path / "x", split)
+            M.write_replays(tmp_path / "x", split)
         with pytest.raises(PermissionError):
             M.main(["--out", str(tmp_path / "x"), "--split", split])
     with pytest.raises(PermissionError):                       # DEV-train is a DEV split but not in the replay set of row (jj)
-        M.generate(tmp_path / "x", "DEV-train")
+        M.write_replays(tmp_path / "x", "DEV-train")
     assert not (tmp_path / "x").exists()
     assert ledger_sha() == before == LEDGER_SHA
 

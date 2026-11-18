@@ -22,7 +22,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from breachlens import pool as P                                   # noqa: E402
 from breachlens.config import sim_version                          # noqa: E402
 from breachlens.constants import GRID, N_BORDER, UNIT_TYPES        # noqa: E402
 from breachlens.env import BreachEnv                               # noqa: E402
@@ -55,13 +54,16 @@ def replay_set(split: str = SPLIT) -> list[tuple]:
 def first_layouts(split: str = SPLIT) -> dict:
     """family -> (position in the split, record, layout): the first record of each family, loaded through the role-guarded DEV loader."""
     replay_set(split)
-    recs = P.load_pool_records(split, "validation", entry_point="scripts.make_replays")
     out = {}
-    for i, r in enumerate(recs):
-        if r["family"] in FAMILIES and r["family"] not in out:
-            rec, layout = X.load_dev_layout(split, i)                      # the guarded loader (evaluator.load_dev_layout)
-            assert rec["id"] == r["id"]
-            out[r["family"]] = (i, rec, layout)
+    for i in range(10 ** 6):                                           # walk the split through the guarded DEV loader until each family has appeared
+        if len(out) == len(FAMILIES):
+            break
+        try:
+            rec, layout = X.load_dev_layout(split, i)
+        except ValueError:                                             # index past the end of the split
+            break
+        if rec["family"] in FAMILIES and rec["family"] not in out:
+            out[rec["family"]] = (i, rec, layout)
     assert set(out) == set(FAMILIES)
     return out
 
@@ -345,7 +347,7 @@ def build_index(rows: list, prov: dict) -> str:
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- driver
-def generate(out_dir: Path = OUT_DIR, split: str = SPLIT) -> list:
+def write_replays(out_dir: Path = OUT_DIR, split: str = SPLIT) -> list:
     """Write the 18 replays + index.html into `out_dir`; return the per-replay rows. Refuses non-DEV splits before loading anything."""
     jobs = replay_set(split)
     layouts = first_layouts(split)
@@ -387,7 +389,7 @@ def main(argv=None) -> list:
     p.add_argument("--out", default=str(OUT_DIR))
     p.add_argument("--split", default=SPLIT, help=f"only {SPLIT} is accepted (row (jj)); any other split is refused")
     a = p.parse_args(argv)
-    rows = generate(Path(a.out), a.split)
+    rows = write_replays(Path(a.out), a.split)
     for r in rows:
         o = r["outcome"]
         print(f"{r['arm']:10s} {'TTA  ' if r['tta'] else 'plain'} {r['family']:12s} score {o['score']:.4f} D {o['d']:.4f} breach {'yes' if o['core'] else 'no ':3s} {r['file']} {r['size']:,} B rate {r['rate']}")
