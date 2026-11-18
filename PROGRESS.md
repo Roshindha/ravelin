@@ -617,7 +617,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Reuse: episodes come from `scripts/make_replays.run_episode` (B16b code; it calls `rl.explain.explain` at every step and asserts its argmax = the eval-path action); models via `rl.explain.load_display_model` (`st.cache_resource(max_entries=1)`: one checkpoint at a time); layouts via `breachlens.evaluator.dev_layout_ids` / `rl.explain.load_dev_layout`; explanations `st.cache_data` per (split, layout, arm, view). No threads, no scoring or TTA reimplemented.
 - Tests `tests/test_b18a_app.py` (9, about 5 s): default view = row (ll); DEV-train shows IN-SAMPLE (and the default does not); unlisted split / arm / layout refused, options are exactly the DEV ids and seed-0 runs; no sidebar + theme config; decision lens chosen action and value at every step = committed B16b replay, actions = `scripts_b15_final._task` recorded actions, final outcome = B15 row (plain and TTA); DDQN "not a policy" + shaped label; headline = RESULTS.md verbatim; ledger sha 20a8b287... unchanged.
 - Full suite: `.venv/bin/python -m pytest`: exit=0, 752 passed in 1034 s.
-- Screenshots `docs/screenshots/b18a_decision_step_11.png`, `b18a_battle_tick_70.png` (headless Chrome via CDP, same episode).
+- Screenshots (follow-up, rule fixed by row (ll) addendum before regeneration): `docs/screenshots/b18a_pos9_first_deploy_step.png` (first DEPLOY step) and `b18a_pos137_battle_tick_120.png` (battle tick 120), default layout / arm / view; test `test_screenshot_rule_positions_and_files`. Full suite after the follow-up: exit=0, 753 passed in 1020 s.
 
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples

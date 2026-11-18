@@ -149,3 +149,23 @@ def test_ledger_sha_unchanged():
     assert hashlib.sha256(P.LEDGER_PATH.read_bytes()).hexdigest() == LEDGER_SHA
     new_app()
     assert hashlib.sha256(P.LEDGER_PATH.read_bytes()).hexdigest() == LEDGER_SHA
+
+
+def test_screenshot_rule_positions_and_files():
+    """Row (ll) addendum: screenshot 1 = first DEPLOY step, screenshot 2 = battle tick 120 (or the last tick); files are named by position."""
+    from app import render as R
+    at = new_app()                                           # default layout / arm / view
+    assert (at.selectbox(key="layout_DEV-validation").value, at.selectbox(key="arm").value, at.radio(key="view").value) == (DEFAULT_LAYOUT, "ppo_plain", "TTA")
+    ep = replay_data("ppo_plain", True)
+    pos = R.screenshot_positions(ep)
+    n_dec = len(ep["steps"])
+    assert ep["steps"][pos["pos_deploy"]]["phase"] == "DEPLOY" and all(s["phase"] != "DEPLOY" for s in ep["steps"][:pos["pos_deploy"]])
+    assert pos["tick"] == min(120, ep["outcome"]["ticks"]) and pos["pos_battle"] == n_dec + pos["tick"]
+    assert (pos["pos_deploy"], pos["pos_battle"], pos["tick"]) == (9, 137, 120)            # the documented values
+    shots = sorted(p.name for p in (ROOT / "docs" / "screenshots").glob("*.png"))
+    assert shots == [f"b18a_pos{pos['pos_battle']}_battle_tick_{pos['tick']}.png", f"b18a_pos{pos['pos_deploy']}_first_deploy_step.png"]
+    # the app shows exactly those frames at those positions
+    at.slider[0].set_value(pos["pos_deploy"]).run()
+    assert at.session_state["_lens"]["kind"] == "decision" and ep["steps"][pos["pos_deploy"]]["phase"] == "DEPLOY"
+    at.slider[0].set_value(pos["pos_battle"]).run()
+    assert at.session_state["_lens"]["kind"] == "battle" and at.session_state["_lens"]["tick"] == 120

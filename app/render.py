@@ -112,3 +112,16 @@ def grid_svg(ep: dict, border: list, n: int, pos: int, heat_mode: str) -> tuple[
             out.append(f'<rect x="{c * CELL + 2}" y="{r * CELL + 2}" width="{CELL - 4}" height="{CELL - 4}" fill="none" stroke="#fff" stroke-width="2.5"/>')
     out.append("</svg>")
     return "".join(out), caption
+
+
+# ----------------------------------------------------------------------------------------------------------------------------- screenshot rule
+SHOT_TICK = 120
+
+
+def screenshot_positions(ep: dict) -> dict:
+    """Row (ll) addendum: screenshot 1 = the first DEPLOY decision step; screenshot 2 = battle tick 120 (or the last tick if the battle ends earlier)."""
+    n_dec = len(ep["steps"])
+    first_deploy = next(i for i, s in enumerate(ep["steps"]) if s["phase"] == "DEPLOY")
+    last_tick = ep["battle"]["frames"][-1]["t"]
+    tick = min(SHOT_TICK, last_tick)
+    return {"first_deploy_step": first_deploy, "tick": tick, "pos_deploy": first_deploy, "pos_battle": n_dec + tick}
