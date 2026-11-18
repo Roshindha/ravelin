@@ -44,7 +44,7 @@ def test_default_view_matches_row_ll():
     lens = at.session_state["_lens"]
     assert lens["kind"] == "decision" and lens["pos"] == 0
     assert not any("IN-SAMPLE" in m.value for m in at.markdown)
-    assert any("DEMO" in m.value for m in at.markdown)
+    assert any("Demo, not a result" in m.value for m in at.markdown)
 
 
 def test_dev_train_shows_in_sample_badge():
@@ -84,7 +84,7 @@ def test_no_sidebar_widgets_and_theme():
     src = Path(APP).read_text()
     assert "st.sidebar" not in src and 'initial_sidebar_state="collapsed"' in src
     cfg = (ROOT / ".streamlit" / "config.toml").read_text()
-    assert 'base = "dark"' in cfg and 'backgroundColor = "#07142b"' in cfg and 'font = "monospace"' in cfg
+    assert 'base = "dark"' in cfg and 'backgroundColor = "#250104"' in cfg and 'font = "Instrument Sans"' in cfg       # B18c: maroon theme, bundled fonts
 
 
 @pytest.mark.parametrize("tta", [True, False])

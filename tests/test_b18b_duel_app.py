@@ -259,10 +259,10 @@ def test_two_sessions_do_not_share_state(runs):
 
 def test_disclaimer_visible_and_no_sidebar(runs):
     at = duel_app()
-    assert any("DEMO, not a result" in m.value for m in at.markdown)
+    assert any("Demo, not a result" in m.value for m in at.markdown)
     assert len(at.sidebar) == 0
     app_script(at)
-    assert any("DEMO, not a result" in m.value for m in at.markdown)
+    assert any("Demo, not a result" in m.value for m in at.markdown)
 
 
 def test_ledger_sha_unchanged(runs):

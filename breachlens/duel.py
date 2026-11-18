@@ -39,7 +39,7 @@ CACHE_VERSION = 1
 CONTESTANTS = ("ppo_plain_tta", "ppo_d4_tta", "ddqn_tta", "best_single", "oracle")
 LABELS = {"human": "You (human)", "ppo_plain_tta": "PPO plain + TTA (seed 0)", "ppo_d4_tta": "PPO+D4 + TTA (seed 0)", "ddqn_tta": "DDQN + TTA (seed 0)",
           "best_single": "BestSingle (Sniper army, scripted)", "oracle": "Oracle (search baseline, not the optimum)"}
-DEMO_NOTE = ("This is a demo, not a result: one layout, one human run, opponents precomputed on DEV-validation layouts that were used for model selection. "
+DEMO_NOTE = ("This is a demo, not a result: one layout, one human run, opponents precomputed on DEV-validation layouts, which were held out from training and only monitored during it (never used to select models). "
              "Oracle is a fixed-budget search baseline (about 400 simulations), NOT the optimum.")
 
 

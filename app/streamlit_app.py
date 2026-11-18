@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from app import render as R  # noqa: E402
+from app import theme as TH  # noqa: E402
 from rl import explain as X  # noqa: E402
 
 # ----------------------------------------------------------------------------------------------------------------------------- fixed by row (ll)
@@ -28,31 +29,11 @@ VIEWS = ("TTA", "plain")
 DEFAULT = {"split": "DEV-validation", "layout": "spine_pods-300000056", "arm": "ppo_plain", "view": "TTA", "pos": 0, "heat": "Chosen unit type"}
 HEATS = ("Chosen unit type", "Per-tile total")
 MODES = ("Replay", "Duel")
-DEMO = "DEMO: a read-out of frozen checkpoints on DEV layouts. Nothing here is a result."
+DISCLAIMER = R.DISCLAIMER                                      # row (nn) A1 / A2: the one disclaimer per screen
 
-st.set_page_config(page_title="Breach Lens (demo)", page_icon="▦", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Breach Lens (demo)", page_icon="◆", layout="wide", initial_sidebar_state="collapsed")
 
-CSS = """
-<style>
-html, body, [class*="css"], .stApp { font-family: ui-monospace, Menlo, Consolas, monospace; }
-.stApp { background-color: #07142b; background-image:
-  linear-gradient(rgba(94,200,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(94,200,255,.05) 1px, transparent 1px); background-size: 28px 28px; }
-[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] { display: none; }
-.block-container { padding-top: 1.2rem; max-width: 1400px; }
-h1, h2, h3 { letter-spacing: .04em; font-weight: 500; }
-.bar { display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 10px 0; }
-.badge { border:1px solid #3f7fb8; color:#9fd4ff; padding:2px 8px; font-size:12px; border-radius:2px; }
-.badge.warn { border-color:#ffb454; color:#ffb454; font-weight:bold; }
-.banner { border:1px dashed #3f7fb8; color:#9fd4ff; padding:4px 10px; font-size:12px; margin-bottom:8px; }
-.panel { border:1px solid #2d5a8c; background:rgba(13,34,68,.7); padding:10px 14px; margin-bottom:10px; }
-.mut { color:#7fa6cf; font-size:12px; }
-.outcome { border-left:3px solid #5ec8ff; padding:4px 10px; margin:6px 0; background:rgba(13,34,68,.7); }
-.stButton button { padding:.25rem .35rem; } .stButton button p { font-size:12px; white-space:nowrap; overflow:visible; text-overflow:clip; }
-table.top { width:100%; border-collapse:collapse; font-size:13px; }
-table.top td, table.top th { border-bottom:1px solid #1d3d6b; padding:3px 6px; text-align:left; }
-table.top tr.chosen td { color:#ffe27a; }
-</style>
-"""
+CSS = TH.app_css()
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- cached data
@@ -132,15 +113,27 @@ def badges(ep: dict):
     if ep["split"] == "DEV-train":
         b.insert(0, '<span class="badge warn">IN-SAMPLE: the learner trained on this layout</span>')
     else:
-        b.insert(0, '<span class="badge">DEV-validation: held out from training</span>')
+        b.insert(0, '<span class="badge">split <b>DEV-validation</b></span>')
     st.markdown(f'<div class="bar">{"".join(b)}</div>', unsafe_allow_html=True)
+
+
+def breach_pill(core: bool) -> str:
+    return '<span class="pill breach">breach</span>' if core else '<span class="pill held">held</span>'
 
 
 def outcome_strip(ep: dict):
     o = ep["outcome"]
-    st.markdown(f'<div class="outcome"><b>True outcome of this episode:</b> score <b>{o["score"]:.4f}</b> &middot; D = {o["d"]:.4f} '
-                f'({o["d_num"]}/{o["d_den"]} building value destroyed) &middot; core breached: <b>{"YES" if o["core"] else "NO"}</b> '
-                f'&middot; {o["n_units"]} units deployed &middot; battle {o["ticks"]} ticks ({o["reason"]})</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="outcome"><b>True outcome of this episode:</b> score <b class="num k">{o["score"]:.4f}</b> &middot; D = <span class="num">{o["d"]:.4f}</span> '
+                f'(<span class="num">{o["d_num"]}/{o["d_den"]}</span> building value destroyed) &middot; core {breach_pill(o["core"])} '
+                f'&middot; <span class="num">{o["n_units"]}</span> units deployed &middot; battle <span class="num">{o["ticks"]}</span> ticks ({o["reason"]})</div>',
+                unsafe_allow_html=True)
+
+
+def legend():
+    """Compact legend next to the board (row (nn) A3 / A5). Shared with the duel screen."""
+    st.markdown("**Legend**")
+    st.image(R.legend_svg(), width=270)
+    st.markdown(f'<div class="mut">Chosen deploy tile: neon frame. White ring on a unit: attacked this tick. {R.AGENTS_SEE}</div>', unsafe_allow_html=True)
 
 
 def decision_lens(ep: dict, pos: int):
@@ -153,13 +146,19 @@ def decision_lens(ep: dict, pos: int):
         st.markdown(f'<div class="mut">decision step {pos} (= {pos} actions already taken) of 0..{n_dec - 1} &middot; {s["phase"]} phase &middot; '
                     f'gold {s["gold"]} &middot; bought {s["bought"]} &middot; legal actions {s["n_legal"]}</div>', unsafe_allow_html=True)
         pc = s["p_chosen"]
-        st.markdown(f'**Chosen action:** {s["label"]} (probability {fmt(pc)}{"; softmax of Q: not a policy" if ep["algo"] == "ddqn" else ""})')
+        txt, tip = R.pretty_label(s["label"])
+        st.markdown(f'**Chosen action:** <span class="chosen-text" title="{tip}">{txt}</span> (probability <span class="num">{fmt(pc)}</span>'
+                    f'{"; softmax of Q: not a policy" if ep["algo"] == "ddqn" else ""})', unsafe_allow_html=True)
         ddqn = ep["algo"] == "ddqn"
         head = ("Top 5 actions by Q. The softmax column is NOT a policy (fixed display temperature %s)." % X.DDQN_TEMPERATURE if ddqn else
                 "Top 5 actions by probability" + (" (TTA: softmax of the 8-view mean log-probability)." if ep["tta"] else "."))
-        rows = "".join(f'<tr class="{"chosen" if t["a"] == s["action"] else ""}"><td>{i}</td><td>{t["label"]}{" &#9664; chosen" if t["a"] == s["action"] else ""}</td>'
-                       + (f'<td>{fmt(t["q"])}</td><td>{fmt(t["p"])}</td>' if ddqn else f'<td>{fmt(t["p"])}</td>') + "</tr>" for i, t in enumerate(s["top"], 1))
-        th = "<th>#</th><th>action</th>" + ("<th>Q</th><th>softmax</th>" if ddqn else "<th>prob.</th>")
+        def _cell(t):
+            txt_, tip_ = R.pretty_label(t["label"])
+            return f'<span title="{tip_}">{txt_}</span>' + (" &#9664; chosen" if t["a"] == s["action"] else "")
+        rows = "".join(f'<tr class="{"chosen" if t["a"] == s["action"] else ""}"><td class="num">{i}</td><td>{_cell(t)}</td>'
+                       + (f'<td class="num">{fmt(t["q"])}</td><td class="num">{fmt(t["p"])}</td>' if ddqn else f'<td class="num">{fmt(t["p"])}</td>') + "</tr>"
+                       for i, t in enumerate(s["top"], 1))
+        th = "<th class=\"num\">#</th><th>action</th>" + ("<th class=\"num\">Q</th><th class=\"num\">softmax</th>" if ddqn else "<th class=\"num\">prob.</th>")
         st.markdown(f'<div class="mut">{head}</div><table class="top"><tr>{th}</tr>{rows}</table>', unsafe_allow_html=True)
         st.markdown(f'**Value estimate:** {fmt(s["value"])}')
         st.markdown(f'<div class="mut">{X.VALUE_LABEL}; {"critic V(s)" if ep["algo"] == "ppo" else "max over legal actions of Q"}'
@@ -178,7 +177,7 @@ def decision_lens(ep: dict, pos: int):
                     f'core {"destroyed" if f["s"][core] <= 0 else "standing"}. White ring = unit attacked this tick.')
         if f["t"] == ep["outcome"]["ticks"]:
             o = ep["outcome"]
-            st.markdown(f'**Final (true) outcome:** score {o["score"]:.4f}, D = {o["d"]:.4f}, core breached: **{"YES" if o["core"] else "NO"}**.')
+            st.markdown(f'**Final (true) outcome:** score <span class="num">{o["score"]:.4f}</span>, D = <span class="num">{o["d"]:.4f}</span>, core {breach_pill(o["core"])}.', unsafe_allow_html=True)
         st.markdown('<div class="mut">The decisions were all made before the battle; the lens for them is under decision steps on the scrubber.</div>', unsafe_allow_html=True)
     st.session_state["_lens"] = lens
 
@@ -189,10 +188,11 @@ def spark(ep: dict, pos: int):
     n_dec = len(ep["steps"])
     df = pd.DataFrame({"step": range(n_dec), "value": [s["value"] for s in ep["steps"]]})
     cur = pd.DataFrame({"step": [min(pos, n_dec - 1)], "value": [df["value"][min(pos, n_dec - 1)]]})
-    line = alt.Chart(df).mark_line(color="#ffb454").encode(x=alt.X("step:Q", title="decision step"), y=alt.Y("value:Q", title="value (shaped return)"))
-    pt = alt.Chart(cur).mark_point(color="#ffffff", size=70, filled=True).encode(x="step:Q", y="value:Q")
-    st.altair_chart((line + pt).properties(height=110).configure(background="#07142b").configure_axis(labelColor="#7fa6cf", titleColor="#7fa6cf", gridColor="#16335e"),
-                    width="stretch")
+    line = alt.Chart(df).mark_line(color=TH.TEXT).encode(x=alt.X("step:Q", title="decision step"), y=alt.Y("value:Q", title="value (shaped return)"))
+    pt = alt.Chart(cur).mark_point(color=TH.NEON, size=70, filled=True).encode(x="step:Q", y="value:Q")
+    st.altair_chart((line + pt).properties(height=110).configure(background=TH.BG, font=TH.FONT_BODY).configure_axis(
+        labelColor=TH.MUTED, titleColor=TH.MUTED, gridColor=TH.PANEL_BORDER, domainColor=TH.PANEL_BORDER, tickColor=TH.PANEL_BORDER, labelFont=TH.FONT_NUM, titleFont=TH.FONT_BODY),
+        width="stretch")
 
 
 def headline_section():
@@ -203,9 +203,10 @@ def headline_section():
 
 def main():
     st.markdown(CSS, unsafe_allow_html=True)
-    top = st.columns([1.3, 5.7])
-    mode = top[0].radio("Mode", MODES, key="mode", horizontal=True)       # the Duel switch lives in the top command bar
-    top[1].markdown(f'<div class="banner">{DEMO}</div>', unsafe_allow_html=True)
+    top = st.columns([3, 1.4])
+    top[0].markdown("# Breach Lens")
+    mode = top[1].radio("Mode", MODES, key="mode", horizontal=True)       # the Duel switch lives in the top command bar
+    st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)        # the ONE disclaimer of the screen (row (nn) A2)
     if mode == "Duel":
         from app import duel_ui
         duel_ui.run()
@@ -227,15 +228,14 @@ def replay_main():
     st.session_state.setdefault(key, start)
     badges(ep)
     outcome_strip(ep)
-    left, right = st.columns([1.15, 1])
+    left, mid, right = st.columns([2.5, 1.15, 2.2])
     with left:
         st.radio("Heatmap overlay", HEATS, key="heat", horizontal=True)
         svg, cap = R.grid_svg(ep, ep["border"], ep["grid"], st.session_state[key], "total" if st.session_state["heat"] == HEATS[1] else "chosen")
-        st.image(svg, width=640)                                   # SVG string, rendered as an image (st.html would strip the SVG)
+        st.image(svg, width=600)                                   # SVG string, rendered as an image (st.html would strip the SVG)
         st.markdown(f'<div class="mut">{cap}</div>' if cap else "", unsafe_allow_html=True)
-        st.markdown('<div class="mut">Blue squares: buildings (number = value). Diamond C: core. Grey: walls. Red circles: defenders. Coloured circles: units '
-                    '(Sc scout, Sn sniper, Bu bulwark, Bl blaster, Me mender). Heat = deploy probability on border tiles. White frame: chosen deploy tile.</div>',
-                    unsafe_allow_html=True)
+    with mid:
+        legend()
     with right:
         decision_lens(ep, st.session_state[key])
         if ep["algo"] == "ddqn":
@@ -250,7 +250,7 @@ def replay_main():
     with st.expander("Value over the decision steps (shaped-return estimate)"):
         spark(ep, p)
     headline_section()
-    st.markdown(f'<div class="mut">{DEMO} Provenance: model {ep["run"]}, layout {ep["layout_id"]} ({ep["split"]}), episode = the learner\'s own deterministic B15 episode.</div>',
+    st.markdown(f'<div class="mut">Provenance: model {ep["run"]}, layout {ep["layout_id"]} ({ep["split"]}), episode = the learner\'s own deterministic B15 episode.</div>',
                 unsafe_allow_html=True)
 
 

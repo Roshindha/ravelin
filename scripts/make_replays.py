@@ -28,6 +28,8 @@ from breachlens.env import BreachEnv                               # noqa: E402
 from breachlens.score import SCORE_VERSION, score_value            # noqa: E402
 from breachlens.sim import simulate                                # noqa: E402
 from rl import explain as X                                        # noqa: E402
+from app import render as R                                       # noqa: E402  (pure: no streamlit)
+from app import theme as TH                                        # noqa: E402
 
 OUT_DIR = ROOT / "docs" / "replays"
 SPLIT = "DEV-validation"
@@ -38,7 +40,7 @@ TOTAL_CAP = 15 * 1024 * 1024
 FILE_CAP = int(1.5 * 1024 * 1024)
 RATES = (1, 2, 3, 4, 6, 8, 12)                                     # battle-frame subsampling: smallest rate that meets the per-file cap
 SPLIT_LABEL = "DEV-validation, held out from training"
-CODE_PATHS = ("scripts/make_replays.py", "rl", "breachlens")
+CODE_PATHS = ("scripts/make_replays.py", "rl", "breachlens", "app/theme.py", "app/render.py", "app/static")
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- selection
@@ -152,58 +154,81 @@ def subsample(frames: list, rate: int) -> list:
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- html
-CSS = """
-:root{--bg:#12151c;--panel:#1b2030;--line:#2e3650;--fg:#e6e9f2;--mut:#9aa3bd;--acc:#ffb347;--ok:#6fd08c;--bad:#ff6b6b;--hot:#ffd34d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header,main,footer{max-width:1180px;margin:0 auto;padding:12px 16px}h1{font-size:20px;margin:4px 0}h2{font-size:15px;margin:0 0 6px;color:var(--mut);font-weight:600}
-.badges{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.badge{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-.badge b{color:var(--acc)}.outcome{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:8px 0}
-.yes{color:var(--ok)}.no{color:var(--bad)}.wrap{display:flex;flex-wrap:wrap;gap:16px}.col{flex:1 1 360px;min-width:0}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:12px}
-canvas{display:block;max-width:100%;height:auto;background:#0d1017;border:1px solid var(--line);border-radius:6px}
-table{border-collapse:collapse;width:100%}td,th{padding:3px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
-tr.chosen td{background:#3a2d12;color:var(--hot);font-weight:600}.bar{height:8px;background:var(--acc);border-radius:2px;min-width:1px}
-.mut{color:var(--mut)}.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}button,select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font:inherit;cursor:pointer}
-button[aria-pressed=true]{border-color:var(--acc);color:var(--acc)}input[type=range]{flex:1 1 300px}details{margin:6px 0}summary{cursor:pointer;color:var(--mut)}
-code{background:#0d1017;padding:1px 4px;border-radius:3px}a{color:var(--acc)}.legend{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--mut)}
-.grad{width:120px;height:10px;background:linear-gradient(90deg,#1b2030,#7a3d00,#ff9d00,#ffe566);border:1px solid var(--line)}
-"""
+CSS = (TH.font_face_css(True) + TH.root_vars() + TH.common_css() + """
+*{box-sizing:border-box}body{margin:0}
+header,main,footer{max-width:1180px;margin:0 auto;padding:12px 16px}h1{margin:4px 0}h2{margin:0 0 6px;color:var(--mut)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.badge{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:2px 10px;font-size:14px}
+.badge b{font-weight:600}.outcome{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--neon);border-radius:var(--r);padding:8px 12px;margin:8px 0}
+.outcome .k{color:var(--neon)}.wrap{display:flex;flex-wrap:wrap;gap:16px}.col{flex:1 1 360px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-bottom:12px}
+.board{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}.board canvas{flex:1 1 520px}.key{flex:0 0 250px;font-size:14px}
+canvas{display:block;max-width:100%;height:auto;background:var(--board);border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:4px 8px;text-align:left;vertical-align:middle;border:0;border-left:3px solid transparent}
+th{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line)}tr:nth-child(even) td{background:var(--board)}
+tr.chosen td:first-child{border-left-color:var(--neon)}tr.chosen td{font-weight:600}td.yes{}td.no{}
+.bar{height:8px;background:var(--fg);border-radius:2px;min-width:1px}tr.chosen .bar{background:var(--neon)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+button,select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:var(--r);padding:4px 12px;font:inherit;font-weight:600;cursor:pointer}
+button[aria-pressed=true],button.primary{background:var(--neon);color:var(--on-neon);border-color:var(--neon)}
+input[type=range]{flex:1 1 300px;accent-color:var(--neon)}details{margin:6px 0}summary{cursor:pointer;color:var(--mut)}
+code{background:var(--bg);padding:1px 4px;border-radius:3px;font-size:14px}a{color:var(--fg);text-decoration:underline}
+.scale{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mut)}
+.grad{width:120px;height:10px;background:""" + TH.heat_scale_css() + """;border:1px solid var(--line)}
+""")
 
 JS = r"""
+const T = """ + TH.js_theme() + r""";
 const D = JSON.parse(document.getElementById('data').textContent);
 const UT = D.unit_types, N = D.grid, CELL = 40, W = N * CELL;
-const UCOL = ['#4fc3f7', '#ba68c8', '#81c784', '#ff8a65', '#fff176'], UAB = ['Sc', 'Sn', 'Bu', 'Bl', 'Me'];
+const UCOL = T.unitFill, UAB = T.unitAbbr;
 const BT = D.border;                                  // border tile -> [row, col]
 const nDec = D.steps.length, nFr = D.battle.frames.length, total = nDec + nFr;
 const $ = id => document.getElementById(id);
+const FB = "'" + T.fontBody + "', system-ui, sans-serif", FN = "'" + T.fontNum + "', ui-monospace, monospace";
 let pos = 0, heatMode = 'chosen', timer = null;
 const cv = $('grid'), cx = cv.getContext('2d');
 cv.width = W; cv.height = W;
 function fmt(x, n) { return x === null || x === undefined ? 'n/a' : x.toFixed(n === undefined ? 4 : n); }
-function heatColor(f) {                               // 0..1 -> dark..yellow (sequential)
-  const s = [[27, 32, 48], [122, 61, 0], [255, 157, 0], [255, 229, 102]], p = Math.min(Math.max(f, 0), 1) * 3, i = Math.min(Math.floor(p), 2), t = p - i;
+function heatColor(f) {                               // 0..1 -> maroon, tomato, neon yellow (sequential)
+  const s = T.heat, p = Math.min(Math.max(f, 0), 1) * (s.length - 1), i = Math.min(Math.floor(p), s.length - 2), t = p - i;
   return 'rgb(' + [0, 1, 2].map(k => Math.round(s[i][k] + (s[i + 1][k] - s[i][k]) * t)).join(',') + ')';
 }
+function shape(kind, x, y) {                          // defenders: gun = square, lancer = triangle, flak = hexagon
+  const m = CELL / 2, r = 13, cxm = x + m, cym = y + m;
+  cx.fillStyle = T.tomato; cx.beginPath();
+  if (kind === 'gun') cx.rect(cxm - r + 1, cym - r + 1, 2 * r - 2, 2 * r - 2);
+  else if (kind === 'lancer') { cx.moveTo(cxm, cym - r); cx.lineTo(cxm + r, cym + r - 2); cx.lineTo(cxm - r, cym + r - 2); cx.closePath(); }
+  else if (kind === 'flak') { for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i; i ? cx.lineTo(cxm + r * Math.cos(a), cym + r * Math.sin(a)) : cx.moveTo(cxm + r, cym); } cx.closePath(); }
+  else cx.arc(cxm, cym, r - 1, 0, 7);
+  cx.fill();
+}
+function wall(x, y) {                                 // fill + diagonal hatching + 1px outline
+  const a = x + 2, b = y + 2, w = CELL - 4;
+  cx.fillStyle = T.wallFill; cx.fillRect(a, b, w, w);
+  cx.save(); cx.beginPath(); cx.rect(a, b, w, w); cx.clip(); cx.strokeStyle = T.wallHatch; cx.lineWidth = 2; cx.beginPath();
+  for (let k = -w; k < w; k += 6) { cx.moveTo(a + k, b + w); cx.lineTo(a + k + w, b); }
+  cx.stroke(); cx.restore();
+  cx.strokeStyle = T.wallHatch; cx.lineWidth = 1; cx.strokeRect(a + 0.5, b + 0.5, w - 1, w - 1);
+}
 function drawStruct(s, hp) {
-  const [k, r, c, ex] = s, x = c * CELL, y = r * CELL, dead = hp <= 0;
-  cx.globalAlpha = dead ? 0.25 : 1;
-  if (k === 'w') { cx.fillStyle = '#6b7388'; cx.fillRect(x + 2, y + 2, CELL - 4, CELL - 4); }
-  else if (k === 'b') { cx.fillStyle = '#4f7fbf'; cx.fillRect(x + 4, y + 4, CELL - 8, CELL - 8); cx.fillStyle = '#fff'; cx.font = 'bold 14px sans-serif'; cx.textAlign = 'center'; cx.fillText(String(ex), x + CELL / 2, y + CELL / 2 + 5); }
-  else if (k === 'c') { cx.fillStyle = '#e8c547'; cx.beginPath(); cx.moveTo(x + CELL / 2, y + 3); cx.lineTo(x + CELL - 3, y + CELL / 2); cx.lineTo(x + CELL / 2, y + CELL - 3); cx.lineTo(x + 3, y + CELL / 2); cx.closePath(); cx.fill(); cx.fillStyle = '#000'; cx.font = 'bold 12px sans-serif'; cx.textAlign = 'center'; cx.fillText('C', x + CELL / 2, y + CELL / 2 + 4); }
-  else { cx.fillStyle = '#d9534f'; cx.beginPath(); cx.arc(x + CELL / 2, y + CELL / 2, CELL / 2 - 5, 0, 7); cx.fill(); cx.fillStyle = '#fff'; cx.font = 'bold 12px sans-serif'; cx.textAlign = 'center'; cx.fillText(String(ex).charAt(0).toUpperCase(), x + CELL / 2, y + CELL / 2 + 4); }
+  const [k, r, c, ex] = s, x = c * CELL, y = r * CELL, dead = hp <= 0, m = CELL / 2;
+  cx.globalAlpha = dead ? 0.25 : 1; cx.textAlign = 'center';
+  if (k === 'w') wall(x, y);
+  else if (k === 'b') { cx.strokeStyle = T.buildingStroke; cx.lineWidth = 2; cx.strokeRect(x + 5, y + 5, CELL - 10, CELL - 10); cx.fillStyle = T.buildingInk; cx.font = '14px ' + FN; cx.fillText(String(ex), x + m, y + m + 5); }
+  else if (k === 'c') { cx.fillStyle = T.coreFill; cx.strokeStyle = T.coreBorder; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + m, y + 3); cx.lineTo(x + CELL - 3, y + m); cx.lineTo(x + m, y + CELL - 3); cx.lineTo(x + 3, y + m); cx.closePath(); cx.fill(); cx.stroke(); cx.fillStyle = T.unitInk; cx.font = '600 12px ' + FB; cx.fillText('C', x + m, y + m + 4); }
+  else shape(String(ex).toLowerCase(), x, y);
   cx.globalAlpha = 1;
-  if (k !== 'w' && hp < 1000 && !dead) { cx.fillStyle = '#000'; cx.fillRect(x + 4, y + CELL - 7, CELL - 8, 4); cx.fillStyle = '#6fd08c'; cx.fillRect(x + 4, y + CELL - 7, (CELL - 8) * hp / 1000, 4); }
-  if (dead && k !== 'w') { cx.strokeStyle = '#ff6b6b'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + 6, y + 6); cx.lineTo(x + CELL - 6, y + CELL - 6); cx.moveTo(x + CELL - 6, y + 6); cx.lineTo(x + 6, y + CELL - 6); cx.stroke(); }
+  if (k !== 'w' && hp < 1000 && !dead) { cx.fillStyle = T.hpBack; cx.fillRect(x + 4, y + CELL - 7, CELL - 8, 4); cx.fillStyle = T.hpFill; cx.fillRect(x + 4, y + CELL - 7, (CELL - 8) * hp / 1000, 4); }
+  if (dead && k !== 'w') { cx.strokeStyle = T.tomato; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + 6, y + 6); cx.lineTo(x + CELL - 6, y + CELL - 6); cx.moveTo(x + CELL - 6, y + 6); cx.lineTo(x + 6, y + CELL - 6); cx.stroke(); }
 }
 function drawUnit(t, x, y, hp, st) {
   if (hp <= 0) return;
   cx.fillStyle = UCOL[t]; cx.beginPath(); cx.arc(x + CELL / 2, y + CELL / 2, 13, 0, 7); cx.fill();
-  if (st === 2) { cx.strokeStyle = '#fff'; cx.lineWidth = 2; cx.stroke(); }
-  cx.fillStyle = '#000'; cx.font = 'bold 11px sans-serif'; cx.textAlign = 'center'; cx.fillText(UAB[t], x + CELL / 2, y + CELL / 2 + 4);
-  cx.fillStyle = '#000'; cx.fillRect(x + 6, y + 2, CELL - 12, 3); cx.fillStyle = '#6fd08c'; cx.fillRect(x + 6, y + 2, (CELL - 12) * hp / 1000, 3);
+  if (st === 2) { cx.strokeStyle = T.attackRing; cx.lineWidth = 2; cx.stroke(); }
+  cx.fillStyle = T.unitInk; cx.font = '600 11px ' + FB; cx.textAlign = 'center'; cx.fillText(UAB[t], x + CELL / 2, y + CELL / 2 + 4);
+  cx.fillStyle = T.hpBack; cx.fillRect(x + 6, y + 2, CELL - 12, 3); cx.fillStyle = T.hpFill; cx.fillRect(x + 6, y + 2, (CELL - 12) * hp / 1000, 3);
 }
 function heatFor(s) {                                  // returns {vals: per border tile, label}
-  const hv = s.heat_total;
   if (heatMode === 'total') return {vals: s.heat_tile, label: 'per-tile total over all unit types'};
   let u = -1;
   const m = s.action - D.deploy_base;
@@ -214,21 +239,21 @@ function heatFor(s) {                                  // returns {vals: per bor
 }
 function draw() {
   cx.clearRect(0, 0, W, W);
-  cx.fillStyle = '#0d1017'; cx.fillRect(0, 0, W, W);
-  cx.strokeStyle = '#1f2638'; cx.lineWidth = 1;
-  for (let i = 0; i <= N; i++) { cx.beginPath(); cx.moveTo(i * CELL, 0); cx.lineTo(i * CELL, W); cx.moveTo(0, i * CELL); cx.lineTo(W, i * CELL); cx.stroke(); }
+  cx.fillStyle = T.boardBg; cx.fillRect(0, 0, W, W);
+  cx.strokeStyle = T.gridLine; cx.lineWidth = 1;
+  for (let i = 0; i <= N; i++) { cx.beginPath(); cx.moveTo(i * CELL + 0.5, 0); cx.lineTo(i * CELL + 0.5, W); cx.moveTo(0, i * CELL + 0.5); cx.lineTo(W, i * CELL + 0.5); cx.stroke(); }
   const dec = pos < nDec;
   let hinfo = '';
   if (dec) {
     const s = D.steps[pos], h = heatFor(s), mx = Math.max.apply(null, h.vals.concat([1e-12]));
     if (s.heat_total > 0) {
-      h.vals.forEach((v, b) => { const [r, c] = BT[b]; cx.fillStyle = heatColor(v / mx); cx.globalAlpha = v > 0 ? 0.9 : 0.15; cx.fillRect(c * CELL + 1, r * CELL + 1, CELL - 2, CELL - 2); cx.globalAlpha = 1; });
+      h.vals.forEach((v, b) => { const [r, c] = BT[b]; cx.fillStyle = heatColor(v / mx); cx.globalAlpha = v > 0 ? 0.9 : 0.35; cx.fillRect(c * CELL + 1, r * CELL + 1, CELL - 2, CELL - 2); cx.globalAlpha = 1; });
       hinfo = h.label + '; colour scale 0 to ' + fmt(mx) + ' (max over border tiles); total deploy probability ' + fmt(s.heat_total);
     } else hinfo = 'no deploy action is legal at this step, so the heatmap is empty (total deploy probability 0)';
     D.structs.forEach(st => drawStruct(st, 1000));
     s.army.forEach(([t, b]) => { const [r, c] = BT[b]; drawUnit(t, c * CELL, r * CELL, 1000, 0); });
     const m = s.action - D.deploy_base;
-    if (m >= 0 && m < 5 * D.n_border) { const b = m % D.n_border, [r, c] = BT[b]; cx.strokeStyle = '#fff'; cx.lineWidth = 3; cx.strokeRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4); }
+    if (m >= 0 && m < 5 * D.n_border) { const b = m % D.n_border, [r, c] = BT[b]; cx.strokeStyle = T.chosenFrame; cx.lineWidth = 3; cx.strokeRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4); }
   } else {
     const f = D.battle.frames[pos - nDec];
     D.structs.forEach((st, i) => drawStruct(st, f.s[i]));
@@ -236,18 +261,23 @@ function draw() {
   }
   $('heatinfo').textContent = hinfo;
 }
+function pretty(label) {                               // 'Deploy sniper at border tile 3 (row 0, col 3)' -> ['Deploy Sniper (0,3)', 'border tile 3']
+  const m = /^Deploy (\w+) at border tile (\d+) \(row (\d+), col (\d+)\)$/.exec(label);
+  return m ? ['Deploy ' + m[1].charAt(0).toUpperCase() + m[1].slice(1) + ' (' + m[3] + ',' + m[4] + ')', 'border tile ' + m[2]] : [label, ''];
+}
 function panel() {
   const dec = pos < nDec;
   $('decpanel').style.display = dec ? '' : 'none'; $('batpanel').style.display = dec ? 'none' : '';
   $('where').textContent = dec ? 'decision step ' + (pos + 1) + ' of ' + nDec : 'battle, tick ' + D.battle.frames[pos - nDec].t + ' of ' + D.outcome.ticks;
   if (dec) {
-    const s = D.steps[pos];
+    const s = D.steps[pos], pc = pretty(s.label);
     $('phase').textContent = s.phase + ' phase, gold ' + s.gold + ', units bought ' + s.bought + ', legal actions ' + s.n_legal;
-    $('chosen').textContent = s.label + '  (probability ' + fmt(s.p_chosen) + (D.algo === 'ddqn' ? ', softmax of Q: not a policy' : '') + ')';
+    $('chosen').textContent = pc[0] + '  (probability ' + fmt(s.p_chosen) + (D.algo === 'ddqn' ? ', softmax of Q: not a policy' : '') + ')'; $('chosen').title = pc[1];
     $('toplabel').textContent = D.algo === 'ddqn' ? 'Top 5 actions by Q. Softmax column is NOT a policy (fixed temperature ' + D.temperature + ').' : 'Top 5 actions by probability' + (D.tta ? ' (TTA: softmax of the 8-view mean log-probability).' : '.');
-    $('top').innerHTML = '<tr><th>#</th><th>action</th>' + (D.algo === 'ddqn' ? '<th>Q</th><th>softmax</th>' : '<th>prob.</th>') + '<th></th></tr>' + s.top.map((t, i) =>
-      '<tr class="' + (t.a === s.action ? 'chosen' : '') + '"><td>' + (i + 1) + '</td><td>' + t.label + (t.a === s.action ? ' &#9664; chosen' : '') + '</td>' +
-      (D.algo === 'ddqn' ? '<td>' + fmt(t.q) + '</td><td>' + fmt(t.p) + '</td>' : '<td>' + fmt(t.p) + '</td>') + '<td style="width:25%"><div class="bar" style="width:' + Math.round(100 * t.p) + '%"></div></td></tr>').join('');
+    $('top').innerHTML = '<tr><th class="num">#</th><th>action</th>' + (D.algo === 'ddqn' ? '<th class="num">Q</th><th class="num">softmax</th>' : '<th class="num">prob.</th>') + '<th></th></tr>' + s.top.map((t, i) => {
+      const p = pretty(t.label);
+      return '<tr class="' + (t.a === s.action ? 'chosen' : '') + '"><td class="num">' + (i + 1) + '</td><td title="' + p[1] + '">' + p[0] + (t.a === s.action ? ' &#9664; chosen' : '') + '</td>' +
+      (D.algo === 'ddqn' ? '<td class="num">' + fmt(t.q) + '</td><td class="num">' + fmt(t.p) + '</td>' : '<td class="num">' + fmt(t.p) + '</td>') + '<td style="width:25%"><div class="bar" style="width:' + Math.round(100 * t.p) + '%"></div></td></tr>'; }).join('');
     $('value').textContent = fmt(s.value);
   } else {
     const f = D.battle.frames[pos - nDec];
@@ -260,11 +290,11 @@ function panel() {
 }
 function spark() {
   const c = $('spark'), g = c.getContext('2d'), w = c.width, h = c.height, v = D.steps.map(s => s.value), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v), pad = 6;
-  g.clearRect(0, 0, w, h); g.fillStyle = '#0d1017'; g.fillRect(0, 0, w, h);
+  g.clearRect(0, 0, w, h); g.fillStyle = T.boardBg; g.fillRect(0, 0, w, h);
   const X = i => pad + (w - 2 * pad) * (v.length > 1 ? i / (v.length - 1) : 0.5), Y = x => h - pad - (h - 2 * pad) * (hi > lo ? (x - lo) / (hi - lo) : 0.5);
-  g.strokeStyle = '#2e3650'; if (lo < 0 && hi > 0) { g.beginPath(); g.moveTo(pad, Y(0)); g.lineTo(w - pad, Y(0)); g.stroke(); }
-  g.strokeStyle = '#ffb347'; g.lineWidth = 2; g.beginPath(); v.forEach((x, i) => i ? g.lineTo(X(i), Y(x)) : g.moveTo(X(i), Y(x))); g.stroke();
-  const cur = Math.min(pos, nDec - 1); g.fillStyle = '#fff'; g.beginPath(); g.arc(X(cur), Y(v[cur]), 4, 0, 7); g.fill();
+  g.strokeStyle = T.line; if (lo < 0 && hi > 0) { g.beginPath(); g.moveTo(pad, Y(0)); g.lineTo(w - pad, Y(0)); g.stroke(); }
+  g.strokeStyle = T.text; g.lineWidth = 2; g.beginPath(); v.forEach((x, i) => i ? g.lineTo(X(i), Y(x)) : g.moveTo(X(i), Y(x))); g.stroke();
+  const cur = Math.min(pos, nDec - 1); g.fillStyle = T.neon; g.beginPath(); g.arc(X(cur), Y(v[cur]), 4, 0, 7); g.fill();
   $('sparinfo').textContent = 'min ' + fmt(lo) + ', max ' + fmt(hi) + ', at the marker ' + fmt(v[cur]) + ' (decision step ' + (cur + 1) + ')';
 }
 function go(p) { pos = Math.max(0, Math.min(total - 1, p)); draw(); panel(); }
@@ -276,6 +306,7 @@ $('play').onclick = () => { if (timer) { clearInterval(timer); timer = null; $('
 document.onkeydown = e => { if (e.key === 'ArrowRight') go(pos + 1); if (e.key === 'ArrowLeft') go(pos - 1); };
 const h0 = parseInt(location.hash.slice(1));
 go(isNaN(h0) ? 0 : h0);          // #N opens at scrubber position N (0-based)
+if (document.fonts && document.fonts.load) Promise.all(["600 11px 'Instrument Sans'", "14px 'IBM Plex Mono'"].map(f => document.fonts.load(f))).then(() => go(pos));   // canvas text needs the embedded fonts
 """
 
 
@@ -294,7 +325,7 @@ def build_html(meta: dict, ep: dict, rate: int) -> str:
             "deploy_base": 5, "border": meta["border"], "steps": ep["steps"], "structs": ep["structs"], "outcome": out,
             "battle": {"frames": frames, "units": ep["battle"]["units"], "rate": rate}}
     view = "TTA (8 views)" if meta["tta"] else "plain"
-    brk = "YES" if out["core"] else "NO"
+    brk = "breach" if out["core"] else "held"
     head_rows = [("code_commit", meta["code_commit"]), ("model id", f"{meta['run']} (final checkpoint sha256 {meta['model_sha'][:16]})"), ("layout id", meta["layout_id"]),
                  ("layout family", meta["family"]), ("split", SPLIT_LABEL), ("sim_version", meta["sim_version"]), ("SCORE_VERSION", meta["score_version"]),
                  ("battle frames", f"every {rate} tick(s) of {out['ticks']}" + (" (subsampled; the last tick is always kept)" if rate > 1 else " (all ticks)")),
@@ -309,14 +340,15 @@ def build_html(meta: dict, ep: dict, rate: int) -> str:
 <header><h1>Why this move? {html.escape(meta['arm'])}, {view}</h1>
 <div class="badges"><span class="badge">arm <b>{html.escape(meta['arm'])}</b></span><span class="badge">model <b>{html.escape(meta['run'])}</b></span>
 <span class="badge">split <b>{html.escape(SPLIT_LABEL)}</b></span><span class="badge">view <b>{view}</b></span><span class="badge">family <b>{html.escape(meta['family'])}</b></span></div>
-<div class="outcome"><b>Episode outcome (true result of this replay):</b> score <b>{out['score']:.4f}</b> &middot; D = {out['d']:.4f} ({out['d_num']}/{out['d_den']} building value destroyed)
-&middot; core breached: <b class="{'yes' if out['core'] else 'no'}">{brk}</b> &middot; {out['n_units']} units deployed &middot; battle {out['ticks']} ticks ({html.escape(out['reason'])})</div>
+<div class="disclaimer mut">{html.escape(R.DISCLAIMER)}</div>
+<div class="outcome"><b>Episode outcome (true result of this replay):</b> score <b class="num k">{out['score']:.4f}</b> &middot; D = <span class="num">{out['d']:.4f}</span> (<span class="num">{out['d_num']}/{out['d_den']}</span> building value destroyed)
+&middot; core <span class="pill {'breach' if out['core'] else 'held'}">{brk}</span> &middot; <span class="num">{out['n_units']}</span> units deployed &middot; battle <span class="num">{out['ticks']}</span> ticks ({html.escape(out['reason'])})</div>
 <details><summary>Provenance</summary><table>{meta_html}</table></details></header>
-<main><div class="wrap"><div class="col" style="flex:0 0 580px"><div class="card"><canvas id="grid" aria-label="14 by 14 grid"></canvas>
+<main><div class="wrap"><div class="col" style="flex:2 1 820px"><div class="card"><div class="board"><canvas id="grid" aria-label="14 by 14 grid"></canvas>
+<div class="key"><b>Legend</b>{R.legend_svg(xmlns=False, fonts=False)}<div class="mut" style="margin-top:6px">White ring on a unit: attacked this tick. Neon frame: tile of the chosen deploy. {html.escape(R.AGENTS_SEE)}</div></div></div>
 <div class="ctl"><span class="mut">Heatmap:</span><button id="h_chosen" aria-pressed="true">Chosen unit type</button><button id="h_total" aria-pressed="false">Per-tile total</button>
-<span class="legend"><span>0</span><span class="grad"></span><span>max</span></span></div><div class="mut" id="heatinfo"></div>
-<div class="mut" style="margin-top:6px">Blue squares: buildings (number = value). Diamond C: core. Grey: walls. Red circles: defenders (G gun, L lancer, F flak). Coloured circles: your units (Sc scout, Sn sniper, Bu bulwark, Bl blaster, Me mender). White square: tile of the chosen deploy.</div></div></div>
-<div class="col"><div class="card"><div class="ctl"><button id="prev">&larr; Prev</button><button id="play">Play</button><button id="next">Next &rarr;</button>
+<span class="scale"><span class="num">0</span><span class="grad"></span><span>max (deploy probability)</span></span></div><div class="mut" id="heatinfo"></div></div></div>
+<div class="col"><div class="card"><div class="ctl"><button id="prev">&larr; Prev</button><button id="play" class="primary">Play</button><button id="next">Next &rarr;</button>
 <input type="range" id="scrub" min="0" max="0" value="0" aria-label="step scrubber"></div><div id="where"><b></b></div>
 <div class="mut">Decision steps ({len(ep['steps'])}: buy, deploy, end-buy, wait), then the battle ({len(frames)} frames). Arrow keys also work.</div></div>
 <div class="card" id="decpanel"><h2>Why this move?</h2><div class="mut" id="phase"></div><div style="margin:6px 0"><b>Chosen:</b> <span id="chosen"></span></div>
@@ -324,7 +356,7 @@ def build_html(meta: dict, ep: dict, rate: int) -> str:
 <div style="margin-top:8px"><b>Value estimate:</b> <span id="value"></span> <span class="mut">{html.escape(X.VALUE_LABEL)}; {'critic V(s)' if meta['algo']=='ppo' else 'max over legal actions of Q'}{' (TTA: mean over 8 views)' if meta['tta'] else ''}. It is not comparable with the final score.</span></div></div>
 <div class="card" id="batpanel" style="display:none"><h2>Battle</h2><div id="bat"></div></div>
 <div class="card"><h2>Value over the decision steps (shaped-return estimate)</h2><canvas id="spark" width="520" height="90"></canvas><div class="mut" id="sparinfo"></div></div></div></div></main>
-<footer class="mut">{html.escape(kind)} Layout from {html.escape(SPLIT_LABEL)}. Everything on this page is a read-out of a frozen checkpoint; nothing was trained or tuned for it. <a href="index.html">All replays</a></footer>
+<footer class="mut">{html.escape(kind)} Layout from {html.escape(SPLIT_LABEL)}. <a href="index.html">All replays</a></footer>
 <script type="application/json" id="data">{_esc_json(data)}</script><script>{JS}</script></body></html>
 """
 
@@ -334,13 +366,13 @@ def build_index(rows: list, prov: dict) -> str:
     for r in rows:
         o = r["outcome"]
         body.append(f"<tr><td>{r['family']}</td><td>{r['arm']}</td><td>{'TTA' if r['tta'] else 'plain'}</td><td><a href=\"{r['file']}\">{html.escape(r['layout_id'])}</a></td>"
-                    f"<td>{o['score']:.4f}</td><td>{o['d']:.4f}</td><td class=\"{'yes' if o['core'] else 'no'}\">{'yes' if o['core'] else 'no'}</td><td>{r['size']:,} B</td></tr>")
+                    f"<td class=\"num\">{o['score']:.4f}</td><td class=\"num\">{o['d']:.4f}</td><td><span class=\"pill {'breach' if o['core'] else 'held'}\">{'breach' if o['core'] else 'held'}</span></td><td class=\"num\">{r['size']:,} B</td></tr>")
     meta = f"code_commit {prov['code_commit']}; sim_version {prov['sim_version']}; SCORE_VERSION {prov['score_version']}; split {SPLIT_LABEL}"
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Why this move? replays</title><style>{CSS}</style></head><body>
 <header><h1>Why this move? 18 replays</h1><p class="mut">First DEV-validation layout of each familiar family, seed-0 display model of each arm, plain and TTA. The set was fixed by index
 (Gate changelog row (jj)), not by outcome; every replay shows its true outcome, including failures. Split: {html.escape(SPLIT_LABEL)}.</p>
-<p class="mut">Provenance: <code>{html.escape(meta)}</code></p></header>
+<div class="disclaimer mut">{html.escape(R.DISCLAIMER)}</div><p class="mut">Provenance: <code>{html.escape(meta)}</code></p></header>
 <main><div class="card"><table><tr><th>family</th><th>arm</th><th>view</th><th>layout (replay)</th><th>score</th><th>D</th><th>breach</th><th>file size</th></tr>{''.join(body)}</table></div>
 <p class="mut">DDQN softmax bars are labelled "not a policy". Values are shaped-return estimates, not game scores.</p></main></body></html>
 """

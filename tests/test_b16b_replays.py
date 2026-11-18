@@ -109,7 +109,7 @@ def test_outcomes_shown_whatever_they_are(runs):
     for r in rows:
         t = (out / r["file"]).read_text()
         assert "Episode outcome (true result of this replay)" in t
-        assert ("core breached: <b class=\"yes\">YES" in t) == r["outcome"]["core"]
+        assert ('core <span class="pill breach">breach</span>' in t) == r["outcome"]["core"]        # B18c: pill instead of YES / NO
 
 
 def test_byte_identical_across_two_runs(runs):
