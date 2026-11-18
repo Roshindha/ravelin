@@ -163,6 +163,7 @@ def test_screenshot_rule_positions_and_files():
     assert pos["tick"] == min(120, ep["outcome"]["ticks"]) and pos["pos_battle"] == n_dec + pos["tick"]
     assert (pos["pos_deploy"], pos["pos_battle"], pos["tick"]) == (9, 137, 120)            # the documented values
     shots = sorted(p.name for p in (ROOT / "docs" / "screenshots").glob("*.png"))
+    shots = [s for s in shots if s.startswith("b18a_")]      # B18b adds its own b18b_* files (row (mm) (g))
     assert shots == [f"b18a_pos{pos['pos_battle']}_battle_tick_{pos['tick']}.png", f"b18a_pos{pos['pos_deploy']}_first_deploy_step.png"]
     # the app shows exactly those frames at those positions
     at.slider[0].set_value(pos["pos_deploy"]).run()

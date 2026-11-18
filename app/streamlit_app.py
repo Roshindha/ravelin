@@ -1,4 +1,4 @@
-"""B18a: Streamlit app shell + replay / decision-lens view (docs/SPEC_V2.md, Gate changelog row (ll)). A DEMO; no duel yet (B18b).
+"""B18a: Streamlit app shell + replay / decision-lens view (docs/SPEC_V2.md, Gate changelog row (ll)). A DEMO. Mode "Duel" (B18b, row (mm)) lives in app/duel_ui.py.
 
     .venv/bin/streamlit run app/streamlit_app.py
 
@@ -27,6 +27,7 @@ ARMS = tuple(X.DISPLAY_MODELS)                                # ppo_plain, ppo_d
 VIEWS = ("TTA", "plain")
 DEFAULT = {"split": "DEV-validation", "layout": "spine_pods-300000056", "arm": "ppo_plain", "view": "TTA", "pos": 0, "heat": "Chosen unit type"}
 HEATS = ("Chosen unit type", "Per-tile total")
+MODES = ("Replay", "Duel")
 DEMO = "DEMO: a read-out of frozen checkpoints on DEV layouts. Nothing here is a result."
 
 st.set_page_config(page_title="Breach Lens (demo)", page_icon="▦", layout="wide", initial_sidebar_state="collapsed")
@@ -46,6 +47,7 @@ h1, h2, h3 { letter-spacing: .04em; font-weight: 500; }
 .panel { border:1px solid #2d5a8c; background:rgba(13,34,68,.7); padding:10px 14px; margin-bottom:10px; }
 .mut { color:#7fa6cf; font-size:12px; }
 .outcome { border-left:3px solid #5ec8ff; padding:4px 10px; margin:6px 0; background:rgba(13,34,68,.7); }
+.stButton button { padding:.25rem .35rem; } .stButton button p { font-size:12px; white-space:nowrap; overflow:visible; text-overflow:clip; }
 table.top { width:100%; border-collapse:collapse; font-size:13px; }
 table.top td, table.top th { border-bottom:1px solid #1d3d6b; padding:3px 6px; text-align:left; }
 table.top tr.chosen td { color:#ffe27a; }
@@ -112,8 +114,6 @@ def fmt(x, n=4):
 
 # ----------------------------------------------------------------------------------------------------------------------------- views
 def command_bar():
-    st.markdown(CSS, unsafe_allow_html=True)
-    st.markdown(f'<div class="banner">{DEMO}</div>', unsafe_allow_html=True)
     c = st.columns([1.1, 2.2, 1.1, 1.0, 0.1])
     split = c[0].selectbox("Split", SPLITS, key="split")
     ids = layout_ids(split)
@@ -202,6 +202,18 @@ def headline_section():
 
 
 def main():
+    st.markdown(CSS, unsafe_allow_html=True)
+    top = st.columns([1.3, 5.7])
+    mode = top[0].radio("Mode", MODES, key="mode", horizontal=True)       # the Duel switch lives in the top command bar
+    top[1].markdown(f'<div class="banner">{DEMO}</div>', unsafe_allow_html=True)
+    if mode == "Duel":
+        from app import duel_ui
+        duel_ui.run()
+        return
+    replay_main()
+
+
+def replay_main():
     init_state()
     split, layout, arm, tta = command_bar()
     ep = episode(split, layout, arm, tta)

@@ -672,6 +672,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B18b DONE (duel mode in the app: `app/duel_ui.py` + mode switch in `app/streamlit_app.py`, reusing `breachlens/duel.py` and `data/v2/duel_cache.json`; Gate changelog (mm) written before code; no training, no new results; ledger sha unchanged). Next: only when told.
 - v2 B18a DONE (Streamlit shell + replay / decision lens, Gate changelog (ll) written before code; no training, no new results; ledger sha unchanged). Next: B18b (duel in the app), only when told.
 - v2 B17 DONE (duel core: `breachlens/duel.py`, `scripts/build_duel_cache.py`, `data/v2/duel_cache.json`, Gate changelog (kk) written before code; no training, no new results; ledger sha unchanged). Next: UI on top of it, only when told.
 - v2 B16b DONE (18 self-contained HTML replays + index in `docs/replays/`, generator `scripts/make_replays.py`, Gate changelog (jj) written before code; no training, no new results; ledger sha unchanged). Next: only when told.
@@ -703,3 +704,10 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Item 0 (commit 0b6856b): Gate changelog (ii): layouts DEV-train / DEV-validation only via the pool API (roles train / validation; FINAL, transfer, LAB-DESIGN, TUNE-* raise), DEV-train labelled in-sample; display models = seed 0 of each arm (`grid_ppo_plain_s0`, `grid_ppo_d4_s0`, `grid_ddqn_s0`); DDQN softmax view at fixed T = 0.1 labelled "not a policy"; TTA = all 8 views through `rl.tta.tta_scores` (PPO: softmax of the mean log-prob over legal actions; DDQN: mean Q); value = PPO critic V(s) (TTA: mean over 8 views) / DDQN max legal Q, labelled SHAPED-return estimates.
 - `rl/explain.py`: `explain` (distribution, heatmap [unit x border tile] + per-tile / per-unit / total, top-5 labelled actions, value), `explain_layout_step` (plays the learner's own deterministic B15 policy, plain or TTA, to a step), `load_dev_layout`, `format_text`, CLI. Action-index map is in the module docstring.
 - `tests/test_b16a_explain.py`: fidelity per arm (plain + TTA), PPO probabilities sum to 1 within 1e-6 and illegal exactly 0, heatmap totals = summed deploy probability, guards, ledger sha unchanged (20a8b287...), determinism, split labels, CLI.
+
+### STEP B18b (duel mode in the Streamlit app) -- done, no training, no new results
+- Item 0 (commit e97840d): Gate changelog (mm): 30 DEV-validation layouts only (default `spine_pods-300000056`), contestants / labels as (kk), opponents hidden and cache unread until the battle resolves, human runs only to the gitignored `results_v2/duel_human_runs.jsonl` (no leaderboard / aggregate), one-line demo disclaimer, screenshot script.
+- `app/duel_ui.py`: BUY (unit buttons with cost, remaining gold, undo, END BUY), DEPLOY (unit select + border-tile number input, DEPLOY, WAIT; free tiles numbered on the grid), engine messages for illegal actions (no state change), battle replay scrubber, comparison table via `Duel.reveal` (Oracle label, BestSingle, disclaimer), New duel. All state in `st.session_state`; `BREACHLENS_DUEL_RUNS` env var overrides the human-run path (tests). `app/render.py`: optional `tile_labels`. WAIT = engine WAIT; END = END_BUY; the battle also starts when the last unit is deployed, so the screenshot script needed no WAIT.
+- `tests/test_b18b_duel_app.py` (11 tests); `tests/test_b18a_app.py` screenshot-list assertion narrowed to `b18a_*` files.
+- Screenshots: `docs/screenshots/b18b_duel_mid_buy.png`, `b18b_duel_results_table.png`.
+- Full suite: exit=0, 764 passed in 1026 s.

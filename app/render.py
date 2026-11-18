@@ -61,7 +61,7 @@ def _unit(t, col, row, hp, st):
             + (_hp_bar(x, y - 0, hp) if hp < 1000 else ""))
 
 
-def grid_svg(ep: dict, border: list, n: int, pos: int, heat_mode: str) -> tuple[str, str]:
+def grid_svg(ep: dict, border: list, n: int, pos: int, heat_mode: str, tile_labels: list | None = None) -> tuple[str, str]:
     """(svg, heat caption) for scrubber position `pos`: decision steps first (0 .. n_dec-1), then battle frames."""
     n_dec = len(ep["steps"])
     W = n * CELL
@@ -104,6 +104,9 @@ def grid_svg(ep: dict, border: list, n: int, pos: int, heat_mode: str) -> tuple[
                    f'<text x="-6" y="{i * CELL + CELL / 2 + 3}" text-anchor="end" fill="#6fa8d8" font-size="9">{i}</text>')
     out.append(f'<rect x="0" y="0" width="{W}" height="{W}" fill="none" stroke="#7cc4ff" stroke-width="1.5"/>')
     out += [_struct(s, hp) for s, hp in structs]
+    for b in tile_labels or []:                                        # B18b duel: border tile indices on the free tiles
+        r, c = border[b]
+        out.append(f'<text x="{c * CELL + CELL / 2}" y="{r * CELL + CELL / 2 + 4}" text-anchor="middle" fill="#9fd4ff" font-size="11">{b}</text>')
     out += [_unit(*u) for u in units]
     if pos < n_dec:
         m = ep["steps"][pos]["action"] - 5
