@@ -648,6 +648,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B16a DONE (explainability core `rl/explain.py` + text CLI `python -m rl.explain`, Gate changelog (ii) written before code; seed-0 display models, DEV familiar layouts only, in-sample label on DEV-train; fidelity tests vs the B15 eval policy plain + TTA; ledger sha unchanged). Next: HTML replay / UI on top of it, only when told.
 - v2 B15d DONE (suite green after B15, no guard weakened; commits 2efcfab and a18d612). Real ledger frozen at 5 build + one eval session (3ccef86e, 238 entries), byte-identical to tag `b15-final`; launchers (B13/B14) and the B15 runner refuse on it permanently (tested); dirty-flag evidence in docs/LIMITATIONS.md. Next: explainability, only when told.
 - v2 B15 DONE (FINAL session 3ccef86e, single session, commit tagged `b15-final`; analysis reproduced byte for byte; docs/RESULTS.md written from results/b15/tables only). Headlines: no learner beats BestSingle on breach; planner beats equal-N controls on FINAL-familiar; TTA holds 12/12; D4 vs plain not established; 27/64 primary checks hold. Next: explainability, only when told. The FINAL set must not be touched again.
 - v2 B15a DONE (session + analysis scripts, rehearsal, tests; FINAL never loaded). Next: owner runs the real session from a clean commit (`scripts_b15_final.py --unlock-final`), only when told.
@@ -670,3 +671,8 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 
 ### STEP B15a-2 (v2): Gate changelog row (hh)
 - Row (hh) (2026-11-17): erratum for the (gg) generator hash (full value, B5 record), every former UNPINNED rule pinned in full (`PINNED_BY_HH`, test checks constant == row), restart rule: `--cause code-fix` only after the defect is reported to the user and agreed (`--defect-agreed`), cells from different commits disclosed in LIMITATIONS. The precondition now checks the FULL generator hash against row (hh) and the B5 record; the 8-character workaround is gone. FINAL not loaded; ledger 5 build / 0 eval; real run NOT started.
+
+### STEP B16a (explainability core) -- done, no training, no new results
+- Item 0 (commit 0b6856b): Gate changelog (ii): layouts DEV-train / DEV-validation only via the pool API (roles train / validation; FINAL, transfer, LAB-DESIGN, TUNE-* raise), DEV-train labelled in-sample; display models = seed 0 of each arm (`grid_ppo_plain_s0`, `grid_ppo_d4_s0`, `grid_ddqn_s0`); DDQN softmax view at fixed T = 0.1 labelled "not a policy"; TTA = all 8 views through `rl.tta.tta_scores` (PPO: softmax of the mean log-prob over legal actions; DDQN: mean Q); value = PPO critic V(s) (TTA: mean over 8 views) / DDQN max legal Q, labelled SHAPED-return estimates.
+- `rl/explain.py`: `explain` (distribution, heatmap [unit x border tile] + per-tile / per-unit / total, top-5 labelled actions, value), `explain_layout_step` (plays the learner's own deterministic B15 policy, plain or TTA, to a step), `load_dev_layout`, `format_text`, CLI. Action-index map is in the module docstring.
+- `tests/test_b16a_explain.py`: fidelity per arm (plain + TTA), PPO probabilities sum to 1 within 1e-6 and illegal exactly 0, heatmap totals = summed deploy probability, guards, ledger sha unchanged (20a8b287...), determinism, split labels, CLI.

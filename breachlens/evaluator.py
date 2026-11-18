@@ -63,6 +63,27 @@ def load_set(set_name: str, role: str, unlock: bool = False, entry_point: str = 
     return [(r, P.load_layout(r, role, entry_point=entry_point)) for r in recs]
 
 
+def load_dev_layout(split: str, index: int | None = None, layout_id: str | None = None, entry_point: str = "breachlens.evaluator") -> tuple:
+    """(record, layout) of ONE DEV-train / DEV-validation layout (role train / validation; B16a explainability). Every other split raises
+    PermissionError before anything is loaded; a FINAL / transfer / design-set id is refused by the pool role guard."""
+    roles = {"DEV-train": "train", "DEV-validation": "validation"}
+    if split not in roles:
+        raise PermissionError(f"only DEV familiar layouts (DEV-train, DEV-validation) may be loaded here; {split!r} is refused")
+    role = roles[split]
+    recs = P.load_pool_records(split, role, entry_point=entry_point)
+    if layout_id is not None:
+        P.assert_dev_only([layout_id], role)
+        hit = [r for r in recs if r["id"] == layout_id]
+        if not hit:
+            raise PermissionError(f"layout {layout_id!r} is not in {split}")
+        rec = hit[0]
+    else:
+        if index is None or not 0 <= index < len(recs):
+            raise ValueError(f"index must be in 0..{len(recs) - 1} for {split}")
+        rec = recs[index]
+    return rec, P.load_layout(rec, role, entry_point=entry_point)
+
+
 def _work(args):
     policy, rec, layout = args
     t0 = time.perf_counter()
