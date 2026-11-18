@@ -33,19 +33,34 @@ def _states(model, algo, tta):
             yield rec, step, env, obs, env.action_masks()
 
 
-def eval_action(model, algo, obs, mask, tta):
-    """The action the B15 evaluation policy takes, written out independently of rl.explain."""
-    from rl.tta import tta_action
-    if tta:
-        if algo == "ppo":
-            from rl.eval_ppo_v2 import masked_probs
-            return tta_action(masked_probs(model), obs, mask, aggregate="logprob")
-        from rl.ddqn import q_values_fn
-        return tta_action(q_values_fn(model), obs, mask, aggregate="mean")
-    if algo == "ppo":
-        return int(model.predict(obs, action_masks=mask, deterministic=True)[0])
-    from rl.ddqn import DDQNPolicy
-    return DDQNPolicy(model).act(obs, mask)
+def b15_actions(arm, tta, rec, layout, monkeypatch):
+    """The action sequence the B15 evaluator's own code path takes on one layout: `scripts_b15_final._task` (the function the B15 session runs per
+    (cell, layout)) builds the policy (ModelPolicy / DDQNPolicy.act / tta_policy + rl.tta.tta_action) and plays the episode; BreachEnv.step is wrapped
+    only to record the chosen actions. Nothing from rl.explain is used here."""
+    import scripts_b15_final as F
+    from breachlens.env import BreachEnv
+    run, algo = X.DISPLAY_MODELS[arm]
+    taken, orig = [], BreachEnv.step
+
+    def rec_step(self, action):
+        taken.append(int(action))
+        return orig(self, action)
+    with monkeypatch.context() as mp:
+        mp.setattr(BreachEnv, "step", rec_step)
+        F._task(({"kind": "learner", "run": run, "algo": algo, "tta": tta, "name": f"{arm}{'_tta' if tta else ''}"}, rec, layout,
+                 {"models_dir": str(X.MODELS)}))
+    return taken
+
+
+def _replay_states(rec, layout, taken):
+    """Replay `taken` on a fresh env (B15 reset seed); yield (step, env, obs, mask, action) BEFORE each action."""
+    import zlib
+    from breachlens.env import BreachEnv
+    env = BreachEnv(layouts=[layout], role="train")
+    obs, _ = env.reset(seed=zlib.crc32(rec["id"].encode()), options={"layout_index": 0})
+    for step, a in enumerate(taken):
+        yield step, env, obs, env.action_masks(), a
+        obs, _, _, _, _ = env.step(a)
 
 
 @pytest.fixture(scope="module", params=ARMS)
@@ -60,18 +75,22 @@ def test_display_models_are_seed_zero():
 
 
 @pytest.mark.parametrize("tta", [False, True])
-def test_fidelity_argmax_equals_eval_policy(loaded, tta):
+def test_fidelity_argmax_equals_eval_policy(loaded, tta, monkeypatch):
     arm, m, algo, _ = loaded
     n = ok = 0
-    for rec, step, env, obs, mask in _states(m, algo, tta):
-        ex = X.explain(m, algo, obs, mask, tta=tta)
-        a = eval_action(m, algo, obs, mask, tta)
-        n += 1
-        ok += ex["greedy_action"] == a
-        assert ex["greedy_action"] == a, (arm, tta, rec["id"], step)
-        assert ex["top"][0]["action"] == a
-        probs = np.asarray(ex["distribution"]["probs"])
-        assert probs[a] == probs[mask].max()                                                 # displayed argmax is the chosen action (ties aside)
+    for split, idx in STATES:
+        rec, layout = X.load_dev_layout(split, idx)
+        taken = b15_actions(arm, tta, rec, layout, monkeypatch)                  # actions chosen by the B15 evaluator path
+        for step, env, obs, mask, a in _replay_states(rec, layout, taken):
+            if step not in STEPS and step % 3:                                   # a spread of BUY and DEPLOY states (all steps in STEPS, every 3rd otherwise)
+                continue
+            ex = X.explain(m, algo, obs, mask, tta=tta)
+            n += 1
+            ok += ex["greedy_action"] == a
+            assert ex["greedy_action"] == a, (arm, tta, rec["id"], step)
+            assert ex["top"][0]["action"] == a
+            probs = np.asarray(ex["distribution"]["probs"])
+            assert probs[a] == probs[mask].max()
     print(f"FIDELITY {arm} tta={tta}: {ok}/{n}")
     assert n >= 15 and ok == n
 
@@ -157,3 +176,46 @@ def test_cli_prints_text(capsys):
     ex = X.main(["--arm", "ddqn", "--split", "DEV-validation", "--index", "0", "--step", "2"])
     out = capsys.readouterr().out
     assert "Why this move?" in out and "not a policy" in out and "SHAPED" in out and ex["step"] == 2
+
+
+def test_load_dev_layout_roles_ledger_and_refusals(monkeypatch):
+    """evaluator.load_dev_layout derives role 'train' (DEV-train) / 'validation' (DEV-validation), never 'design'; it never writes the ledger."""
+    from breachlens import evaluator as EV
+    seen = []
+    orig_rec, orig_lay = P.load_pool_records, P.load_layout
+    monkeypatch.setattr(P, "load_pool_records", lambda split, role, *a, **k: (seen.append(("recs", split, role)), orig_rec(split, role, *a, **k))[1])
+    monkeypatch.setattr(P, "load_layout", lambda rec, role, *a, **k: (seen.append(("layout", rec["split"], role)), orig_lay(rec, role, *a, **k))[1])
+    monkeypatch.setattr(P, "log_final_access", lambda *a, **k: pytest.fail("the ledger must not be written for DEV layouts"))
+    n0 = len(P.read_ledger())
+    EV.load_dev_layout("DEV-train", 0)
+    EV.load_dev_layout("DEV-validation", 0)
+    assert seen == [("recs", "DEV-train", "train"), ("layout", "DEV-train", "train"), ("recs", "DEV-validation", "validation"),
+                    ("layout", "DEV-validation", "validation")]
+    assert all(r != "design" for *_, r in seen)
+    for split in ("FINAL-familiar", "FINAL-transfer", "LAB-DESIGN", "TUNE-train", "TUNE-val", "nonsense"):
+        with pytest.raises(PermissionError):
+            EV.load_dev_layout(split, 0)
+    monkeypatch.undo()
+    assert len(P.read_ledger()) == n0 and ledger_sha() == LEDGER_SHA
+    # any role other than the one it uses is refused by the pool guards for these records
+    for split, own in (("DEV-train", "train"), ("DEV-validation", "validation")):
+        rec = P.load_pool_records(split, own)[0]
+        # the DEV-side roles: only its own role (and the union role 'tuning') may load it. 'build' / 'eval' are FINAL-side roles that the pool
+        # (unchanged) lets read DEV records without a ledger entry; load_dev_layout never uses them.
+        for role in ("train", "validation", "tuning", "design"):
+            if role in (own, "tuning"):
+                P.load_layout(rec, role)
+            else:
+                with pytest.raises(PermissionError):
+                    P.load_layout(rec, role)
+                with pytest.raises(PermissionError):
+                    P.load_pool_records(split, role)
+    assert ledger_sha() == LEDGER_SHA
+
+
+def test_cli_defaults_to_dev_validation_and_labels_dev_train(monkeypatch, capsys):
+    got = {}
+    monkeypatch.setattr(X, "explain_layout_step", lambda arm, split, *a, **k: got.update(split=split) or {"x": 1})
+    monkeypatch.setattr(X, "format_text", lambda ex: "ok")
+    X.main(["--arm", "ddqn"])
+    assert got["split"] == "DEV-validation"
