@@ -143,7 +143,7 @@ def decision_lens(ep: dict, pos: int):
         s = ep["steps"][pos]
         lens.update(kind="decision", chosen_action=s["action"], chosen_label=s["label"], top=[t["a"] for t in s["top"]], value=s["value"])
         st.subheader("Decision lens")
-        st.markdown(f'<div class="mut">decision step {pos} (= {pos} actions already taken) of 0..{n_dec - 1} &middot; {s["phase"]} phase &middot; '
+        st.markdown(f'<div class="mut">decision step {pos} (= {pos} actions already taken) of 0 to {n_dec - 1} &middot; {s["phase"]} phase &middot; '
                     f'gold {s["gold"]} &middot; bought {s["bought"]} &middot; legal actions {s["n_legal"]}</div>', unsafe_allow_html=True)
         pc = s["p_chosen"]
         txt, tip = R.pretty_label(s["label"])
@@ -244,9 +244,9 @@ def replay_main():
     b[0].button("◀ Prev", on_click=_step, args=(-1, key, total - 1), key="prev")
     b[1].button("Next ▶", on_click=_step, args=(1, key, total - 1), key="next")
     p = st.session_state[key]
-    where = f"decision step {p} of 0..{n_dec - 1}" if p < n_dec else f"battle tick {ep['battle']['frames'][p - n_dec]['t']} of {ep['outcome']['ticks']}"
+    where = f"decision step {p} of 0 to {n_dec - 1}" if p < n_dec else f"battle tick {ep['battle']['frames'][p - n_dec]['t']} of {ep['outcome']['ticks']}"
     b[2].slider("Timeline", 0, total - 1, key=key)
-    b[2].markdown(f'<div class="mut">decision steps 0..{n_dec - 1}, then battle ticks 0..{ep["outcome"]["ticks"]}; now: {where}</div>', unsafe_allow_html=True)
+    b[2].markdown(f'<div class="mut">decision steps 0 to {n_dec - 1}, then battle ticks 0 to {ep["outcome"]["ticks"]}; now: {where}</div>', unsafe_allow_html=True)
     with st.expander("Value over the decision steps (shaped-return estimate)"):
         spark(ep, p)
     headline_section()
