@@ -84,6 +84,14 @@ def load_dev_layout(split: str, index: int | None = None, layout_id: str | None 
     return rec, P.load_layout(rec, role, entry_point=entry_point)
 
 
+def dev_layout_ids(split: str, entry_point: str = "breachlens.evaluator") -> list:
+    """(B17) Ids of one DEV-train / DEV-validation split in pool order, through the role-guarded loader (ids only; every other split raises PermissionError)."""
+    roles = {"DEV-train": "train", "DEV-validation": "validation"}
+    if split not in roles:
+        raise PermissionError(f"only DEV familiar splits (DEV-train, DEV-validation) may be listed here; {split!r} is refused")
+    return [r["id"] for r in P.load_pool_records(split, roles[split], entry_point=entry_point)]
+
+
 def _work(args):
     policy, rec, layout = args
     t0 = time.perf_counter()

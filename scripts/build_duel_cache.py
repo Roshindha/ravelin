@@ -127,7 +127,7 @@ def provenance() -> dict:
 
 
 def layout_ids() -> list[str]:
-    return [r["id"] for r in P.load_pool_records(D.DUEL_SPLIT, "validation", entry_point="scripts.build_duel_cache")]
+    return EV.dev_layout_ids(D.DUEL_SPLIT, entry_point="scripts.build_duel_cache")
 
 
 def build(out: Path, procs: int = 1, ids: list[str] | None = None, allow_dirty: bool = False) -> dict:

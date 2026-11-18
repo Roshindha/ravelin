@@ -58,8 +58,8 @@ def reset_seed(layout_id: str) -> int:
 # ---------------------------------------------------------------------------------------------------------------------------- cache
 def _check_duel_id(layout_id: str) -> None:
     P.assert_dev_only([layout_id], "validation")       # FINAL / transfer / LAB-DESIGN ids raise PermissionError
-    ids = {r["id"] for r in P.load_pool_records(DUEL_SPLIT, "validation", entry_point="breachlens.duel")}
-    if layout_id not in ids:
+    from . import evaluator as EV
+    if layout_id not in set(EV.dev_layout_ids(DUEL_SPLIT, entry_point="breachlens.duel")):
         raise PermissionError(f"layout {layout_id!r} is not a {DUEL_SPLIT} layout; the duel uses {DUEL_SPLIT} only")
 
 
@@ -389,6 +389,7 @@ def _stdin_lines():
 
 
 def main(argv: list[str] | None = None) -> None:
+    from . import evaluator as EV
     p = argparse.ArgumentParser(description="Human-vs-agents duel on a DEV-validation layout (text only; a demo).")
     p.add_argument("--layout", default=None, help="DEV-validation layout id")
     p.add_argument("--index", type=int, default=0, help="position in DEV-validation (default 0); ignored with --layout")
@@ -397,8 +398,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--no-log", action="store_true", help="do not write the local human-run file")
     a = p.parse_args(argv)
     if a.list:
-        for i, r in enumerate(P.load_pool_records(DUEL_SPLIT, "validation", entry_point="breachlens.duel")):
-            print(f"{i:>2d}  {r['id']}  [{r['family']}]")
+        for i, lid in enumerate(EV.dev_layout_ids(DUEL_SPLIT, entry_point="breachlens.duel")):
+            print(f"{i:>2d}  {lid}  [{lid.rsplit('-', 1)[0]}]")
         return
     duel = Duel(a.layout, a.index, human_runs_path=None if a.no_log else HUMAN_RUNS_PATH)
     lines = Path(a.script).read_text().splitlines() if a.script else _stdin_lines()
