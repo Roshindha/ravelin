@@ -1,0 +1,8101 @@
+{
+ "layouts": {
+  "archipelago-301000201": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       3
+      ],
+      [
+       "sniper",
+       4
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.0
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.3333333333333333,
+     "deploy": [
+      [
+       "scout",
+       37
+      ],
+      [
+       "scout",
+       39
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.2
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 2,
+      "mender": 1,
+      "scout": 3,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.9583333333333334,
+     "deploy": [
+      [
+       "sniper",
+       39
+      ],
+      [
+       "bulwark",
+       40
+      ],
+      [
+       "blaster",
+       41
+      ],
+      [
+       "mender",
+       42
+      ],
+      [
+       "scout",
+       43
+      ],
+      [
+       "scout",
+       44
+      ],
+      [
+       "scout",
+       45
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "blaster",
+       47
+      ],
+      [
+       "sniper",
+       48
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.975
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 7
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.7083333333333334,
+     "deploy": [
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "scout",
+       14
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       38
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.825
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.3333333333333333,
+     "deploy": [
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "blaster",
+       20
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       29
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.2
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000203": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.043478260869565216,
+     "deploy": [
+      [
+       "sniper",
+       20
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.02608695652173913
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.17391304347826086,
+     "deploy": [
+      [
+       "scout",
+       24
+      ],
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       45
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.10434782608695652
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 1,
+      "mender": 3,
+      "scout": 4,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.391304347826087,
+     "deploy": [
+      [
+       "sniper",
+       22
+      ],
+      [
+       "mender",
+       23
+      ],
+      [
+       "bulwark",
+       24
+      ],
+      [
+       "mender",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "mender",
+       28
+      ],
+      [
+       "scout",
+       29
+      ],
+      [
+       "blaster",
+       30
+      ],
+      [
+       "scout",
+       31
+      ],
+      [
+       "scout",
+       32
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 0.6347826086956522
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.13043478260869565,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       50
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "blaster",
+       14
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "scout",
+       35
+      ],
+      [
+       "scout",
+       3
+      ],
+      [
+       "scout",
+       8
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.0782608695652174
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 6,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 2
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.17391304347826086,
+     "deploy": [
+      [
+       "sniper",
+       8
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       17
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       33
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.10434782608695652
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000205": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.2,
+     "deploy": [
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       3
+      ],
+      [
+       "sniper",
+       4
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.52
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.13333333333333333,
+     "deploy": [
+      [
+       "scout",
+       11
+      ],
+      [
+       "scout",
+       41
+      ],
+      [
+       "sniper",
+       20
+      ],
+      [
+       "sniper",
+       43
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.08
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 2,
+      "scout": 4,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       13
+      ],
+      [
+       "scout",
+       14
+      ],
+      [
+       "blaster",
+       15
+      ],
+      [
+       "sniper",
+       16
+      ],
+      [
+       "mender",
+       17
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "mender",
+       19
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "scout",
+       21
+      ],
+      [
+       "scout",
+       22
+      ],
+      [
+       "scout",
+       23
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 5
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6666666666666666,
+     "deploy": [
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "bulwark",
+       8
+      ],
+      [
+       "bulwark",
+       49
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "bulwark",
+       43
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.8
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.4666666666666667,
+     "deploy": [
+      [
+       "sniper",
+       42
+      ],
+      [
+       "bulwark",
+       49
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "bulwark",
+       48
+      ],
+      [
+       "bulwark",
+       15
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.68
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000208": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.65,
+     "deploy": [
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.79
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.25,
+     "deploy": [
+      [
+       "scout",
+       32
+      ],
+      [
+       "scout",
+       34
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       17
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       43
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       39
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.15
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.65,
+     "deploy": [
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.79
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 5,
+      "sniper": 6
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.3,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       15
+      ],
+      [
+       "scout",
+       29
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "scout",
+       23
+      ],
+      [
+       "scout",
+       12
+      ],
+      [
+       "scout",
+       20
+      ],
+      [
+       "scout",
+       30
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       11
+      ]
+     ],
+     "n_bought": 12,
+     "n_deployed": 12,
+     "score": 0.18
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.3,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "bulwark",
+       15
+      ],
+      [
+       "blaster",
+       23
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "bulwark",
+       9
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.18
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000212": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.25,
+     "deploy": [
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.15
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.20833333333333334,
+     "deploy": [
+      [
+       "scout",
+       20
+      ],
+      [
+       "scout",
+       6
+      ],
+      [
+       "sniper",
+       30
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       28
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       8
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.125
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 1,
+      "scout": 4,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       27
+      ],
+      [
+       "scout",
+       28
+      ],
+      [
+       "mender",
+       29
+      ],
+      [
+       "bulwark",
+       30
+      ],
+      [
+       "scout",
+       31
+      ],
+      [
+       "scout",
+       32
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "scout",
+       37
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.3333333333333333,
+     "deploy": [
+      [
+       "bulwark",
+       48
+      ],
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "scout",
+       38
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "scout",
+       36
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "blaster",
+       16
+      ],
+      [
+       "blaster",
+       49
+      ],
+      [
+       "scout",
+       20
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.2
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.5416666666666666,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       50
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       17
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.325
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000214": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.2631578947368421,
+     "deploy": [
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       41
+      ],
+      [
+       "sniper",
+       42
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5578947368421052
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.21052631578947367,
+     "deploy": [
+      [
+       "scout",
+       6
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       48
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.5263157894736842
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.3684210526315789,
+     "deploy": [
+      [
+       "bulwark",
+       27
+      ],
+      [
+       "sniper",
+       28
+      ],
+      [
+       "bulwark",
+       29
+      ],
+      [
+       "blaster",
+       30
+      ],
+      [
+       "blaster",
+       31
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "scout",
+       34
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.6210526315789474
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 8,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.3684210526315789,
+     "deploy": [
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       24
+      ],
+      [
+       "scout",
+       40
+      ],
+      [
+       "scout",
+       51
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "scout",
+       14
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "scout",
+       10
+      ],
+      [
+       "scout",
+       9
+      ],
+      [
+       "scout",
+       23
+      ],
+      [
+       "scout",
+       7
+      ]
+     ],
+     "n_bought": 14,
+     "n_deployed": 14,
+     "score": 0.6210526315789474
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.15789473684210525,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "bulwark",
+       0
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "bulwark",
+       43
+      ],
+      [
+       "bulwark",
+       46
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.49473684210526314
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000216": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.25,
+     "deploy": [
+      [
+       "sniper",
+       20
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.55
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.25,
+     "deploy": [
+      [
+       "scout",
+       6
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       24
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.55
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 1,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       48
+      ],
+      [
+       "bulwark",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "bulwark",
+       0
+      ],
+      [
+       "mender",
+       1
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "bulwark",
+       3
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 5
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5625,
+     "deploy": [
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "blaster",
+       4
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "scout",
+       49
+      ],
+      [
+       "scout",
+       6
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.3375
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.625,
+     "deploy": [
+      [
+       "blaster",
+       3
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       25
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.775
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000218": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.23809523809523808,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5428571428571428
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.5238095238095238,
+     "deploy": [
+      [
+       "scout",
+       33
+      ],
+      [
+       "scout",
+       46
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       17
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       32
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       30
+      ],
+      [
+       "sniper",
+       47
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.3142857142857143
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 1,
+      "mender": 3,
+      "scout": 4,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "scout",
+       16
+      ],
+      [
+       "blaster",
+       17
+      ],
+      [
+       "scout",
+       18
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "mender",
+       20
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "mender",
+       23
+      ],
+      [
+       "scout",
+       24
+      ],
+      [
+       "mender",
+       25
+      ],
+      [
+       "scout",
+       26
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 5
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6190476190476191,
+     "deploy": [
+      [
+       "scout",
+       43
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "bulwark",
+       5
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "sniper",
+       28
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "bulwark",
+       7
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.37142857142857144
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.6190476190476191,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       3
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "bulwark",
+       28
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7714285714285715
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000219": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.5238095238095238,
+     "deploy": [
+      [
+       "sniper",
+       4
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7142857142857143
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.0,
+     "deploy": [
+      [
+       "scout",
+       37
+      ],
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       48
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.4
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 3,
+      "scout": 4,
+      "sniper": 1
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "sniper",
+       48
+      ],
+      [
+       "mender",
+       49
+      ],
+      [
+       "blaster",
+       50
+      ],
+      [
+       "bulwark",
+       51
+      ],
+      [
+       "scout",
+       0
+      ],
+      [
+       "bulwark",
+       1
+      ],
+      [
+       "mender",
+       2
+      ],
+      [
+       "mender",
+       3
+      ],
+      [
+       "scout",
+       4
+      ],
+      [
+       "scout",
+       5
+      ],
+      [
+       "scout",
+       6
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.0,
+     "deploy": [
+      [
+       "bulwark",
+       35
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "scout",
+       23
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "scout",
+       25
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "scout",
+       30
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.4
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.09523809523809523,
+     "deploy": [
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "bulwark",
+       4
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.45714285714285713
+    }
+   },
+   "family": "archipelago"
+  },
+  "archipelago-301000222": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.5,
+     "deploy": [
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       15
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.75,
+     "deploy": [
+      [
+       "scout",
+       7
+      ],
+      [
+       "scout",
+       6
+      ],
+      [
+       "sniper",
+       30
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       19
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.85
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 6,
+      "mender": 2,
+      "scout": 0,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       8
+      ],
+      [
+       "bulwark",
+       9
+      ],
+      [
+       "bulwark",
+       10
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "bulwark",
+       12
+      ],
+      [
+       "bulwark",
+       13
+      ],
+      [
+       "mender",
+       14
+      ],
+      [
+       "mender",
+       15
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5625,
+     "deploy": [
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "bulwark",
+       9
+      ],
+      [
+       "scout",
+       1
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.7375
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.375,
+     "deploy": [
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       28
+      ],
+      [
+       "bulwark",
+       30
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "bulwark",
+       17
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.225
+    }
+   },
+   "family": "archipelago"
+  },
+  "bunker_nest-302000065": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.1,
+     "deploy": [
+      [
+       "sniper",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.06
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.5,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "scout",
+       15
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "sniper",
+       28
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.7
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 2,
+      "mender": 2,
+      "scout": 5,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.5,
+     "deploy": [
+      [
+       "scout",
+       10
+      ],
+      [
+       "scout",
+       11
+      ],
+      [
+       "scout",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "mender",
+       14
+      ],
+      [
+       "scout",
+       15
+      ],
+      [
+       "bulwark",
+       16
+      ],
+      [
+       "mender",
+       17
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "sniper",
+       20
+      ],
+      [
+       "scout",
+       21
+      ]
+     ],
+     "n_bought": 12,
+     "n_deployed": 12,
+     "score": 0.7
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.9,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "blaster",
+       10
+      ],
+      [
+       "blaster",
+       8
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.94
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.8,
+     "deploy": [
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       7
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.48
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000066": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.21428571428571427,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5285714285714286
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.5714285714285714,
+     "deploy": [
+      [
+       "scout",
+       46
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       41
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.7428571428571429
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 2,
+      "scout": 4,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.35714285714285715,
+     "deploy": [
+      [
+       "sniper",
+       28
+      ],
+      [
+       "bulwark",
+       29
+      ],
+      [
+       "scout",
+       30
+      ],
+      [
+       "mender",
+       31
+      ],
+      [
+       "blaster",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "bulwark",
+       34
+      ],
+      [
+       "mender",
+       35
+      ],
+      [
+       "scout",
+       36
+      ],
+      [
+       "scout",
+       37
+      ],
+      [
+       "scout",
+       38
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 0.6142857142857143
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5714285714285714,
+     "deploy": [
+      [
+       "bulwark",
+       17
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "blaster",
+       12
+      ],
+      [
+       "scout",
+       10
+      ],
+      [
+       "blaster",
+       14
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "scout",
+       51
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       25
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.34285714285714286
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.5,
+     "deploy": [
+      [
+       "blaster",
+       10
+      ],
+      [
+       "bulwark",
+       21
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       15
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.3
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000067": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.2,
+     "deploy": [
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "scout",
+       19
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       28
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       25
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.12
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 6,
+      "mender": 2,
+      "scout": 0,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "bulwark",
+       34
+      ],
+      [
+       "bulwark",
+       35
+      ],
+      [
+       "bulwark",
+       36
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "bulwark",
+       38
+      ],
+      [
+       "mender",
+       39
+      ],
+      [
+       "mender",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 3,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 5,
+      "sniper": 0
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6,
+     "deploy": [
+      [
+       "bulwark",
+       24
+      ],
+      [
+       "bulwark",
+       18
+      ],
+      [
+       "bulwark",
+       30
+      ],
+      [
+       "scout",
+       16
+      ],
+      [
+       "blaster",
+       23
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "scout",
+       12
+      ],
+      [
+       "blaster",
+       3
+      ],
+      [
+       "blaster",
+       21
+      ],
+      [
+       "scout",
+       19
+      ],
+      [
+       "scout",
+       10
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 0.36
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 5
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 1.0,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "blaster",
+       14
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "bulwark",
+       23
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       24
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000068": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.0
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.4444444444444444,
+     "deploy": [
+      [
+       "scout",
+       7
+      ],
+      [
+       "scout",
+       50
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.26666666666666666
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 2,
+      "scout": 0,
+      "sniper": 1
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.4444444444444444,
+     "deploy": [
+      [
+       "sniper",
+       15
+      ],
+      [
+       "bulwark",
+       16
+      ],
+      [
+       "mender",
+       17
+      ],
+      [
+       "bulwark",
+       18
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "mender",
+       20
+      ]
+     ],
+     "n_bought": 6,
+     "n_deployed": 6,
+     "score": 0.6666666666666666
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.7777777777777778,
+     "deploy": [
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       17
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "blaster",
+       3
+      ],
+      [
+       "blaster",
+       8
+      ],
+      [
+       "scout",
+       6
+      ],
+      [
+       "scout",
+       49
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.4666666666666667
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.4444444444444444,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "bulwark",
+       9
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "bulwark",
+       20
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.26666666666666666
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000069": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.0
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.8,
+     "deploy": [
+      [
+       "sniper",
+       0
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       47
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.48
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 3,
+      "bulwark": 1,
+      "mender": 1,
+      "scout": 2,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.8,
+     "deploy": [
+      [
+       "blaster",
+       7
+      ],
+      [
+       "mender",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "blaster",
+       10
+      ],
+      [
+       "blaster",
+       11
+      ],
+      [
+       "bulwark",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "scout",
+       14
+      ],
+      [
+       "scout",
+       15
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.88
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 3,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 4,
+      "sniper": 0
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.3,
+     "deploy": [
+      [
+       "bulwark",
+       24
+      ],
+      [
+       "bulwark",
+       17
+      ],
+      [
+       "bulwark",
+       21
+      ],
+      [
+       "blaster",
+       12
+      ],
+      [
+       "blaster",
+       18
+      ],
+      [
+       "blaster",
+       16
+      ],
+      [
+       "scout",
+       27
+      ],
+      [
+       "scout",
+       45
+      ],
+      [
+       "scout",
+       51
+      ],
+      [
+       "scout",
+       14
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.18
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 2
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.8,
+     "deploy": [
+      [
+       "blaster",
+       10
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "blaster",
+       3
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "scout",
+       42
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.48
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000070": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.23076923076923078,
+     "deploy": [
+      [
+       "sniper",
+       46
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       48
+      ],
+      [
+       "sniper",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       1
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.13846153846153847
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.3076923076923077,
+     "deploy": [
+      [
+       "scout",
+       11
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       41
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.18461538461538463
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 2,
+      "scout": 1,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.5384615384615384,
+     "deploy": [
+      [
+       "mender",
+       2
+      ],
+      [
+       "sniper",
+       3
+      ],
+      [
+       "scout",
+       4
+      ],
+      [
+       "bulwark",
+       5
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "mender",
+       8
+      ],
+      [
+       "bulwark",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.7230769230769231
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5384615384615384,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "bulwark",
+       15
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "blaster",
+       16
+      ],
+      [
+       "scout",
+       14
+      ],
+      [
+       "scout",
+       25
+      ],
+      [
+       "blaster",
+       27
+      ],
+      [
+       "scout",
+       23
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.3230769230769231
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.7692307692307693,
+     "deploy": [
+      [
+       "sniper",
+       21
+      ],
+      [
+       "blaster",
+       25
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "bulwark",
+       16
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.46153846153846156
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000072": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.5,
+     "deploy": [
+      [
+       "sniper",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.5,
+     "deploy": [
+      [
+       "scout",
+       7
+      ],
+      [
+       "scout",
+       6
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       0
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.3
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 6,
+      "mender": 2,
+      "scout": 0,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "bulwark",
+       34
+      ],
+      [
+       "bulwark",
+       35
+      ],
+      [
+       "bulwark",
+       36
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "mender",
+       38
+      ],
+      [
+       "mender",
+       39
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 7
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6666666666666666,
+     "deploy": [
+      [
+       "sniper",
+       0
+      ],
+      [
+       "blaster",
+       10
+      ],
+      [
+       "scout",
+       3
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       1
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.4
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.6666666666666666,
+     "deploy": [
+      [
+       "sniper",
+       5
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       8
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.8
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000073": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.15384615384615385,
+     "deploy": [
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       41
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.49230769230769234
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.6923076923076923,
+     "deploy": [
+      [
+       "sniper",
+       48
+      ],
+      [
+       "scout",
+       46
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "scout",
+       50
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       35
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.4153846153846154
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 2,
+      "mender": 2,
+      "scout": 3,
+      "sniper": 1
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "scout",
+       46
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "blaster",
+       48
+      ],
+      [
+       "blaster",
+       49
+      ],
+      [
+       "bulwark",
+       50
+      ],
+      [
+       "bulwark",
+       51
+      ],
+      [
+       "mender",
+       0
+      ],
+      [
+       "mender",
+       1
+      ],
+      [
+       "scout",
+       2
+      ],
+      [
+       "scout",
+       3
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 3,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6923076923076923,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "blaster",
+       3
+      ],
+      [
+       "blaster",
+       10
+      ],
+      [
+       "blaster",
+       16
+      ]
+     ],
+     "n_bought": 7,
+     "n_deployed": 7,
+     "score": 0.4153846153846154
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.8461538461538461,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "blaster",
+       3
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "bulwark",
+       4
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5076923076923077
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000074": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.21428571428571427,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5285714285714286
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.5714285714285714,
+     "deploy": [
+      [
+       "scout",
+       50
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "scout",
+       2
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       17
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.34285714285714286
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.21428571428571427,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5285714285714286
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 6
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5714285714285714,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "blaster",
+       5
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "blaster",
+       10
+      ],
+      [
+       "sniper",
+       1
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.34285714285714286
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.6428571428571429,
+     "deploy": [
+      [
+       "sniper",
+       8
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "blaster",
+       16
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "bulwark",
+       50
+      ],
+      [
+       "bulwark",
+       9
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.38571428571428573
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "bunker_nest-302000076": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.0
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.6111111111111112,
+     "deploy": [
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "scout",
+       5
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       50
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.36666666666666664
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 3,
+      "bulwark": 1,
+      "mender": 1,
+      "scout": 2,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.8888888888888888,
+     "deploy": [
+      [
+       "blaster",
+       5
+      ],
+      [
+       "blaster",
+       6
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "mender",
+       8
+      ],
+      [
+       "blaster",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "scout",
+       12
+      ],
+      [
+       "scout",
+       13
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.9333333333333333
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 5
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 1.0,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       15
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "bulwark",
+       21
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       25
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.8888888888888888,
+     "deploy": [
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "bulwark",
+       3
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "bulwark",
+       15
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5333333333333333
+    }
+   },
+   "family": "bunker_nest"
+  },
+  "spine_pods-300000056": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.2,
+     "deploy": [
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.52
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.45,
+     "deploy": [
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       17
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       30
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.67
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 2,
+      "scout": 1,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "oracle",
+     "d": 0.95,
+     "deploy": [
+      [
+       "mender",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "bulwark",
+       28
+      ],
+      [
+       "mender",
+       29
+      ],
+      [
+       "bulwark",
+       30
+      ],
+      [
+       "sniper",
+       31
+      ],
+      [
+       "scout",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "bulwark",
+       34
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.57
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 5
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6,
+     "deploy": [
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "bulwark",
+       48
+      ],
+      [
+       "bulwark",
+       50
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.76
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.35,
+     "deploy": [
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       44
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "bulwark",
+       43
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       38
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.61
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000058": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 7
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.8181818181818182,
+     "deploy": [
+      [
+       "scout",
+       46
+      ],
+      [
+       "scout",
+       50
+      ],
+      [
+       "scout",
+       45
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       48
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       11
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.4909090909090909
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 3,
+      "mender": 4,
+      "scout": 0,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "mender",
+       19
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "mender",
+       21
+      ],
+      [
+       "bulwark",
+       22
+      ],
+      [
+       "mender",
+       23
+      ],
+      [
+       "mender",
+       24
+      ],
+      [
+       "blaster",
+       25
+      ],
+      [
+       "bulwark",
+       26
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 7
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.6818181818181818,
+     "deploy": [
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "scout",
+       42
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.8090909090909091
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.36363636363636365,
+     "deploy": [
+      [
+       "bulwark",
+       44
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       2
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.6181818181818182
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000059": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       48
+      ],
+      [
+       "sniper",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       2
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.75,
+     "deploy": [
+      [
+       "scout",
+       6
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.45
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 2,
+      "scout": 4,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "mender",
+       28
+      ],
+      [
+       "sniper",
+       29
+      ],
+      [
+       "scout",
+       30
+      ],
+      [
+       "blaster",
+       31
+      ],
+      [
+       "sniper",
+       32
+      ],
+      [
+       "scout",
+       33
+      ],
+      [
+       "scout",
+       34
+      ],
+      [
+       "mender",
+       35
+      ],
+      [
+       "bulwark",
+       36
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "scout",
+       38
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.65,
+     "deploy": [
+      [
+       "sniper",
+       13
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "blaster",
+       9
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "scout",
+       18
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "scout",
+       46
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.79
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.6,
+     "deploy": [
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       8
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "bulwark",
+       10
+      ],
+      [
+       "bulwark",
+       11
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       0
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.76
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000060": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       32
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       36
+      ],
+      [
+       "sniper",
+       37
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       39
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 4,
+      "sniper": 7
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.3181818181818182,
+     "deploy": [
+      [
+       "scout",
+       19
+      ],
+      [
+       "scout",
+       20
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "scout",
+       18
+      ],
+      [
+       "sniper",
+       33
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       46
+      ],
+      [
+       "sniper",
+       39
+      ]
+     ],
+     "n_bought": 11,
+     "n_deployed": 11,
+     "score": 0.5909090909090909
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 1,
+      "mender": 3,
+      "scout": 3,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.7727272727272727,
+     "deploy": [
+      [
+       "scout",
+       42
+      ],
+      [
+       "mender",
+       43
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       45
+      ],
+      [
+       "blaster",
+       46
+      ],
+      [
+       "bulwark",
+       47
+      ],
+      [
+       "mender",
+       48
+      ],
+      [
+       "mender",
+       49
+      ],
+      [
+       "scout",
+       50
+      ],
+      [
+       "scout",
+       51
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.8636363636363636
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 7
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5454545454545454,
+     "deploy": [
+      [
+       "bulwark",
+       17
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       28
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7272727272727273
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.45454545454545453,
+     "deploy": [
+      [
+       "blaster",
+       16
+      ],
+      [
+       "bulwark",
+       15
+      ],
+      [
+       "bulwark",
+       19
+      ],
+      [
+       "bulwark",
+       18
+      ],
+      [
+       "sniper",
+       34
+      ],
+      [
+       "bulwark",
+       20
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.6727272727272727
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000061": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       45
+      ],
+      [
+       "sniper",
+       46
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       48
+      ],
+      [
+       "sniper",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.391304347826087,
+     "deploy": [
+      [
+       "sniper",
+       12
+      ],
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       42
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       4
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.6347826086956522
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 2,
+      "scout": 1,
+      "sniper": 1
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       1
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "scout",
+       3
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "bulwark",
+       5
+      ],
+      [
+       "mender",
+       6
+      ],
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "mender",
+       8
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.5217391304347826,
+     "deploy": [
+      [
+       "sniper",
+       39
+      ],
+      [
+       "blaster",
+       30
+      ],
+      [
+       "blaster",
+       31
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       0
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7130434782608696
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.6956521739130435,
+     "deploy": [
+      [
+       "sniper",
+       44
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       28
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "bulwark",
+       31
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       26
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.8173913043478261
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000062": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.2222222222222222,
+     "deploy": [
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       28
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5333333333333333
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.7222222222222222,
+     "deploy": [
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       0
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.43333333333333335
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 3,
+      "scout": 5,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "scout",
+       51
+      ],
+      [
+       "bulwark",
+       0
+      ],
+      [
+       "scout",
+       1
+      ],
+      [
+       "sniper",
+       2
+      ],
+      [
+       "mender",
+       3
+      ],
+      [
+       "sniper",
+       4
+      ],
+      [
+       "mender",
+       5
+      ],
+      [
+       "mender",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "scout",
+       8
+      ],
+      [
+       "scout",
+       9
+      ],
+      [
+       "scout",
+       10
+      ]
+     ],
+     "n_bought": 12,
+     "n_deployed": 12,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 3,
+      "mender": 0,
+      "scout": 6,
+      "sniper": 2
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.8333333333333334,
+     "deploy": [
+      [
+       "sniper",
+       39
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       31
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "blaster",
+       35
+      ],
+      [
+       "scout",
+       40
+      ],
+      [
+       "scout",
+       29
+      ],
+      [
+       "scout",
+       23
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "scout",
+       20
+      ],
+      [
+       "scout",
+       25
+      ],
+      [
+       "scout",
+       44
+      ]
+     ],
+     "n_bought": 12,
+     "n_deployed": 12,
+     "score": 0.5
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.7777777777777778,
+     "deploy": [
+      [
+       "blaster",
+       36
+      ],
+      [
+       "bulwark",
+       34
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       38
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4666666666666667
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000063": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.5882352941176471,
+     "deploy": [
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       45
+      ],
+      [
+       "sniper",
+       46
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "sniper",
+       48
+      ],
+      [
+       "sniper",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.7529411764705882
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.23529411764705882,
+     "deploy": [
+      [
+       "scout",
+       32
+      ],
+      [
+       "scout",
+       33
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       42
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       35
+      ],
+      [
+       "sniper",
+       48
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.5411764705882353
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 6,
+      "mender": 2,
+      "scout": 0,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       44
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "bulwark",
+       47
+      ],
+      [
+       "bulwark",
+       48
+      ],
+      [
+       "bulwark",
+       49
+      ],
+      [
+       "mender",
+       50
+      ],
+      [
+       "mender",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 1,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.4117647058823529,
+     "deploy": [
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "scout",
+       30
+      ],
+      [
+       "scout",
+       25
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       38
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.6470588235294118
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.47058823529411764,
+     "deploy": [
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "bulwark",
+       31
+      ],
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "sniper",
+       47
+      ],
+      [
+       "bulwark",
+       28
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       38
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.6823529411764706
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000064": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       6
+      ],
+      [
+       "sniper",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       10
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       12
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ddqn_tta",
+     "d": 0.8076923076923077,
+     "deploy": [
+      [
+       "scout",
+       45
+      ],
+      [
+       "scout",
+       20
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       32
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       44
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.4846153846153846
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 2,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 6,
+      "sniper": 2
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 0.4230769230769231,
+     "deploy": [
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "blaster",
+       47
+      ],
+      [
+       "blaster",
+       48
+      ],
+      [
+       "scout",
+       49
+      ],
+      [
+       "sniper",
+       50
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "scout",
+       0
+      ],
+      [
+       "scout",
+       1
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "scout",
+       3
+      ],
+      [
+       "scout",
+       4
+      ],
+      [
+       "scout",
+       5
+      ]
+     ],
+     "n_bought": 12,
+     "n_deployed": 12,
+     "score": 0.6538461538461539
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": false,
+     "contestant": "ppo_d4_tta",
+     "d": 0.8076923076923077,
+     "deploy": [
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       14
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4846153846153846
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": false,
+     "contestant": "ppo_plain_tta",
+     "d": 0.9615384615384616,
+     "deploy": [
+      [
+       "bulwark",
+       44
+      ],
+      [
+       "bulwark",
+       45
+      ],
+      [
+       "bulwark",
+       41
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "bulwark",
+       46
+      ],
+      [
+       "sniper",
+       40
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       1
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.5769230769230769
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000065": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.04,
+     "deploy": [
+      [
+       "sniper",
+       19
+      ],
+      [
+       "sniper",
+       20
+      ],
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.424
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.28,
+     "deploy": [
+      [
+       "scout",
+       6
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       18
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       11
+      ],
+      [
+       "sniper",
+       9
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       8
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.568
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 2,
+      "scout": 2,
+      "sniper": 0
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "scout",
+       32
+      ],
+      [
+       "mender",
+       33
+      ],
+      [
+       "mender",
+       34
+      ],
+      [
+       "scout",
+       35
+      ],
+      [
+       "bulwark",
+       36
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "bulwark",
+       38
+      ],
+      [
+       "bulwark",
+       39
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 2,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 6
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.48,
+     "deploy": [
+      [
+       "bulwark",
+       7
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       13
+      ],
+      [
+       "sniper",
+       38
+      ],
+      [
+       "sniper",
+       1
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.688
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 4
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.4,
+     "deploy": [
+      [
+       "sniper",
+       21
+      ],
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "bulwark",
+       5
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "bulwark",
+       3
+      ],
+      [
+       "sniper",
+       14
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       51
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.64
+    }
+   },
+   "family": "spine_pods"
+  },
+  "spine_pods-300000066": {
+   "contestants": {
+    "best_single": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "best_single",
+     "d": 0.0,
+     "deploy": [
+      [
+       "sniper",
+       21
+      ],
+      [
+       "sniper",
+       22
+      ],
+      [
+       "sniper",
+       23
+      ],
+      [
+       "sniper",
+       24
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       28
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.4
+    },
+    "ddqn_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 2,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ddqn_tta",
+     "d": 0.68,
+     "deploy": [
+      [
+       "scout",
+       33
+      ],
+      [
+       "scout",
+       32
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       4
+      ],
+      [
+       "sniper",
+       5
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       17
+      ],
+      [
+       "sniper",
+       19
+      ]
+     ],
+     "n_bought": 10,
+     "n_deployed": 10,
+     "score": 0.808
+    },
+    "oracle": {
+     "bought": {
+      "blaster": 1,
+      "bulwark": 4,
+      "mender": 0,
+      "scout": 3,
+      "sniper": 1
+     },
+     "breach": true,
+     "contestant": "oracle",
+     "d": 1.0,
+     "deploy": [
+      [
+       "bulwark",
+       2
+      ],
+      [
+       "bulwark",
+       3
+      ],
+      [
+       "bulwark",
+       4
+      ],
+      [
+       "blaster",
+       5
+      ],
+      [
+       "bulwark",
+       6
+      ],
+      [
+       "scout",
+       7
+      ],
+      [
+       "sniper",
+       8
+      ],
+      [
+       "scout",
+       9
+      ],
+      [
+       "scout",
+       10
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 1.0
+    },
+    "ppo_d4_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 0,
+      "mender": 0,
+      "scout": 1,
+      "sniper": 8
+     },
+     "breach": true,
+     "contestant": "ppo_d4_tta",
+     "d": 0.68,
+     "deploy": [
+      [
+       "scout",
+       36
+      ],
+      [
+       "sniper",
+       51
+      ],
+      [
+       "sniper",
+       26
+      ],
+      [
+       "sniper",
+       39
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "sniper",
+       15
+      ],
+      [
+       "sniper",
+       1
+      ],
+      [
+       "sniper",
+       27
+      ],
+      [
+       "sniper",
+       13
+      ]
+     ],
+     "n_bought": 9,
+     "n_deployed": 9,
+     "score": 0.808
+    },
+    "ppo_plain_tta": {
+     "bought": {
+      "blaster": 0,
+      "bulwark": 5,
+      "mender": 0,
+      "scout": 0,
+      "sniper": 3
+     },
+     "breach": true,
+     "contestant": "ppo_plain_tta",
+     "d": 0.4,
+     "deploy": [
+      [
+       "bulwark",
+       33
+      ],
+      [
+       "bulwark",
+       34
+      ],
+      [
+       "bulwark",
+       32
+      ],
+      [
+       "sniper",
+       25
+      ],
+      [
+       "bulwark",
+       37
+      ],
+      [
+       "bulwark",
+       35
+      ],
+      [
+       "sniper",
+       46
+      ],
+      [
+       "sniper",
+       40
+      ]
+     ],
+     "n_bought": 8,
+     "n_deployed": 8,
+     "score": 0.64
+    }
+   },
+   "family": "spine_pods"
+  }
+ },
+ "meta": {
+  "best_single": {
+   "by_family": {
+    "archipelago": 1,
+    "bunker_nest": 1,
+    "spine_pods": 1
+   },
+   "pooled": 1,
+   "source": "data/v2/baselines/b8_best_single.json (DEV-train choice)",
+   "unit_names": [
+    "scout",
+    "sniper",
+    "bulwark",
+    "blaster",
+    "mender"
+   ]
+  },
+  "code_commit": "d7433ef21f96d484264c989d4dc2059e65621139",
+  "generator_hash": "49b8a18c53228c6ec9271f0082bbf6d6ec0d6fdbc3c5755721bfa0f36ec42095",
+  "git_dirty": false,
+  "models": {
+   "ddqn_tta": {
+    "algo": "ddqn",
+    "file": "final.pt",
+    "run": "grid_ddqn_s0",
+    "sha256": "eb0be3471a465d56e838d87186f3593d6c532a21a2f3714836450a1fbb3b171f"
+   },
+   "ppo_d4_tta": {
+    "algo": "ppo",
+    "file": "final.zip",
+    "run": "grid_ppo_d4_s0",
+    "sha256": "0f92e1aec02a7456dac4829a7949d5338a57cfc628683869beb01c04dcb7fe35"
+   },
+   "ppo_plain_tta": {
+    "algo": "ppo",
+    "file": "final.zip",
+    "run": "grid_ppo_plain_s0",
+    "sha256": "43f29c0df831e1e11b0dea64acccbbb59b65a600a0d3fe45d260d0e9dbe0ab9a"
+   }
+  },
+  "note": "demo data on DEV-validation layouts; not a result; no timestamps",
+  "oracle": {
+   "approx_simulations": 400,
+   "label": "search baseline, not the optimum",
+   "n_random": 200,
+   "n_refine": 200,
+   "rng": "default_rng([layout seed, 4242])",
+   "warm_starts": "B8 (breachlens.acceptance.warm_starts)"
+  },
+  "pool_sha256": "1346536dea209eb7953eb00eb0d69f24bed930a2a81d89daea7ec1b705f834e4",
+  "reset_seed": "crc32(layout id), shared with the human",
+  "score_version": "b7-single-rounding",
+  "sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338",
+  "split": "DEV-validation",
+  "tta": "B15 row (gg): PPO mean log-prob over the 8 D4 views, DDQN mean of the 8 mapped-back Q-values, then masked argmax"
+ },
+ "version": 1
+}

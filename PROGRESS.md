@@ -600,6 +600,16 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Tests `tests/test_b15_session.py` (20): exclusive create, manifest / crash rule, refusals (no unlock, eval entries, session.json, dirty tree, suite, missing model, hash mismatch), real mode writes exactly one eval session (via `count_eval_sessions`) including a kill and restart, worker-count independence, analysis determinism, paired-CI known answers, pinned draw order, raw-only imports. Full `.venv/bin/python -m pytest`: **pytest exit code 0, 676 passed**.
 - Real-run command (NOT run): `caffeinate -dimsu .venv/bin/python scripts_b15_final.py --unlock-final` from a clean commit; then `.venv/bin/python scripts_b15_analysis.py`.
 
+### STEP B17 (duel core: headless engine + text CLI) -- done, no training, no new results
+- Item 0 (commit ad94a6e): Gate changelog (kk): 30 DEV-validation layouts (10 per familiar family); opponents = seed-0 ppo_plain / ppo_d4 / ddqn WITH TTA (B15 aggregation), BestSingle (Sniper, B8), Oracle (200 + 200, B8 warm starts, rng [layout seed, 4242]; always labelled "search baseline, not the optimum"); committed cache `data/v2/duel_cache.json` with provenance; human runs only in the gitignored `results_v2/duel_human_runs.jsonl`; opponents hidden until the human's battle is resolved; undo in the BUY phase only.
+- `breachlens/duel.py`: `Duel` (same `BreachEnv`, observation grid and masks as the agents; `buy` / `deploy` / `end_buy` / `wait` / `undo` / `render` / `reveal`; `DuelError` with a reason for every illegal action; `DuelNotFinished` until the end; the cache file is not opened before the end), `format_table`, text CLI `python -m breachlens.duel [--layout ID | --index N | --list | --script FILE | --no-log]`. No torch import.
+- Undo: the env has no undo; `Duel.undo` resets with the same seed and replays the remaining buys through the env (BUY phase only, refused after END_BUY); env untouched.
+- `scripts/build_duel_cache.py` (`--estimate`, `--procs N`): refuses a dirty tree and any non-DEV-validation id. **Runtime: 0.4 s per layout + about 2.3 s model load; full build of 30 layouts 8.6 s at 6 procs, so Claude Code ran it.** Cache built from a clean tree at commit d7433ef.
+- `breachlens/evaluator.dev_layout_ids(split)`: ids-only, role-guarded; used by duel.py and the builder so the B6 audit (only audited modules call `load_pool_records`) stays strict and was NOT edited.
+- Cached opponents, DEV-validation, illustrative (mean score / breach rate, 10 layouts per family): see the B17 report; BestSingle breach 0.73 vs learners 0.40-0.50, Oracle (400 sims) 0.97.
+- Tests `tests/test_b17_duel.py` (18): cache = fresh recomputation on one layout per family (all 5 contestants, Oracle included, exact); cached TTA rows = `scripts_b15_final._task` actions (3 arms x 3 layouts); BestSingle = B8 policy; non-DEV ids refused (FINAL, transfer, DEV-train, tampered cache, builder); illegal actions rejected with clear messages and no state change; opponents hidden until END; undo; human-runs file gitignored; scripted CLI session; ledger sha 20a8b287... unchanged.
+- Full suite: `.venv/bin/python -m pytest`: **741 passed in 973 s, no failures** (exit 0; the first run had 1 failure, the B6 loader audit, fixed by the evaluator helper rather than by editing the audit).
+
 ## Decisions
 - Env raises on illegal actions (catches bugs early) -> Gymnasium `check_env` can't be used (samples
   unmasked); we test reset/seed determinism only.
@@ -653,6 +663,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   the baselines surface a real problem with it.
 
 ## NEXT
+- v2 B17 DONE (duel core: `breachlens/duel.py`, `scripts/build_duel_cache.py`, `data/v2/duel_cache.json`, Gate changelog (kk) written before code; no training, no new results; ledger sha unchanged). Next: UI on top of it, only when told.
 - v2 B16b DONE (18 self-contained HTML replays + index in `docs/replays/`, generator `scripts/make_replays.py`, Gate changelog (jj) written before code; no training, no new results; ledger sha unchanged). Next: only when told.
 - v2 B16a DONE (explainability core `rl/explain.py` + text CLI `python -m rl.explain`, Gate changelog (ii) written before code; seed-0 display models, DEV familiar layouts only, in-sample label on DEV-train; fidelity tests vs the B15 eval policy plain + TTA; ledger sha unchanged). Next: HTML replay / UI on top of it, only when told.
 - v2 B15d DONE (suite green after B15, no guard weakened; commits 2efcfab and a18d612). Real ledger frozen at 5 build + one eval session (3ccef86e, 238 entries), byte-identical to tag `b15-final`; launchers (B13/B14) and the B15 runner refuse on it permanently (tested); dirty-flag evidence in docs/LIMITATIONS.md. Next: explainability, only when told.
