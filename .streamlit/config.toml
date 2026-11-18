@@ -1,0 +1,18 @@
+# B18a: dark "blueprint" theme (original design)
+[theme]
+base = "dark"
+primaryColor = "#5ec8ff"
+backgroundColor = "#07142b"
+secondaryBackgroundColor = "#0d2244"
+textColor = "#cfe6ff"
+font = "monospace"
+
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = false
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
