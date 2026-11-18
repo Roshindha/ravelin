@@ -141,15 +141,15 @@ def test_self_contained_no_network(runs):
 def test_labels_and_provenance_persistent(runs):
     a, _, rows, _ = runs
     prov = M.provenance()
-    assert len(prov["commit"]) >= 40 and prov["sim_version"] and prov["score_version"]
+    assert len(prov["code_commit"]) >= 40 and prov["sim_version"] and prov["score_version"]
     for r in rows:
         t = (a / r["file"]).read_text()
         run = X.DISPLAY_MODELS[r["arm"]][0]
         assert f"<b>{r['arm']}</b>" in t and f"<b>{run}</b>" in t and M.SPLIT_LABEL in t and r["layout_id"] in t
         assert ("TTA (8 views)" if r["tta"] else "plain") in t
-        for k in ("commit", "model id", "layout id", "split", "sim_version", "SCORE_VERSION", "battle frames"):
+        for k in ("code_commit", "model id", "layout id", "split", "sim_version", "SCORE_VERSION", "battle frames"):
             assert k in t
-        assert prov["commit"] in t and prov["sim_version"] in t and prov["score_version"] in t
+        assert prov["code_commit"] in t and prov["sim_version"] in t and prov["score_version"] in t
         assert "SHAPED" in t
         assert ("NOT a policy" in re.sub(r"<script.*?</script>", "", t, flags=re.S)) == (r["arm"] == "ddqn")      # visible page text, not the JS branch
         assert not re.search(r"20\d\d-\d\d-\d\d", t)             # no timestamp / date
@@ -178,9 +178,15 @@ def test_page_contents(runs):
     assert idx.count("<tr><td>") == 18 and all(r["file"] in idx for r in rows)
 
 
-def test_committed_replays_if_present():
+def test_committed_replays_equal_fresh_generation(runs):
+    """Drift guard (row (jj) addendum): docs/replays must be byte-identical to a fresh generation. The header carries code_commit (last commit
+    touching the generator, rl/ or breachlens/), so replays must be regenerated after any such commit or this test fails."""
+    a, _, rows, _ = runs
     d = ROOT / "docs" / "replays"
-    if not d.exists():
-        pytest.skip("docs/replays not generated yet")
-    files = list(d.iterdir())
-    assert len(files) == 19 and max(f.stat().st_size for f in files) <= M.FILE_CAP and sum(f.stat().st_size for f in files) <= M.TOTAL_CAP
+    assert d.exists(), "docs/replays missing: run scripts/make_replays.py"
+    committed = sorted(f.name for f in d.iterdir())
+    fresh = sorted(f.name for f in a.iterdir())
+    assert committed == fresh and len(fresh) == 19
+    stale = [n for n in fresh if (d / n).read_bytes() != (a / n).read_bytes()]
+    assert not stale, f"committed replays are stale (regenerate with scripts/make_replays.py): {stale[:3]}"
+    assert max(f.stat().st_size for f in d.iterdir()) <= M.FILE_CAP and sum(f.stat().st_size for f in d.iterdir()) <= M.TOTAL_CAP

@@ -277,6 +277,54 @@ def test_undo_only_before_end_buy():
         d.undo()
 
 
+def _snapshot(d):
+    e = d.env
+    return (list(d.actions), e.gold, list(e.owned), e.bought, e.phase, e.steps, d.legal_actions(), e.action_masks().tobytes(),
+            d.obs["grid"].tobytes(), d.obs["state"].tobytes(), [tuple(x) for x in e.army])
+
+
+def test_undo_equals_never_having_bought():
+    """(buy A, buy B, undo, buy C) == (buy A, buy C): state, gold, mask and the final battle outcome (same layout, same seed)."""
+    for idx in IDX:
+        x, y = duel(idx), duel(idx)
+        for u in ("sniper", "bulwark"):
+            x.buy(u)
+        x.undo()
+        x.buy("scout")
+        y.buy("sniper")
+        y.buy("scout")
+        assert _snapshot(x) == _snapshot(y), idx
+        for d in (x, y):
+            d.buy("blaster")
+            d.end_buy()
+        tiles = [b for b in range(52) if x.env._st.border_free[b]][:3]
+        for d in (x, y):
+            for u, t in zip(("sniper", "scout", "blaster"), tiles):
+                d.deploy(u, t)
+        assert x.finished and y.finished and x.human_row() == y.human_row() and x.actions == y.actions
+
+
+def test_undo_after_end_buy_refused_without_state_change():
+    d = duel()
+    d.buy("sniper")
+    d.buy("scout")
+    d.end_buy()
+    before = _snapshot(d)
+    with pytest.raises(D.DuelError, match="only possible during the BUY phase"):
+        d.undo()
+    assert _snapshot(d) == before
+    d.deploy("sniper", next(b for b in range(52) if d.env._st.border_free[b]))
+    before = _snapshot(d)
+    with pytest.raises(D.DuelError):
+        d.undo()
+    assert _snapshot(d) == before
+    d.wait()
+    before = _snapshot(d)
+    with pytest.raises(D.DuelError):
+        d.undo()
+    assert _snapshot(d) == before
+
+
 def test_human_runs_file_is_gitignored_and_local(tmp_path):
     r = subprocess.run(["git", "check-ignore", "-q", str(D.HUMAN_RUNS_PATH.relative_to(ROOT))], cwd=ROOT)
     assert r.returncode == 0, "results_v2/duel_human_runs.jsonl must be gitignored"

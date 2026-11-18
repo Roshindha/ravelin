@@ -73,7 +73,7 @@ def provenance() -> dict:
         return subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     commit = git("log", "-1", "--format=%H", "--", *CODE_PATHS)
     dirty = bool(git("status", "--porcelain", "--", *CODE_PATHS))
-    return {"commit": commit + ("+dirty" if dirty else ""), "sim_version": sim_version(), "score_version": SCORE_VERSION}
+    return {"code_commit": commit + ("+dirty" if dirty else ""), "sim_version": sim_version(), "score_version": SCORE_VERSION}
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- one episode
@@ -295,7 +295,7 @@ def build_html(meta: dict, ep: dict, rate: int) -> str:
             "battle": {"frames": frames, "units": ep["battle"]["units"], "rate": rate}}
     view = "TTA (8 views)" if meta["tta"] else "plain"
     brk = "YES" if out["core"] else "NO"
-    head_rows = [("commit", meta["commit"]), ("model id", f"{meta['run']} (final checkpoint sha256 {meta['model_sha'][:16]})"), ("layout id", meta["layout_id"]),
+    head_rows = [("code_commit", meta["code_commit"]), ("model id", f"{meta['run']} (final checkpoint sha256 {meta['model_sha'][:16]})"), ("layout id", meta["layout_id"]),
                  ("layout family", meta["family"]), ("split", SPLIT_LABEL), ("sim_version", meta["sim_version"]), ("SCORE_VERSION", meta["score_version"]),
                  ("battle frames", f"every {rate} tick(s) of {out['ticks']}" + (" (subsampled; the last tick is always kept)" if rate > 1 else " (all ticks)")),
                  ("episode", "the learner's own deterministic B15 episode (reset seed = crc32 of the layout id)")]
@@ -335,7 +335,7 @@ def build_index(rows: list, prov: dict) -> str:
         o = r["outcome"]
         body.append(f"<tr><td>{r['family']}</td><td>{r['arm']}</td><td>{'TTA' if r['tta'] else 'plain'}</td><td><a href=\"{r['file']}\">{html.escape(r['layout_id'])}</a></td>"
                     f"<td>{o['score']:.4f}</td><td>{o['d']:.4f}</td><td class=\"{'yes' if o['core'] else 'no'}\">{'yes' if o['core'] else 'no'}</td><td>{r['size']:,} B</td></tr>")
-    meta = f"commit {prov['commit']}; sim_version {prov['sim_version']}; SCORE_VERSION {prov['score_version']}; split {SPLIT_LABEL}"
+    meta = f"code_commit {prov['code_commit']}; sim_version {prov['sim_version']}; SCORE_VERSION {prov['score_version']}; split {SPLIT_LABEL}"
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Why this move? replays</title><style>{CSS}</style></head><body>
 <header><h1>Why this move? 18 replays</h1><p class="mut">First DEV-validation layout of each familiar family, seed-0 display model of each arm, plain and TTA. The set was fixed by index
