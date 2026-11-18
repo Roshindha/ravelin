@@ -133,7 +133,9 @@ def test_self_contained_no_network(runs):
         t = p.read_text()
         t = re.sub(r"<!--.*?-->", "", t, flags=re.S)             # an optional comment may mention a URL
         assert "http" not in t.lower(), p.name
-        for bad in ("src=", "@import", "<link", "fetch(", "XMLHttpRequest", "WebSocket", "sendBeacon", "import(", "//cdn", "url("):
+        t = t.replace("url(data:font/woff2;base64,", "")         # B18c: the only url() allowed is an embedded base64 font (data URI, no network)
+        assert not re.search(r"url\((?!#)", t), p.name
+        for bad in ("src=", "@import", "<link", "fetch(", "XMLHttpRequest", "WebSocket", "sendBeacon", "import(", "//cdn"):
             assert bad not in t, (p.name, bad)
         assert t.count("<script") == 2 or p.name == "index.html"
 
