@@ -1,37 +1,32 @@
-# B18c: maroon / cream / tomato / neon theme (docs/SPEC_V2.md row (nn)). The colours here must equal app/theme.py (a test compares them).
+# B18d: palette v2 (light) and fonts v2 (docs/SPEC_V2.md row (nn) + its B18d addendum). The colours here must equal app/theme.py (a test compares them).
 # Fonts are OFL files bundled in app/static/fonts and served by Streamlit static serving: no CDN, no network request.
 [theme]
-base = "dark"
-primaryColor = "#CDF73D"
-backgroundColor = "#250104"
-secondaryBackgroundColor = "#3B0A0F"
-textColor = "#F4EBDD"
-borderColor = "#5A1A20"
+base = "light"
+primaryColor = "#3283BE"
+backgroundColor = "#FEFDFE"
+secondaryBackgroundColor = "#F3F7FB"
+textColor = "#132A3E"
+borderColor = "#D5E2EE"
 baseRadius = "6px"
-font = "Instrument Sans"
-headingFont = "Bricolage Grotesque"
-codeFont = "IBM Plex Mono"
+font = "Atkinson Hyperlegible Next"
+headingFont = "Fraunces"
+codeFont = "Atkinson Hyperlegible Mono"
 baseFontSize = 16
 
 [[theme.fontFaces]]
-family = "Instrument Sans"
-url = "app/static/fonts/InstrumentSans-wght400-600.woff2"
+family = "Atkinson Hyperlegible Next"
+url = "app/static/fonts/AtkinsonHyperlegibleNext-wght400-600.woff2"
 weight = "400 600"
 
 [[theme.fontFaces]]
-family = "Bricolage Grotesque"
-url = "app/static/fonts/BricolageGrotesque-wght600-800.woff2"
-weight = "600 800"
+family = "Fraunces"
+url = "app/static/fonts/Fraunces-opsz-wght600-700.woff2"
+weight = "600 700"
 
 [[theme.fontFaces]]
-family = "IBM Plex Mono"
-url = "app/static/fonts/IBMPlexMono-Regular.woff2"
-weight = "400"
-
-[[theme.fontFaces]]
-family = "IBM Plex Mono"
-url = "app/static/fonts/IBMPlexMono-SemiBold.woff2"
-weight = "600"
+family = "Atkinson Hyperlegible Mono"
+url = "app/static/fonts/AtkinsonHyperlegibleMono-wght400-600.woff2"
+weight = "400 600"
 
 [client]
 toolbarMode = "minimal"

@@ -1,0 +1,11 @@
+Bundled fonts (B18d). All SIL OFL 1.1; the OFL text of each is next to it. None of the three OFL files declares a Reserved Font Name,
+so the subsets keep the original family names; the files are modified versions (Latin subset, axes limited), not the original release files.
+
+Source: https://github.com/google/fonts/tree/main/ofl (the Google Fonts release of each upstream project), fetched 2026-11-18.
+  Fraunces         upstream https://github.com/undercasetype/Fraunces                         source sha256 177ff6c0f14e5550a3c624247cd1189611d4eb65d000b14944c63d967958abbb
+  Atkinson Hyperlegible Next   upstream https://github.com/googlefonts/atkinson-hyperlegible-next        source sha256 5a455d1cfa099b601ab70751bb9673e8fe1854dc4500c80e1a220d0d75e31745
+  Atkinson Hyperlegible Mono   upstream https://github.com/googlefonts/atkinson-hyperlegible-next-mono   source sha256 5ce8b1698d1ded7dff2178c1a3ad159470085a58ea239e8b2cb88f4fb4a6f646
+Processing (fontTools instancer + subsetter, woff2): Latin (U+0020-007E, U+00A0-00FF) plus general punctuation, arrows, minus, <=, >=, !=, ~=.
+  Fraunces: SOFT = 0, WONK = 0 pinned; wght limited to 600-700; opsz axis (9-144) kept (CSS font-optical-sizing: auto).
+  Atkinson Hyperlegible Next: wght limited to 400-600 (tnum / pnum kept).
+  Atkinson Hyperlegible Mono: wght limited to 400-600. Monospaced, so its figures are tabular by construction.

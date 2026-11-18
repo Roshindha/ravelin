@@ -158,19 +158,19 @@ CSS = (TH.font_face_css(True) + TH.root_vars() + TH.common_css() + """
 *{box-sizing:border-box}body{margin:0}
 header,main,footer{max-width:1180px;margin:0 auto;padding:12px 16px}h1{margin:4px 0}h2{margin:0 0 6px;color:var(--mut)}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.badge{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:2px 10px;font-size:14px}
-.badge b{font-weight:600}.outcome{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--neon);border-radius:var(--r);padding:8px 12px;margin:8px 0}
-.outcome .k{color:var(--neon)}.wrap{display:flex;flex-wrap:wrap;gap:16px}.col{flex:1 1 360px;min-width:0}
+.badge b{font-weight:600}.outcome{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:var(--r);padding:8px 12px;margin:8px 0}
+.outcome .k{color:var(--primary-text)}.wrap{display:flex;flex-wrap:wrap;gap:16px}.col{flex:1 1 360px;min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-bottom:12px}
 .board{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}.board canvas{flex:1 1 520px}.key{flex:0 0 250px;font-size:14px}
 canvas{display:block;max-width:100%;height:auto;background:var(--board);border:1px solid var(--line);border-radius:var(--r)}
 table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:4px 8px;text-align:left;vertical-align:middle;border:0;border-left:3px solid transparent}
-th{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line)}tr:nth-child(even) td{background:var(--board)}
-tr.chosen td:first-child{border-left-color:var(--neon)}tr.chosen td{font-weight:600}td.yes{}td.no{}
-.bar{height:8px;background:var(--fg);border-radius:2px;min-width:1px}tr.chosen .bar{background:var(--neon)}
+th{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line)}tr:nth-child(even) td{background:var(--zebra)}.card tr:nth-child(odd) td{background:var(--bg)}
+tr.chosen td{font-weight:600;border-top:3px solid var(--outline);border-bottom:3px solid var(--outline);border-left:0}tr.chosen td:first-child{border-left:3px solid var(--outline)}tr.chosen td:last-child{border-right:3px solid var(--outline)}td.yes{}td.no{}
+.bar{height:8px;background:var(--fg);border-radius:2px;min-width:1px}tr.chosen .bar{background:var(--primary)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
 button,select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:var(--r);padding:4px 12px;font:inherit;font-weight:600;cursor:pointer}
-button[aria-pressed=true],button.primary{background:var(--neon);color:var(--on-neon);border-color:var(--neon)}
-input[type=range]{flex:1 1 300px;accent-color:var(--neon)}details{margin:6px 0}summary{cursor:pointer;color:var(--mut)}
+button[aria-pressed=true],button.primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-size:16px}
+input[type=range]{flex:1 1 300px;accent-color:var(--primary)}details{margin:6px 0}summary{cursor:pointer;color:var(--mut)}
 code{background:var(--bg);padding:1px 4px;border-radius:3px;font-size:14px}a{color:var(--fg);text-decoration:underline}
 .scale{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mut)}
 .grad{width:120px;height:10px;background:""" + TH.heat_scale_css() + """;border:1px solid var(--line)}
@@ -189,18 +189,18 @@ let pos = 0, heatMode = 'chosen', timer = null;
 const cv = $('grid'), cx = cv.getContext('2d');
 cv.width = W; cv.height = W;
 function fmt(x, n) { return x === null || x === undefined ? 'n/a' : x.toFixed(n === undefined ? 4 : n); }
-function heatColor(f) {                               // 0..1 -> maroon, tomato, neon yellow (sequential)
+function heatColor(f) {                               // 0..1 -> snow, azure, ink (sequential)
   const s = T.heat, p = Math.min(Math.max(f, 0), 1) * (s.length - 1), i = Math.min(Math.floor(p), s.length - 2), t = p - i;
   return 'rgb(' + [0, 1, 2].map(k => Math.round(s[i][k] + (s[i + 1][k] - s[i][k]) * t)).join(',') + ')';
 }
 function shape(kind, x, y) {                          // defenders: gun = square, lancer = triangle, flak = hexagon
   const m = CELL / 2, r = 13, cxm = x + m, cym = y + m;
-  cx.fillStyle = T.tomato; cx.beginPath();
+  cx.fillStyle = T.danger; cx.strokeStyle = T.outline; cx.lineWidth = 1.5; cx.beginPath();
   if (kind === 'gun') cx.rect(cxm - r + 1, cym - r + 1, 2 * r - 2, 2 * r - 2);
   else if (kind === 'lancer') { cx.moveTo(cxm, cym - r); cx.lineTo(cxm + r, cym + r - 2); cx.lineTo(cxm - r, cym + r - 2); cx.closePath(); }
   else if (kind === 'flak') { for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i; i ? cx.lineTo(cxm + r * Math.cos(a), cym + r * Math.sin(a)) : cx.moveTo(cxm + r, cym); } cx.closePath(); }
   else cx.arc(cxm, cym, r - 1, 0, 7);
-  cx.fill();
+  cx.fill(); cx.stroke();
 }
 function wall(x, y) {                                 // fill + diagonal hatching + 1px outline
   const a = x + 2, b = y + 2, w = CELL - 4;
@@ -215,17 +215,17 @@ function drawStruct(s, hp) {
   cx.globalAlpha = dead ? 0.25 : 1; cx.textAlign = 'center';
   if (k === 'w') wall(x, y);
   else if (k === 'b') { cx.strokeStyle = T.buildingStroke; cx.lineWidth = 2; cx.strokeRect(x + 5, y + 5, CELL - 10, CELL - 10); cx.fillStyle = T.buildingInk; cx.font = '14px ' + FN; cx.fillText(String(ex), x + m, y + m + 5); }
-  else if (k === 'c') { cx.fillStyle = T.coreFill; cx.strokeStyle = T.coreBorder; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + m, y + 3); cx.lineTo(x + CELL - 3, y + m); cx.lineTo(x + m, y + CELL - 3); cx.lineTo(x + 3, y + m); cx.closePath(); cx.fill(); cx.stroke(); cx.fillStyle = T.unitInk; cx.font = '600 12px ' + FB; cx.fillText('C', x + m, y + m + 4); }
+  else if (k === 'c') { cx.fillStyle = T.coreFill; cx.strokeStyle = T.coreBorder; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + m, y + 3); cx.lineTo(x + CELL - 3, y + m); cx.lineTo(x + m, y + CELL - 3); cx.lineTo(x + 3, y + m); cx.closePath(); cx.fill(); cx.stroke(); cx.fillStyle = T.coreInk; cx.font = '600 12px ' + FB; cx.fillText('C', x + m, y + m + 4); }
   else shape(String(ex).toLowerCase(), x, y);
   cx.globalAlpha = 1;
   if (k !== 'w' && hp < 1000 && !dead) { cx.fillStyle = T.hpBack; cx.fillRect(x + 4, y + CELL - 7, CELL - 8, 4); cx.fillStyle = T.hpFill; cx.fillRect(x + 4, y + CELL - 7, (CELL - 8) * hp / 1000, 4); }
-  if (dead && k !== 'w') { cx.strokeStyle = T.tomato; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + 6, y + 6); cx.lineTo(x + CELL - 6, y + CELL - 6); cx.moveTo(x + CELL - 6, y + 6); cx.lineTo(x + 6, y + CELL - 6); cx.stroke(); }
+  if (dead && k !== 'w') { cx.strokeStyle = T.outline; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x + 6, y + 6); cx.lineTo(x + CELL - 6, y + CELL - 6); cx.moveTo(x + CELL - 6, y + 6); cx.lineTo(x + 6, y + CELL - 6); cx.stroke(); }
 }
 function drawUnit(t, x, y, hp, st) {
   if (hp <= 0) return;
-  cx.fillStyle = UCOL[t]; cx.beginPath(); cx.arc(x + CELL / 2, y + CELL / 2, 13, 0, 7); cx.fill();
-  if (st === 2) { cx.strokeStyle = T.attackRing; cx.lineWidth = 2; cx.stroke(); }
-  cx.fillStyle = T.unitInk; cx.font = '600 11px ' + FB; cx.textAlign = 'center'; cx.fillText(UAB[t], x + CELL / 2, y + CELL / 2 + 4);
+  cx.fillStyle = UCOL[t]; cx.strokeStyle = T.outline; cx.lineWidth = 1.5; cx.beginPath(); cx.arc(x + CELL / 2, y + CELL / 2, 13, 0, 7); cx.fill(); cx.stroke();
+  if (st === 2) { cx.strokeStyle = T.attackRing; cx.lineWidth = 2; cx.beginPath(); cx.arc(x + CELL / 2, y + CELL / 2, 17, 0, 7); cx.stroke(); }
+  cx.fillStyle = T.unitInk[t]; cx.font = '600 11px ' + FB; cx.textAlign = 'center'; cx.fillText(UAB[t], x + CELL / 2, y + CELL / 2 + 4);
   cx.fillStyle = T.hpBack; cx.fillRect(x + 6, y + 2, CELL - 12, 3); cx.fillStyle = T.hpFill; cx.fillRect(x + 6, y + 2, (CELL - 12) * hp / 1000, 3);
 }
 function heatFor(s) {                                  // returns {vals: per border tile, label}
@@ -253,7 +253,7 @@ function draw() {
     D.structs.forEach(st => drawStruct(st, 1000));
     s.army.forEach(([t, b]) => { const [r, c] = BT[b]; drawUnit(t, c * CELL, r * CELL, 1000, 0); });
     const m = s.action - D.deploy_base;
-    if (m >= 0 && m < 5 * D.n_border) { const b = m % D.n_border, [r, c] = BT[b]; cx.strokeStyle = T.chosenFrame; cx.lineWidth = 3; cx.strokeRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4); }
+    if (m >= 0 && m < 5 * D.n_border) { const b = m % D.n_border, [r, c] = BT[b]; cx.strokeStyle = T.chosenKeyline; cx.lineWidth = 5; cx.strokeRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4); cx.strokeStyle = T.chosenFrame; cx.lineWidth = 3; cx.strokeRect(c * CELL + 2, r * CELL + 2, CELL - 4, CELL - 4); }
   } else {
     const f = D.battle.frames[pos - nDec];
     D.structs.forEach((st, i) => drawStruct(st, f.s[i]));
@@ -283,7 +283,7 @@ function panel() {
     const f = D.battle.frames[pos - nDec];
     const alive = f.u.filter(u => u[1] > 0).length, sd = D.structs.reduce((n, st, i) => n + (st[0] === 'b' && f.s[i] <= 0 ? 1 : 0), 0), nb = D.structs.filter(st => st[0] === 'b').length;
     const core = D.structs.findIndex(st => st[0] === 'c');
-    $('bat').textContent = 'tick ' + f.t + ': ' + alive + ' of ' + f.u.length + ' units alive; ' + sd + ' of ' + nb + ' buildings destroyed; core ' + (f.s[core] <= 0 ? 'destroyed' : 'standing') + '. White ring = unit attacked this tick.';
+    $('bat').textContent = 'tick ' + f.t + ': ' + alive + ' of ' + f.u.length + ' units alive; ' + sd + ' of ' + nb + ' buildings destroyed; core ' + (f.s[core] <= 0 ? 'destroyed' : 'standing') + '. Dark ring = unit attacked this tick.';
   }
   $('scrub').value = pos;
   spark();
@@ -294,7 +294,7 @@ function spark() {
   const X = i => pad + (w - 2 * pad) * (v.length > 1 ? i / (v.length - 1) : 0.5), Y = x => h - pad - (h - 2 * pad) * (hi > lo ? (x - lo) / (hi - lo) : 0.5);
   g.strokeStyle = T.line; if (lo < 0 && hi > 0) { g.beginPath(); g.moveTo(pad, Y(0)); g.lineTo(w - pad, Y(0)); g.stroke(); }
   g.strokeStyle = T.text; g.lineWidth = 2; g.beginPath(); v.forEach((x, i) => i ? g.lineTo(X(i), Y(x)) : g.moveTo(X(i), Y(x))); g.stroke();
-  const cur = Math.min(pos, nDec - 1); g.fillStyle = T.neon; g.beginPath(); g.arc(X(cur), Y(v[cur]), 4, 0, 7); g.fill();
+  const cur = Math.min(pos, nDec - 1); g.fillStyle = T.primary; g.beginPath(); g.arc(X(cur), Y(v[cur]), 4, 0, 7); g.fill();
   $('sparinfo').textContent = 'min ' + fmt(lo) + ', max ' + fmt(hi) + ', at the marker ' + fmt(v[cur]) + ' (decision step ' + (cur + 1) + ')';
 }
 function go(p) { pos = Math.max(0, Math.min(total - 1, p)); draw(); panel(); }
@@ -306,7 +306,7 @@ $('play').onclick = () => { if (timer) { clearInterval(timer); timer = null; $('
 document.onkeydown = e => { if (e.key === 'ArrowRight') go(pos + 1); if (e.key === 'ArrowLeft') go(pos - 1); };
 const h0 = parseInt(location.hash.slice(1));
 go(isNaN(h0) ? 0 : h0);          // #N opens at scrubber position N (0-based)
-if (document.fonts && document.fonts.load) Promise.all(["600 11px 'Instrument Sans'", "14px 'IBM Plex Mono'"].map(f => document.fonts.load(f))).then(() => go(pos));   // canvas text needs the embedded fonts
+if (document.fonts && document.fonts.load) Promise.all(["600 11px '" + T.fontBody + "'", "14px '" + T.fontNum + "'"].map(f => document.fonts.load(f))).then(() => go(pos));   // canvas text needs the embedded fonts
 """
 
 
@@ -345,7 +345,7 @@ def build_html(meta: dict, ep: dict, rate: int) -> str:
 &middot; core <span class="pill {'breach' if out['core'] else 'held'}">{brk}</span> &middot; <span class="num">{out['n_units']}</span> units deployed &middot; battle <span class="num">{out['ticks']}</span> ticks ({html.escape(out['reason'])})</div>
 <details><summary>Provenance</summary><table>{meta_html}</table></details></header>
 <main><div class="wrap"><div class="col" style="flex:2 1 820px"><div class="card"><div class="board"><canvas id="grid" aria-label="14 by 14 grid"></canvas>
-<div class="key"><b>Legend</b>{R.legend_svg(xmlns=False, fonts=False)}<div class="mut" style="margin-top:6px">White ring on a unit: attacked this tick. Neon frame: tile of the chosen deploy. {html.escape(R.AGENTS_SEE)}</div></div></div>
+<div class="key"><b>Legend</b>{R.legend_svg(xmlns=False, fonts=False)}<div class="mut" style="margin-top:6px">Dark ring around a unit: attacked this tick. Dark frame: tile of the chosen deploy. {html.escape(R.AGENTS_SEE)}</div></div></div>
 <div class="ctl"><span class="mut">Heatmap:</span><button id="h_chosen" aria-pressed="true">Chosen unit type</button><button id="h_total" aria-pressed="false">Per-tile total</button>
 <span class="scale"><span class="num">0</span><span class="grad"></span><span>max (deploy probability)</span></span></div><div class="mut" id="heatinfo"></div></div></div>
 <div class="col"><div class="card"><div class="ctl"><button id="prev">&larr; Prev</button><button id="play" class="primary">Play</button><button id="next">Next &rarr;</button>

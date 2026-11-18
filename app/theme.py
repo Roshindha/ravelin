@@ -1,4 +1,4 @@
-"""B18c: the single source of truth for the visual theme (docs/SPEC_V2.md, Gate changelog row (nn)).
+"""B18c / B18d: the single source of truth for the visual theme: palette v2 + fonts v2 (docs/SPEC_V2.md, Gate changelog row (nn) and its B18d addendum).
 
 Every hex colour of ``app/`` and ``scripts/make_replays.py`` is defined HERE and nowhere else (test-enforced). Pure module: no streamlit import, so the
 replay generator and the renderer can use it. Fonts are OFL, bundled under ``app/static/fonts/`` (no CDN, no network request).
@@ -9,74 +9,95 @@ import base64
 import json
 from pathlib import Path
 
-# ----------------------------------------------------------------------------------------------------------------------------- palette
-BG = "#250104"               # page background (flat)
-PANEL = "#3B0A0F"
-PANEL_BORDER = "#5A1A20"
-TEXT = "#F4EBDD"             # cream
-MUTED = "#C9AFA8"
-TOMATO = "#D71A06"           # accent 1: defenders, breach, danger (shapes, text >= 18px bold, or button background with ON_TOMATO text)
-ON_TOMATO = "#FEFDFE"
-NEON = "#CDF73D"             # accent 2: chosen action, primary button, current scrubber position, key numbers
-ON_NEON = BG
-CORE_FILL = "#FEFDFE"
-CORE_BORDER = TOMATO
-UNIT_FILL = {"scout": "#F6E7C8", "sniper": NEON, "bulwark": "#9FB8AD", "blaster": "#FF8A3D", "mender": "#E9A6C0"}
-UNIT_INK = BG
+# ----------------------------------------------------------------------------------------------------------------------------- palette (v2, light)
+BG = "#FEFDFE"               # page background (snowy white, flat)
+PANEL = "#F3F7FB"
+PANEL_BORDER = "#D5E2EE"
+TEXT = "#132A3E"             # ink
+MUTED = "#5B6B7A"
+PRIMARY = "#3283BE"          # azure navy: selected controls, primary buttons, scrubber, heading rule, unit Sniper. LARGE / BOLD / GRAPHIC ONLY (4.04:1 on the page).
+ON_PRIMARY = BG              # text on a primary button: bold, >= 16px
+PRIMARY_TEXT = "#245F8C"     # azure text smaller than 18px
+DANGER = "#FD614B"           # coral red: defenders, breach pill background, core ring. SHAPE ONLY (2.96:1 on the page): never a text colour.
+ON_DANGER = TEXT             # text on the breach pill
+DANGER_TEXT = "#C4402C"      # coral-coloured text
+OUTLINE = TEXT               # 1.5px outline of units and defenders; 3px frame of the chosen action
+CORE_FILL = TEXT             # ink diamond ...
+CORE_BORDER = DANGER         # ... with a 2px coral ring
+CORE_INK = BG                # the 'C' on the ink diamond
+UNIT_FILL = {"scout": "#F2C14E", "sniper": PRIMARY, "bulwark": "#6BAF92", "blaster": "#9B7BD4", "mender": "#F4A6C0"}
+UNIT_INK = {"scout": TEXT, "sniper": BG, "bulwark": TEXT, "blaster": TEXT, "mender": TEXT}
 UNIT_ORDER = ("scout", "sniper", "bulwark", "blaster", "mender")          # the engine's UNIT_TYPES order (index t)
 UNIT_ABBR = ("Sc", "Sn", "Bu", "Bl", "Me")
-WALL_FILL = PANEL
-WALL_HATCH = PANEL_BORDER
-BOARD_BG = "#2E0306"
-GRID_LINE = "#4A1218"
-ZEBRA = BOARD_BG
-HEAT_STOPS = (BG, TOMATO, NEON)                                         # sequential maroon -> tomato -> neon yellow
+WALL_FILL = "#C9D6E3"
+WALL_HATCH = "#A9BCCF"
+BOARD_BG = "#EEF4FA"
+GRID_LINE = PANEL_BORDER
+ZEBRA = PANEL
+HEAT_STOPS = (BG, PRIMARY, TEXT)                                        # sequential snow -> azure -> ink
 # derived roles (aliases only, no new colours)
 BUILDING_STROKE = TEXT
 BUILDING_INK = TEXT
 HP_BACK = PANEL_BORDER
 HP_FILL = TEXT
-ATTACK_RING = CORE_FILL
-CHOSEN_FRAME = NEON
+ATTACK_RING = TEXT           # ring (offset from the unit outline) on a unit that attacked this tick
+CHOSEN_FRAME = TEXT          # 3px outline of the chosen deploy tile and of the chosen top-5 row
+CHOSEN_KEYLINE = BG          # 1px light fringe on both sides of the chosen tile frame, so it stays visible on dark heatmap cells
 AXIS_INK = MUTED
+HUMAN_ROW = PRIMARY          # 3px left border of the human row in the comparison table
 
 # ----------------------------------------------------------------------------------------------------------------------------- typography
-FONT_HEADING = "Bricolage Grotesque"
-FONT_BODY = "Instrument Sans"
-FONT_NUM = "IBM Plex Mono"
+FONT_HEADING = "Fraunces"
+FONT_BODY = "Atkinson Hyperlegible Next"
+FONT_NUM = "Atkinson Hyperlegible Mono"
 SIZE_BASE, SIZE_H1, SIZE_H2, SIZE_TABLE = 16, 32, 22, 15
 RADIUS = 6
 FONT_DIR = Path(__file__).resolve().parent / "static" / "fonts"
-# (family, file, CSS weight, license file). Variable fonts are pinned to wdth 100 and the weight range used; IBM Plex Mono is static.
+# (family, file, CSS weight, license file). Variable woff2 subsets (Latin): Fraunces keeps its opsz axis; none of the three OFL files has a Reserved Font Name.
 FONTS = (
-    (FONT_HEADING, "BricolageGrotesque-wght600-800.woff2", "600 800", "OFL-BricolageGrotesque.txt"),
-    (FONT_BODY, "InstrumentSans-wght400-600.woff2", "400 600", "OFL-InstrumentSans.txt"),
-    (FONT_NUM, "IBMPlexMono-Regular.woff2", "400", "OFL-IBMPlexMono.txt"),
-    (FONT_NUM, "IBMPlexMono-SemiBold.woff2", "600", "OFL-IBMPlexMono.txt"),
+    (FONT_HEADING, "Fraunces-opsz-wght600-700.woff2", "600 700", "OFL-Fraunces.txt"),
+    (FONT_BODY, "AtkinsonHyperlegibleNext-wght400-600.woff2", "400 600", "OFL-AtkinsonHyperlegibleNext.txt"),
+    (FONT_NUM, "AtkinsonHyperlegibleMono-wght400-600.woff2", "400 600", "OFL-AtkinsonHyperlegibleMono.txt"),
 )
 STATIC_URL_PREFIX = "app/static/fonts/"                                 # Streamlit static serving (relative URL, same origin)
 
 # ----------------------------------------------------------------------------------------------------------------------------- contrast
-# (name, foreground, background, kind). kind: "normal" text needs 4.5:1; "large" (>= 18px bold, or a graphic / UI shape) needs 3:1.
+# (name, foreground, background, kind). kind: "normal" text 4.5:1; "large" = bold text >= 16px / large text / a graphic or UI shape, 3:1;
+# "exception" = a registered shortfall (4.3:1 floor, reported to the owner); "shape" = coral fills (identity carried by the ink outline pair, ratio reported only);
+# "decorative" = hairlines and tints that carry no information alone (>= 1.1:1, ratio reported).
 TEXT_PAIRS = (
     ("body text on page", TEXT, BG, "normal"),
-    ("body text on panel", TEXT, PANEL, "normal"),
-    ("body text on board / zebra row", TEXT, BOARD_BG, "normal"),
+    ("body text on panel / zebra row", TEXT, PANEL, "normal"),
+    ("body text on board", TEXT, BOARD_BG, "normal"),
     ("muted text on page", MUTED, BG, "normal"),
-    ("muted text on panel", MUTED, PANEL, "normal"),
-    ("muted text on board / zebra row", MUTED, BOARD_BG, "normal"),
-    ("primary button: dark text on neon", ON_NEON, NEON, "normal"),
-    ("key numbers: neon on page", NEON, BG, "normal"),
-    ("key numbers: neon on panel", NEON, PANEL, "normal"),
-    ("breach pill / tomato button: text on tomato", ON_TOMATO, TOMATO, "normal"),
-    ("tomato large text (>= 18px bold) on page", TOMATO, BG, "large"),
-    ("tomato shapes (defenders, core border) on board", TOMATO, BOARD_BG, "large"),
-    ("core diamond on board", CORE_FILL, BOARD_BG, "large"),
-    ("chosen-tile frame on board", NEON, BOARD_BG, "large"),
+    ("muted text on panel / zebra row", MUTED, PANEL, "normal"),
+    ("muted text on board", MUTED, BOARD_BG, "normal"),
+    ("azure text (< 18px) on page", PRIMARY_TEXT, BG, "normal"),
+    ("azure text (< 18px) on panel", PRIMARY_TEXT, PANEL, "normal"),
+    ("coral text on page", DANGER_TEXT, BG, "normal"),
+    ("coral text on panel", DANGER_TEXT, PANEL, "normal"),
+    ("breach pill: ink text on coral", ON_DANGER, DANGER, "normal"),
     ("building outline and number on board", BUILDING_INK, BOARD_BG, "normal"),
-    ("held pill: cream outline text on page", TEXT, BG, "normal"),
-) + tuple((f"unit letter on {u}", UNIT_INK, UNIT_FILL[u], "normal") for u in UNIT_ORDER)
-THRESHOLD = {"normal": 4.5, "large": 3.0}
+    ("core letter on ink diamond", CORE_INK, CORE_FILL, "normal"),
+    ("primary button: snow text (bold, >= 16px) on azure", ON_PRIMARY, PRIMARY, "large"),
+    ("azure on page (selected control, scrubber, rule)", PRIMARY, BG, "large"),
+    ("azure on panel (human row border, selected control)", PRIMARY, PANEL, "large"),
+    ("azure on board (heatmap mid stop, Sniper)", PRIMARY, BOARD_BG, "large"),
+    ("chosen-action frame (ink) on board", OUTLINE, BOARD_BG, "large"),
+    ("unit / defender outline (ink) on board", OUTLINE, BOARD_BG, "large"),
+    ("defender outline (ink) on coral fill", OUTLINE, DANGER, "large"),
+    ("core ring: coral on ink diamond", CORE_BORDER, CORE_FILL, "large"),
+    ("coral defender fill on board (shape only; the ink outline pair above carries it)", DANGER, BOARD_BG, "shape"),
+    ("coral on page (shape only, never text)", DANGER, BG, "shape"),
+    ("wall on board (decorative; the hatch and legend identify it)", WALL_FILL, BOARD_BG, "decorative"),
+    ("wall hatch on wall", WALL_HATCH, WALL_FILL, "decorative"),
+    ("grid line on board", GRID_LINE, BOARD_BG, "decorative"),
+    ("panel border on page", PANEL_BORDER, BG, "decorative"),
+) + tuple((f"unit letter on {u}" + (" (exception)" if u == "blaster" else ""), UNIT_INK[u], UNIT_FILL[u],
+           "large" if u == "sniper" else "exception" if u == "blaster" else "normal") for u in UNIT_ORDER)
+THRESHOLD = {"normal": 4.5, "large": 3.0, "exception": 4.3, "shape": 0.0, "decorative": 1.1}
+LARGE_ONLY = (PRIMARY,)                                                 # never the foreground of normal-size text (checked by a test)
+SHAPE_ONLY = (DANGER,)                                                  # never a text colour (checked by a test)
 
 
 def _lin(c: float) -> float:
@@ -101,7 +122,7 @@ def rgb(hex_color: str) -> tuple:
 
 
 def heat_color(f: float) -> str:
-    """0..1 -> maroon .. tomato .. neon yellow, as an rgb() string."""
+    """0..1 -> snow .. azure .. ink, as an rgb() string."""
     s = [rgb(c) for c in HEAT_STOPS]
     p = min(max(f, 0.0), 1.0) * (len(s) - 1)
     i = min(int(p), len(s) - 2)
@@ -117,10 +138,11 @@ def heat_scale_css() -> str:
 def js_theme() -> str:
     """The palette as a JSON object for the replay pages' script (so the script holds no colour literal)."""
     return json.dumps({
-        "bg": BG, "panel": PANEL, "line": PANEL_BORDER, "text": TEXT, "muted": MUTED, "tomato": TOMATO, "neon": NEON, "onTomato": ON_TOMATO,
-        "coreFill": CORE_FILL, "coreBorder": CORE_BORDER, "unitFill": [UNIT_FILL[u] for u in UNIT_ORDER], "unitInk": UNIT_INK, "unitAbbr": list(UNIT_ABBR),
+        "bg": BG, "panel": PANEL, "line": PANEL_BORDER, "text": TEXT, "muted": MUTED, "danger": DANGER, "primary": PRIMARY, "onPrimary": ON_PRIMARY,
+        "outline": OUTLINE, "coreFill": CORE_FILL, "coreBorder": CORE_BORDER, "coreInk": CORE_INK, "unitFill": [UNIT_FILL[u] for u in UNIT_ORDER],
+        "unitInk": [UNIT_INK[u] for u in UNIT_ORDER], "unitAbbr": list(UNIT_ABBR),
         "wallFill": WALL_FILL, "wallHatch": WALL_HATCH, "boardBg": BOARD_BG, "gridLine": GRID_LINE, "buildingStroke": BUILDING_STROKE,
-        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME,
+        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME, "chosenKeyline": CHOSEN_KEYLINE,
         "heat": [list(rgb(c)) for c in HEAT_STOPS], "fontHeading": FONT_HEADING, "fontBody": FONT_BODY, "fontNum": FONT_NUM,
     }, separators=(",", ":"), sort_keys=True)
 
@@ -139,28 +161,29 @@ def font_face_css(embed: bool) -> str:
 
 
 def root_vars() -> str:
-    return (f":root{{--bg:{BG};--panel:{PANEL};--line:{PANEL_BORDER};--fg:{TEXT};--mut:{MUTED};--tomato:{TOMATO};--on-tomato:{ON_TOMATO};--neon:{NEON};"
-            f"--on-neon:{ON_NEON};--board:{BOARD_BG};--grid:{GRID_LINE};--r:{RADIUS}px;--f-head:'{FONT_HEADING}',system-ui,sans-serif;"
-            f"--f-body:'{FONT_BODY}',system-ui,sans-serif;--f-num:'{FONT_NUM}',ui-monospace,monospace}}")
+    return (f":root{{--bg:{BG};--panel:{PANEL};--line:{PANEL_BORDER};--fg:{TEXT};--mut:{MUTED};--danger:{DANGER};--danger-text:{DANGER_TEXT};--on-danger:{ON_DANGER};"
+            f"--primary:{PRIMARY};--primary-text:{PRIMARY_TEXT};--on-primary:{ON_PRIMARY};--board:{BOARD_BG};--grid:{GRID_LINE};--zebra:{ZEBRA};--outline:{OUTLINE};"
+            f"--r:{RADIUS}px;--f-head:'{FONT_HEADING}',Georgia,serif;--f-body:'{FONT_BODY}',system-ui,sans-serif;--f-num:'{FONT_NUM}',ui-monospace,monospace}}")
 
 
 def common_css() -> str:
     """Rules shared by the app and the replay pages."""
     return (
         f"body{{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:{SIZE_BASE}px;line-height:1.5}}"
-        f"h1,h2,h3{{font-family:var(--f-head);font-weight:700;letter-spacing:0;text-transform:none}}"
+        f"h1,h2,h3{{font-family:var(--f-head);font-weight:700;font-optical-sizing:auto;letter-spacing:0;text-transform:none}}"
         f"h1{{font-size:{SIZE_H1}px}}h2{{font-size:{SIZE_H2}px}}"
+        "h1,h2{border-bottom:2px solid var(--primary);padding-bottom:.15em}"
         ".num,code,td.num,.mono{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}"
         ".mut{color:var(--mut)}"
         f".disclaimer{{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);color:var(--mut);padding:3px 12px;font-size:14px;margin:0 0 10px 0}}"
         f".pill{{display:inline-block;border-radius:999px;padding:1px 10px;font-size:14px;font-weight:600;line-height:1.5}}"
-        f".pill.breach,.yes.pill{{background:var(--tomato);color:var(--on-tomato)}}"
+        f".pill.breach,.yes.pill{{background:var(--danger);color:var(--on-danger)}}"
         f".pill.held,.no.pill{{border:1px solid var(--fg);color:var(--fg)}}"
     )
 
 
 def app_css() -> str:
-    """The Streamlit page: flat background, Instrument Sans body, Bricolage headings, Plex Mono numbers, 6px radius, no shadows."""
+    """The Streamlit page: flat light background, Atkinson Hyperlegible Next body, Fraunces headings, Atkinson Hyperlegible Mono numbers, 6px radius, no shadows."""
     return (
         "<style>" + font_face_css(False) + root_vars() + common_css() +
         f".stApp{{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:{SIZE_BASE}px}}"
@@ -173,21 +196,24 @@ def app_css() -> str:
         "[data-testid='stSliderTickBarMin'],[data-testid='stSliderTickBarMax']{font-family:var(--f-num);font-variant-numeric:tabular-nums}"
         ".bar{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px 0}"
         f".badge{{border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:2px 10px;font-size:14px;border-radius:var(--r)}}"
-        f".badge.warn{{border-color:var(--tomato);color:var(--fg);font-weight:600}}"
+        f".badge.warn{{border-color:var(--danger);color:var(--fg);font-weight:600}}"
         f".panel{{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:10px}}"
-        f".outcome{{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--neon);border-radius:var(--r);padding:6px 12px;margin:6px 0}}"
-        ".outcome .k{color:var(--neon);font-weight:600}"
+        f".outcome{{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:var(--r);padding:6px 12px;margin:6px 0}}"
+        ".outcome .k{color:var(--primary-text);font-weight:600}"
         f".legend{{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px 12px;font-size:14px}}"
         ".legend .row{display:flex;align-items:center;gap:8px;margin:3px 0}.legend svg{flex:none}"
-        f".stButton button{{border-radius:var(--r);border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:.25rem .6rem;font-family:var(--f-body)}}"
-        ".stButton button p{font-size:15px;white-space:nowrap;overflow:visible;text-overflow:clip;font-weight:600}"
-        f".stButton button[kind='primary']{{background:var(--neon);border-color:var(--neon);color:var(--on-neon)}}"
-        ".stButton button[kind='primary'] p{color:var(--on-neon)}"
+        f".stButton button{{border-radius:var(--r);border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:.25rem .4rem;font-family:var(--f-body)}}"
+        ".stButton button p{font-size:15px;white-space:normal;overflow:visible;text-overflow:clip;font-weight:600;line-height:1.25}"
+        ".stButton button [data-testid='stMarkdownContainer']{overflow:visible;text-overflow:clip}"        # Atkinson is wider than the old body font: no ellipsis on button labels
+        f".stButton button[kind='primary']{{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}}"
+        ".stButton button[kind='primary'] p{color:var(--on-primary);font-size:16px;font-weight:600}"
         f"table.top{{width:100%;border-collapse:collapse;font-size:{SIZE_TABLE}px}}"
         f"table.top td,table.top th{{padding:5px 8px;text-align:left;border:0;border-left:3px solid transparent}}"
         "table.top th{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line)}"
-        "table.top tr:nth-child(even) td{background:var(--board)}"
-        "table.top tr.chosen td:first-child{border-left-color:var(--neon)}"
+        "table.top tr:nth-child(even) td{background:var(--zebra)}"
+        "table.top tr.chosen td{border-top:3px solid var(--outline);border-bottom:3px solid var(--outline);border-left:0}"
+        "table.top tr.chosen td:first-child{border-left:3px solid var(--outline)}table.top tr.chosen td:last-child{border-right:3px solid var(--outline)}"
+        "table.top tr.human td:first-child{border-left-color:var(--primary)}"
         "table.top td.num,table.top th.num{text-align:right}"
         "</style>"
     )
@@ -195,4 +221,4 @@ def app_css() -> str:
 
 def config_toml_theme() -> dict:
     """The colours that .streamlit/config.toml must carry (the config file cannot import this module; a test compares them)."""
-    return {"primaryColor": NEON, "backgroundColor": BG, "secondaryBackgroundColor": PANEL, "textColor": TEXT}
+    return {"primaryColor": PRIMARY, "backgroundColor": BG, "secondaryBackgroundColor": PANEL, "textColor": TEXT, "borderColor": PANEL_BORDER}

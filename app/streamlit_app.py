@@ -133,7 +133,7 @@ def legend():
     """Compact legend next to the board (row (nn) A3 / A5). Shared with the duel screen."""
     st.markdown("**Legend**")
     st.image(R.legend_svg(), width=270)
-    st.markdown(f'<div class="mut">Chosen deploy tile: neon frame. White ring on a unit: attacked this tick. {R.AGENTS_SEE}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="mut">Chosen deploy tile: dark frame. Dark ring around a unit: attacked this tick. {R.AGENTS_SEE}</div>', unsafe_allow_html=True)
 
 
 def decision_lens(ep: dict, pos: int):
@@ -174,7 +174,7 @@ def decision_lens(ep: dict, pos: int):
         lens.update(kind="battle", tick=f["t"], units_alive=alive, buildings_destroyed=dead, core_destroyed=f["s"][core] <= 0)
         st.subheader("Decision lens: battle")
         st.markdown(f'**Outcome so far (tick {f["t"]} of {ep["outcome"]["ticks"]}):** {alive} of {len(f["u"])} units alive; {dead} of {nb} buildings destroyed; '
-                    f'core {"destroyed" if f["s"][core] <= 0 else "standing"}. White ring = unit attacked this tick.')
+                    f'core {"destroyed" if f["s"][core] <= 0 else "standing"}. Dark ring = unit attacked this tick.')
         if f["t"] == ep["outcome"]["ticks"]:
             o = ep["outcome"]
             st.markdown(f'**Final (true) outcome:** score <span class="num">{o["score"]:.4f}</span>, D = <span class="num">{o["d"]:.4f}</span>, core {breach_pill(o["core"])}.', unsafe_allow_html=True)
@@ -189,7 +189,7 @@ def spark(ep: dict, pos: int):
     df = pd.DataFrame({"step": range(n_dec), "value": [s["value"] for s in ep["steps"]]})
     cur = pd.DataFrame({"step": [min(pos, n_dec - 1)], "value": [df["value"][min(pos, n_dec - 1)]]})
     line = alt.Chart(df).mark_line(color=TH.TEXT).encode(x=alt.X("step:Q", title="decision step"), y=alt.Y("value:Q", title="value (shaped return)"))
-    pt = alt.Chart(cur).mark_point(color=TH.NEON, size=70, filled=True).encode(x="step:Q", y="value:Q")
+    pt = alt.Chart(cur).mark_point(color=TH.PRIMARY, size=70, filled=True).encode(x="step:Q", y="value:Q")
     st.altair_chart((line + pt).properties(height=110).configure(background=TH.BG, font=TH.FONT_BODY).configure_axis(
         labelColor=TH.MUTED, titleColor=TH.MUTED, gridColor=TH.PANEL_BORDER, domainColor=TH.PANEL_BORDER, tickColor=TH.PANEL_BORDER, labelFont=TH.FONT_NUM, titleFont=TH.FONT_BODY),
         width="stretch")

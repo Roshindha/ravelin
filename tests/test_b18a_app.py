@@ -84,7 +84,7 @@ def test_no_sidebar_widgets_and_theme():
     src = Path(APP).read_text()
     assert "st.sidebar" not in src and 'initial_sidebar_state="collapsed"' in src
     cfg = (ROOT / ".streamlit" / "config.toml").read_text()
-    assert 'base = "dark"' in cfg and 'backgroundColor = "#250104"' in cfg and 'font = "Instrument Sans"' in cfg       # B18c: maroon theme, bundled fonts
+    assert 'base = "light"' in cfg and 'backgroundColor = "#FEFDFE"' in cfg and 'font = "Atkinson Hyperlegible Next"' in cfg       # B18d: palette v2 (light), fonts v2
 
 
 @pytest.mark.parametrize("tta", [True, False])

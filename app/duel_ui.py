@@ -156,7 +156,7 @@ def _results(duel: D.Duel) -> None:
         st.markdown('<div class="mut">Same replay view as the Replay mode.</div>', unsafe_allow_html=True)
     st.subheader("Comparison (same layout, same reset seed)")
     body = "".join(
-        f'<tr class="{"chosen" if r["contestant"] == "human" else ""}"><td>{html.escape(r["label"])}</td><td class="num">{r["score"]:.3f}</td><td class="num">{r["d"]:.3f}</td>'
+        f'<tr class="{"human" if r["contestant"] == "human" else ""}"><td>{html.escape(r["label"])}</td><td class="num">{r["score"]:.3f}</td><td class="num">{r["d"]:.3f}</td>'
         f'<td>{_pill(r["breach"])}</td>'
         f'<td class="num">{r["n_bought"]}</td><td class="num">{r["n_deployed"]}</td>'
         f'<td>{html.escape(" ".join(f"{u[:3]}={n}" for u, n in r["bought"].items() if n))}</td>'

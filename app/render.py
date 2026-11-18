@@ -54,7 +54,7 @@ def font_style() -> str:
     """@font-face with base64 data URIs INSIDE the svg: an svg shown as an <img> cannot use the page's fonts, and no network request may be made."""
     parts = []
     for fam, fn, weight, _ in T.FONTS:
-        if fn.startswith("IBMPlexMono-SemiBold") or fn.startswith("BricolageGrotesque"):
+        if fam == T.FONT_HEADING:                                   # the board SVG has no heading text
             continue
         b64 = base64.b64encode((T.FONT_DIR / fn).read_bytes()).decode()
         parts.append(f"@font-face{{font-family:'{fam}';font-weight:{weight};src:url(data:font/woff2;base64,{b64}) format('woff2')}}")
@@ -68,18 +68,18 @@ def _hp_bar(x, y, hp):
 
 
 def defender_shape(kind: str, cx: float, cy: float, scale: float = 1.0) -> str:
-    """Gun = square, Lancer = triangle, Flak = hexagon (tomato). Unknown type: circle."""
+    """Gun = square, Lancer = triangle, Flak = hexagon (coral fill, 1.5px ink outline). Unknown type: circle."""
     k = (kind or "").lower()
     r = 13 * scale
     if k == "gun":
-        return f'<rect x="{cx - r + 1:.1f}" y="{cy - r + 1:.1f}" width="{2 * r - 2:.1f}" height="{2 * r - 2:.1f}" fill="{T.TOMATO}"/>'
+        return f'<rect x="{cx - r + 1:.1f}" y="{cy - r + 1:.1f}" width="{2 * r - 2:.1f}" height="{2 * r - 2:.1f}" fill="{T.DANGER}" stroke="{T.OUTLINE}" stroke-width="1.5"/>'
     if k == "lancer":
         pts = f"{cx:.1f},{cy - r:.1f} {cx + r:.1f},{cy + r - 2:.1f} {cx - r:.1f},{cy + r - 2:.1f}"
-        return f'<polygon points="{pts}" fill="{T.TOMATO}"/>'
+        return f'<polygon points="{pts}" fill="{T.DANGER}" stroke="{T.OUTLINE}" stroke-width="1.5"/>'
     if k == "flak":
         pts = " ".join(f"{cx + r * math.cos(math.radians(60 * i)):.1f},{cy + r * math.sin(math.radians(60 * i)):.1f}" for i in range(6))
-        return f'<polygon points="{pts}" fill="{T.TOMATO}"/>'
-    return f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r - 1:.1f}" fill="{T.TOMATO}"/>'
+        return f'<polygon points="{pts}" fill="{T.DANGER}" stroke="{T.OUTLINE}" stroke-width="1.5"/>'
+    return f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r - 1:.1f}" fill="{T.DANGER}" stroke="{T.OUTLINE}" stroke-width="1.5"/>'
 
 
 def _struct(s, hp):
@@ -95,14 +95,14 @@ def _struct(s, hp):
               f'<text x="{x + m}" y="{y + m + 5}" text-anchor="middle" fill="{T.BUILDING_INK}" font-size="14" font-family="\'{T.FONT_NUM}\'">{html.escape(str(ex))}</text>')
     elif k == "c":
         g += (f'<polygon points="{x + m},{y + 3} {x + CELL - 3},{y + m} {x + m},{y + CELL - 3} {x + 3},{y + m}" fill="{T.CORE_FILL}" stroke="{T.CORE_BORDER}" stroke-width="2"/>'
-              f'<text x="{x + m}" y="{y + m + 4}" text-anchor="middle" fill="{T.UNIT_INK}" font-size="12" font-weight="600" font-family="\'{T.FONT_BODY}\'">C</text>')
+              f'<text x="{x + m}" y="{y + m + 4}" text-anchor="middle" fill="{T.CORE_INK}" font-size="12" font-weight="600" font-family="\'{T.FONT_BODY}\'">C</text>')
     else:
         g += defender_shape(str(ex), x + m, y + m)
     g += "</g>"
     if k not in ("w",) and 0 < hp < 1000:
         g += _hp_bar(x, y, hp)
     if dead and k != "w":
-        g += f'<path d="M{x + 7} {y + 7}L{x + CELL - 7} {y + CELL - 7}M{x + CELL - 7} {y + 7}L{x + 7} {y + CELL - 7}" stroke="{T.TOMATO}" stroke-width="2"/>'
+        g += f'<path d="M{x + 7} {y + 7}L{x + CELL - 7} {y + CELL - 7}M{x + CELL - 7} {y + 7}L{x + 7} {y + CELL - 7}" stroke="{T.OUTLINE}" stroke-width="2"/>'
     return g
 
 
@@ -110,9 +110,9 @@ def _unit(t, col, row, hp, st):
     if hp <= 0:
         return ""
     x, y = col * CELL, row * CELL
-    ring = f' stroke="{T.ATTACK_RING}" stroke-width="2"' if st == 2 else ""
-    return (f'<circle cx="{x + CELL / 2}" cy="{y + CELL / 2}" r="12" fill="{UCOL[t]}"{ring}/>'
-            f'<text x="{x + CELL / 2}" y="{y + CELL / 2 + 4}" text-anchor="middle" fill="{T.UNIT_INK}" font-size="11" font-weight="600" font-family="\'{T.FONT_BODY}\'">{UAB[t]}</text>'
+    ring = f'<circle cx="{x + CELL / 2}" cy="{y + CELL / 2}" r="16" fill="none" stroke="{T.ATTACK_RING}" stroke-width="2"/>' if st == 2 else ""
+    return (f'<circle cx="{x + CELL / 2}" cy="{y + CELL / 2}" r="12" fill="{UCOL[t]}" stroke="{T.OUTLINE}" stroke-width="1.5"/>{ring}'
+            f'<text x="{x + CELL / 2}" y="{y + CELL / 2 + 4}" text-anchor="middle" fill="{T.UNIT_INK[T.UNIT_ORDER[t]]}" font-size="11" font-weight="600" font-family="\'{T.FONT_BODY}\'">{UAB[t]}</text>'
             + (_hp_bar(x, y, hp) if hp < 1000 else ""))
 
 
@@ -184,7 +184,8 @@ def grid_svg(ep: dict, border: list, n: int, pos: int, heat_mode: str, tile_labe
         m = ep["steps"][pos]["action"] - 5
         if 0 <= m < 5 * len(border):
             r, c = border[m % len(border)]
-            out.append(f'<rect x="{c * CELL + 2}" y="{r * CELL + 2}" width="{CELL - 4}" height="{CELL - 4}" fill="none" stroke="{T.CHOSEN_FRAME}" stroke-width="2.5"/>')
+            fr = f'x="{c * CELL + 2}" y="{r * CELL + 2}" width="{CELL - 4}" height="{CELL - 4}" fill="none"'
+            out.append(f'<rect {fr} stroke="{T.CHOSEN_KEYLINE}" stroke-width="5"/><rect {fr} stroke="{T.CHOSEN_FRAME}" stroke-width="3"/>')
     out.append(f'<rect x="0" y="0" width="{W}" height="{W}" fill="none" stroke="{T.PANEL_BORDER}" stroke-width="1"/>')
     out.append(_heat_scale(0, W + 12, scale_max))
     H = W + FOOT + 14
@@ -209,7 +210,7 @@ def legend_svg(xmlns: bool = True, fonts: bool = True) -> str:
         y, cx, cy = i * rowh + 4, 14, i * rowh + 14
         if kind.startswith("unit:"):
             t = T.UNIT_ORDER.index(kind[5:])
-            out.append(f'<circle cx="{cx}" cy="{cy}" r="10" fill="{UCOL[t]}"/><text x="{cx}" y="{cy + 4}" text-anchor="middle" fill="{T.UNIT_INK}" font-size="10" '
+            out.append(f'<circle cx="{cx}" cy="{cy}" r="10" fill="{UCOL[t]}" stroke="{T.OUTLINE}" stroke-width="1.5"/><text x="{cx}" y="{cy + 4}" text-anchor="middle" fill="{T.UNIT_INK[kind[5:]]}" font-size="10" '
                        f'font-weight="600" font-family="\'{T.FONT_BODY}\'">{UAB[t]}</text>')
         elif kind in ("gun", "lancer", "flak"):
             out.append(defender_shape(kind, cx, cy, 0.8))

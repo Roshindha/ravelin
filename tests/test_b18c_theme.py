@@ -1,4 +1,4 @@
-"""B18c: visual theme and content fixes (docs/SPEC_V2.md, Gate changelog row (nn)). Pure file / module checks; no training, no evaluation."""
+"""B18c / B18d: visual theme and content fixes (docs/SPEC_V2.md, Gate changelog row (nn)). Pure file / module checks; no training, no evaluation."""
 import re
 import tomllib
 from pathlib import Path
@@ -20,18 +20,50 @@ def test_contrast_meets_wcag_aa(name, fg, bg, kind):
 
 def test_contrast_function_known_values():
     assert T.contrast("#000000", "#FFFFFF") == pytest.approx(21.0)
-    assert T.contrast("#D71A06", "#250104") == pytest.approx(3.72, abs=0.01)       # tomato on maroon: large / shapes only (never small text)
-    assert ("tomato large text (>= 18px bold) on page", T.TOMATO, T.BG, "large") in T.TEXT_PAIRS
-    assert not any(fg == T.TOMATO and kind == "normal" for _, fg, _, kind in T.TEXT_PAIRS)
+    assert T.contrast("#3283BE", "#FEFDFE") == pytest.approx(4.04, abs=0.01)       # azure on the page: below 4.5, so large / bold / graphic only
+    assert T.contrast("#FD614B", "#FEFDFE") == pytest.approx(2.96, abs=0.01)       # coral on the page: below 3, so shape only, never text
+
+
+def test_azure_is_large_only_and_coral_is_shape_only():
+    for name, fg, bg, kind in T.TEXT_PAIRS:
+        if kind == "normal":
+            assert T.PRIMARY not in (fg, bg) and fg != T.DANGER, name                # normal-size text: never azure, never coral text (coral may be the pill background)
+    assert any(fg == T.ON_PRIMARY and bg == T.PRIMARY and kind == "large" for _, fg, bg, kind in T.TEXT_PAIRS)       # white on azure: declared bold-only
+    assert not any(fg == T.DANGER and kind not in ("shape", "large") for _, fg, _, kind in T.TEXT_PAIRS)
+    # source scan: azure / coral are never a text colour (CSS `color:` or SVG / canvas text fill) in app code, theme CSS or the replay script
+    srcs = [p for p in APP_FILES] + [ROOT / "scripts" / "make_replays.py"]
+    bad = []
+    for p in srcs:
+        for i, line in enumerate(p.read_text().splitlines(), 1):
+            if re.search(r"(?<![-\w])color:\s*var\(--(primary|danger)\)", line):          # CSS text colour (background / border / accent-color are fine)
+                bad.append(f"{p.name}:{i}")
+            if ("<text" in line or "fillText" in line) and re.search(r"fill=\"\{T\.(PRIMARY|DANGER)\}\"", line):
+                bad.append(f"{p.name}:{i}")
+    assert not bad, bad
+    assert T.TEXT_PAIRS and all(T.contrast(fg, bg) >= T.THRESHOLD[k] for _, fg, bg, k in T.TEXT_PAIRS)
 
 
 def test_palette_is_the_spec():
-    assert (T.BG, T.PANEL, T.PANEL_BORDER, T.TEXT, T.MUTED) == ("#250104", "#3B0A0F", "#5A1A20", "#F4EBDD", "#C9AFA8")
-    assert (T.TOMATO, T.NEON, T.CORE_FILL, T.CORE_BORDER) == ("#D71A06", "#CDF73D", "#FEFDFE", "#D71A06")
-    assert T.UNIT_FILL == {"scout": "#F6E7C8", "sniper": "#CDF73D", "bulwark": "#9FB8AD", "blaster": "#FF8A3D", "mender": "#E9A6C0"}
-    assert (T.BOARD_BG, T.GRID_LINE, T.WALL_FILL, T.WALL_HATCH) == ("#2E0306", "#4A1218", "#3B0A0F", "#5A1A20")
-    assert T.HEAT_STOPS == ("#250104", "#D71A06", "#CDF73D")
+    assert (T.BG, T.PANEL, T.PANEL_BORDER, T.TEXT, T.MUTED) == ("#FEFDFE", "#F3F7FB", "#D5E2EE", "#132A3E", "#5B6B7A")
+    assert (T.PRIMARY, T.ON_PRIMARY, T.PRIMARY_TEXT) == ("#3283BE", "#FEFDFE", "#245F8C")
+    assert (T.DANGER, T.ON_DANGER, T.DANGER_TEXT) == ("#FD614B", "#132A3E", "#C4402C")
+    assert (T.CORE_FILL, T.CORE_BORDER, T.OUTLINE, T.CHOSEN_FRAME) == ("#132A3E", "#FD614B", "#132A3E", "#132A3E")
+    assert T.UNIT_FILL == {"scout": "#F2C14E", "sniper": "#3283BE", "bulwark": "#6BAF92", "blaster": "#9B7BD4", "mender": "#F4A6C0"}
+    assert T.UNIT_INK == {"scout": "#132A3E", "sniper": "#FEFDFE", "bulwark": "#132A3E", "blaster": "#132A3E", "mender": "#132A3E"}
+    assert (T.BOARD_BG, T.GRID_LINE, T.WALL_FILL, T.WALL_HATCH, T.ZEBRA, T.HUMAN_ROW) == ("#EEF4FA", "#D5E2EE", "#C9D6E3", "#A9BCCF", "#F3F7FB", "#3283BE")
+    assert T.HEAT_STOPS == ("#FEFDFE", "#3283BE", "#132A3E")
     assert (T.SIZE_BASE, T.SIZE_H1, T.SIZE_H2, T.SIZE_TABLE, T.RADIUS) == (16, 32, 22, 15, 6)
+    assert (T.FONT_HEADING, T.FONT_BODY, T.FONT_NUM) == ("Fraunces", "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Mono")
+
+
+def test_old_palette_and_fonts_are_gone():
+    old = ["#250104", "#3b0a0f", "#5a1a20", "#f4ebdd", "#c9afa8", "#d71a06", "#cdf73d", "#f6e7c8", "#9fb8ad", "#ff8a3d", "#e9a6c0", "#2e0306", "#4a1218"]
+    files = [*APP_FILES, ROOT / "scripts" / "make_replays.py", ROOT / ".streamlit" / "config.toml", *(ROOT / "docs" / "replays").glob("*.html"), *(ROOT / "app" / "static" / "fonts").glob("*.txt")]
+    for p in files:
+        t = p.read_text().lower()
+        assert not [c for c in old if c.lower() in t], p.name
+        assert not re.search(r"maroon|tomato|neon|cream|bricolage|instrument sans|plex", t), p.name
+    assert sorted(f.name for f in (ROOT / "app" / "static" / "fonts").glob("*.woff2")) == sorted(fn for _, fn, _, _ in T.FONTS)
 
 
 def test_hex_colours_only_in_theme():
@@ -50,7 +82,7 @@ def test_config_toml_matches_theme_and_enables_static_serving():
     th = cfg["theme"]
     for k, v in T.config_toml_theme().items():
         assert th[k].upper() == v.upper(), k
-    assert th["borderColor"].upper() == T.PANEL_BORDER and th["font"] == T.FONT_BODY and th["headingFont"] == T.FONT_HEADING and th["codeFont"] == T.FONT_NUM
+    assert th["base"] == "light" and th["borderColor"].upper() == T.PANEL_BORDER and th["font"] == T.FONT_BODY and th["headingFont"] == T.FONT_HEADING and th["codeFont"] == T.FONT_NUM
     assert cfg["server"]["enableStaticServing"] is True
     for ff in th["fontFaces"]:                                   # relative, local URLs only
         assert ff["url"].startswith(T.STATIC_URL_PREFIX) and (ROOT / "app" / ff["url"].removeprefix("app/")).exists()
@@ -62,6 +94,8 @@ def test_fonts_and_license_files_present():
         f, l = T.FONT_DIR / fn, T.FONT_DIR / lic
         assert f.exists() and f.stat().st_size > 5_000 and f.read_bytes()[:4] == b"wOF2", fn
         assert l.exists() and "SIL OPEN FONT LICENSE" in l.read_text().upper(), lic
+        assert not re.search(r'with Reserved Font Name', l.read_text(), re.I), lic           # no RFN declared: the subsets may keep the family names
+    assert (T.FONT_DIR / "SOURCES.txt").exists()
 
 
 def test_no_network_urls_in_app_or_replays():
@@ -78,7 +112,7 @@ def test_no_network_urls_in_app_or_replays():
 def test_replays_embed_fonts_and_are_themed():
     t = (ROOT / "docs" / "replays" / "spine_pods__ppo_plain__tta.html").read_text()
     assert t.count("@font-face") == len(T.FONTS) and "data:font/woff2;base64," in t
-    for c in (T.BG, T.PANEL, T.TOMATO, T.NEON):
+    for c in (T.BG, T.PANEL, T.DANGER, T.PRIMARY, T.TEXT):
         assert c in t
     assert R.DISCLAIMER in t.replace("&#x27;", "'")
 
