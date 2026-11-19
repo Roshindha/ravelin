@@ -1,4 +1,4 @@
-G7 report  models=/Users/roshinisudhakar/base-siege/models_v2  horizon=300000  bar=0.4369  plain seeds=[9001, 9002, 9003]  d4 seeds=[9101, 9102, 9103]
+G7 report  models=models_v2  horizon=300000  bar=0.4369  plain seeds=[9001, 9002, 9003]  d4 seeds=[9101, 9102, 9103]
 
 G7 look at t = [250000, 275000, 300000]: mean score 0.4284 vs bar 0.4369
   seed 9001: score 0.4346  D 0.491  breach 0.350  bought 9.0  distinct armies 34

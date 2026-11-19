@@ -1,5 +1,5 @@
 G7 SHAPED-REWARD PILOT (SPEC 7.4, Gate changelog (z)): training used shaping, every number below is the TRUE score
-G7 report  models=/Users/roshinisudhakar/base-siege/models_v2  horizon=300000  bar=0.4369  plain seeds=[9201, 9202, 9203]  d4 seeds=[]
+G7 report  models=models_v2  horizon=300000  bar=0.4369  plain seeds=[9201, 9202, 9203]  d4 seeds=[]
 
 G7 look at t = [250000, 275000, 300000]: mean score 0.4650 vs bar 0.4369
   seed 9201: score 0.4544  D 0.483  breach 0.411  bought 8.6  distinct armies 37
