@@ -1,10 +1,10 @@
-# PROGRESS
+# Ravelin build log
 
-Project root: `~/base-siege` (NOT `~/RL-Project`, which is an empty 0-byte file that was left untouched).
-Project spec: [docs/SPEC.md](docs/SPEC.md)
+The honest step-by-step log of the build (formerly `PROGRESS.md`; the project was renamed Ravelin in B19). Entries are history and keep the names used at the time: the prototype package `siege/` (removed in B20, at tag `prototype-v1`) and root scripts `scripts_<name>.py`, which now live at `scripts/<name>.py`.
+Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototype-v1`).
 
 ## Setup / commands
-    cd ~/base-siege
+    cd <repo root>
     python3.11 -m venv .venv                      # already created
     .venv/bin/pip install -r requirements-dev.txt # research + test stack; requirements.txt is the deployed app only (B21)
     .venv/bin/pytest                              # run all tests
@@ -236,7 +236,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
   at t>=10k (status -> interrupted), rerun -> resumed from ckpt_10000 in phase B, finished. Mini-grid models/logs deleted.
 - Expected cost: ~167 steps/s per job at 6 parallel => 1M steps ~ 1.7 h/job, 20 jobs in ~3.4 waves => roughly 6-7 h wall.
 - Commands to run (own terminal):
-      cd ~/base-siege && caffeinate -i nohup scripts/run_ppo_grid.sh > results/logs/grid.out 2>&1 &
+      caffeinate -i nohup scripts/run_ppo_grid.sh > results/logs/grid.out 2>&1 &
       .venv/bin/python scripts/status.py            # check progress anytime
       # after a crash/reboot/Ctrl-C: just run the same command again; finished runs are skipped, others resume
 
@@ -469,7 +469,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 ### STEP B8 (v2): baselines + evaluator (done, branch v2-redesign); FINAL never loaded, ledger 5 build / 0 eval
 - Pre-registered first (commit 3713e5b): Gate changelog (k) = BestSingle chosen per family on the matching training split (DEV-validation <- DEV-train, TUNE-val <- TUNE-train, training sets in-sample; B15 FINAL-familiar <- DEV-train per family, FINAL-transfer <- ONE type pooled over DEV-train familiar), diagnostics BestSingle-hindsight and BestSingle-perlayout, Greedy = B5 definition (Mender pairing dropped), Random = uniform over legal BreachEnv actions with 5 layout-id-derived seeds, B8 scope. Changelog (l) records the boundary check.
 - **Deviation from the SPEC section 11 B8 row (by owner decision):** B8 covers Random, Greedy, BestSingle (+2 diagnostics) and Oracle only. Army search stays in `oracle.py`; RAS-N and RPS-N move to the planner step (B12).
-- `breachlens/evaluator.py` (policy x set x role -> per-layout rows + per-group summary; breach rate headline, mean score and D, bootstrap over layouts 10,000 resamples seed 8080; every row carries score_version, sim_version, generator_hash, pool_sha256, git_commit, seed, role, set; missing field -> ValueError; role eval needs unlock=True and writes one `eval` ledger entry per evaluation, tested only with a monkeypatched `LEDGER_PATH` and synthetic layouts), `breachlens/baselines.py`, `SCORE_VERSION = "b7-single-rounding"` in `score.py`, `scripts_b8_baselines.py`, `scripts_b8_checks.py`, `tests/test_b8_baselines.py` (21). Outputs in `data/v2/baselines/` (layout rows, summary csv/json, best-single choice, Oracle cache, timing, checks). Run on commit 1d0b924 with 7 processes; row `git_dirty` is true only because untracked `logs_b8/` existed.
+- `breachlens/evaluator.py` (policy x set x role -> per-layout rows + per-group summary; breach rate headline, mean score and D, bootstrap over layouts 10,000 resamples seed 8080; every row carries score_version, sim_version, generator_hash, pool_sha256, git_commit, seed, role, set; missing field -> ValueError; role eval needs unlock=True and writes one `eval` ledger entry per evaluation, tested only with a monkeypatched `LEDGER_PATH` and synthetic layouts), `breachlens/baselines.py`, `SCORE_VERSION = "b7-single-rounding"` in `score.py`, `scripts_b8_baselines.py`, `scripts_b8_checks.py`, `tests/test_b8_baselines.py` (21). Outputs in `data/v2/baselines/` (layout rows, summary csv/json, best-single choice, Oracle cache, timing, checks). Run on commit 1d0b924 with 7 processes; row `git_dirty` is true only because untracked `data/v2/baselines/ (b8_baselines.log, b8_checks.log; formerly logs_b8/)` existed.
 - Findings: Greedy (B5 definition) buys 8 Bulwark, i.e. it IS the single-Bulwark army; BestSingle = Sniper everywhere except TUNE archipelago (Bulwark); the train-chosen type equals the hindsight type on all 4 sets. Oracle >= every other baseline on all 420 layouts. B5 consistency exact for Oracle; Greedy within 1.1e-16 (22 layouts). Boundary check: 0 / 367 DEV bit mismatches, 0 candidates at exactly 99/100.
 - Wall time per baseline (4 sets, 7 procs): Oracle 49.7 s; every other baseline <= 1.4 s.
 - Full plain `pytest`: `425 passed in 492.08s (0:08:12)`, exit 0 (the first run failed the B6 AST audit list until `evaluator.py` and `scripts_b8_checks.py` were added to it; the new B8 test pins that the checks script only calls `walk` with "DEV").

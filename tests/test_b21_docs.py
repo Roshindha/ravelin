@@ -17,8 +17,8 @@ def tracked_md() -> list:
 
 def test_readme_has_no_inspired_by_placeholders_or_old_name():
     """Owner decision (row (qq)): no 'Inspired by' line anywhere; the placeholders are gone; the old name does not appear in the README."""
-    for bad in ("AUTHOR_NAME", "AUTHOR_URL", "Inspired by", "inspired by", "Base Siege", "troops.md"):
-        assert bad not in README, bad
+    for bad in ("AUTHOR_NAME", "AUTHOR_URL", "Inspired by", "inspired by", "base" + " " + "siege", "troops.md"):
+        assert bad.lower() not in README.lower(), bad
 
 
 def test_readme_content_rules():
@@ -28,11 +28,13 @@ def test_readme_content_rules():
     for shot in re.findall(r"!\[[^\]]*\]\(([^)]+)\)", README):
         assert not shot.startswith(("http", "/")) and (ROOT / shot).exists(), shot
     assert len(re.findall(r"!\[[^\]]*\]\(", README)) == 2
-    for needle in ("Fraunces", "Atkinson Hyperlegible", "SIL Open Font License", "MIT", "docs/RESULTS.md", "docs/LIMITATIONS.md", "requirements-dev.txt",
+    for needle in ("Fraunces", "Atkinson Hyperlegible", "SIL Open Font License", "docs/RESULTS.md", "docs/LIMITATIONS.md", "requirements-dev.txt",
                    "No learned policy beats a fixed single-type army on breach rate", "bootstrap", "BestSingle", "Oracle", "TTA", "DDQN", "PPO+D4"):
         assert needle in README, needle
     assert not re.search(r"[\U0001F000-\U0001FAFF☀-➿⬀-⯿️]", README), "emoji"
-    assert (ROOT / "LICENSE").read_text().startswith("MIT License")
+    assert "The Python package keeps its original internal name (breachlens) because frozen provenance hashes reference it." in README
+    assert "ravelin_1a_" in README and "ravelin_1b_" in README
+    assert not (ROOT / "LICENSE").exists() and "License:" not in README and "MIT License" not in README     # owner decision (B19): no licence file, no licence section
 
 
 def test_readme_table_numbers_come_from_results_md():

@@ -6,7 +6,7 @@ Play it: https://ravelin.streamlit.app (placeholder until the app is deployed)
 
 ![Title and shop](docs/screenshots/ravelin_1a_title_top_two_units_bought.png)
 
-![Report cards](docs/screenshots/ravelin_6_report_cards.png)
+![Shop](docs/screenshots/ravelin_1b_shop_two_units_bought.png)
 
 ## What it is
 
@@ -67,24 +67,21 @@ Rebuilding the bundle, replays and duel cache needs the trained checkpoints in `
     .venv/bin/python scripts/make_replays.py
     .venv/bin/python scripts/build_duel_cache.py
 
-The tables in RESULTS.md come from `results/b15/tables/`. Step-by-step history and exact commands are in [PROGRESS.md](PROGRESS.md).
+The tables in RESULTS.md come from `results/b15/tables/`. Step-by-step history and exact commands are in [docs/dev_log.md](docs/dev_log.md).
 
 ## Repo layout
 
     app/            Streamlit app (game, theme, board component, bundle reader), fonts
     breachlens/     game engine and evaluation code (simulator, environment, scoring, pool, duel)
     rl/             PPO / DDQN training, test-time augmentation, planner, explainability
-    scripts/        app bundle, replays, duel cache, screenshots
-    scripts_*.py    step-by-step research scripts (training grids, analysis)
+    scripts/        app bundle, replays, duel cache, screenshots, and the step-by-step research scripts (training grids, analysis)
     data/           frozen layout pool, unit stats, duel cache, app bundle
     results/        evaluation outputs and tables
-    docs/           RESULTS, LIMITATIONS, SPEC_V2, replays, screenshots
+    docs/           RESULTS, LIMITATIONS, SPEC_V2, dev_log, replays, screenshots
     tests/          test suite
 
-The engine package is named `breachlens`, the project's working name; the game is called Ravelin.
+The Python package keeps its original internal name (breachlens) because frozen provenance hashes reference it.
 
 ## Credits
 
 Fonts: Fraunces and Atkinson Hyperlegible (SIL Open Font License; licence files in `app/static/fonts/`).
-
-License: MIT.
