@@ -1,6 +1,0 @@
-sanity_none_s0/best.zip, deploy-only single-type armies, 20 val layouts (mean destruction)
-troop     n   clustered PPOclustered script   scattered PPOscattered script   ALL PPO  ALL script
-swarm    20           0.096           0.023           0.407           0.572     0.251       0.298
-ranger    8           0.084           0.120           0.000           0.227     0.042       0.173
-tank      6           0.051           0.070           0.120           0.165     0.085       0.118
-splash    5           0.126           0.111           0.000           0.000     0.063       0.056
