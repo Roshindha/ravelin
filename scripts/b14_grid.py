@@ -300,7 +300,21 @@ def gate_problems(spec_text: str) -> list:
     return out
 
 
+def resolve_commit(commit: str) -> str:
+    """Translate a commit id recorded before the 2026-11-19 history rewrite (trailer edit only) to its current id via docs/commit_map.tsv."""
+    mp = ROOT / "docs" / "commit_map.tsv"
+    if mp.exists() and commit:
+        for line in mp.read_text().splitlines():
+            if line.startswith("#") or "\t" not in line:
+                continue
+            old, new = line.split("\t")
+            if old.startswith(commit):
+                return new
+    return commit
+
+
 def code_changed_since(commit: str) -> list:
+    commit = resolve_commit(commit)
     r = subprocess.run(["git", "diff", "--name-only", commit, "HEAD", "--", *CODE_PATHS], cwd=ROOT, capture_output=True, text=True)
     return [x for x in r.stdout.split() if x] if r.returncode == 0 else [f"git diff failed for {commit}"]
 

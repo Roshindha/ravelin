@@ -43,3 +43,7 @@ results/*
 !results/layouts.json
 !results/layouts.sha256
 !results/layout_contact_sheet.png
+
+# assistant tooling config (never tracked)
+CLAUDE.md
+.claude/

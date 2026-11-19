@@ -1,5 +1,5 @@
 """B20: the prototype (siege/, rl/augment_v1.py, rl/train_ppo.py and the prototype rl/ modules, scripts and tests) is gone and nothing imports it.
-It lives at tag prototype-v1 (ef43f63). Names are matched whole, so rl.train_ppo_v2 does NOT trigger this."""
+It lives at tag prototype-v1 (ef43f63 before the 2026-11-19 history rewrite; see docs/commit_map.tsv). Names are matched whole, so rl.train_ppo_v2 does NOT trigger this."""
 from __future__ import annotations
 
 import ast
