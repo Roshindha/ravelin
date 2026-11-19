@@ -1,0 +1,191 @@
+{
+ "arms": [
+  "ppo_plain",
+  "ppo_d4",
+  "ddqn"
+ ],
+ "layouts": {
+  "archipelago-301000201": {
+   "bytes": 28903,
+   "file": "archipelago-301000201.json.gz",
+   "sha256": "45c785cb91c1971e03234e7ae905ff9cb8bccbf73c0d15718574c29045baf34a"
+  },
+  "archipelago-301000203": {
+   "bytes": 28407,
+   "file": "archipelago-301000203.json.gz",
+   "sha256": "eb4d474fb6d76113195cdd4ed438178f2de47f6c098b3d76f3e004536bee05f8"
+  },
+  "archipelago-301000205": {
+   "bytes": 28905,
+   "file": "archipelago-301000205.json.gz",
+   "sha256": "8121f7379e4931a8d699187c979ae2f917db4901e7a3fba1727c58fe89ed7acc"
+  },
+  "archipelago-301000208": {
+   "bytes": 28531,
+   "file": "archipelago-301000208.json.gz",
+   "sha256": "9557ecf698873a8cbdc2bbf831f180c4ddb87910a72fb38be30698feda7007af"
+  },
+  "archipelago-301000212": {
+   "bytes": 33534,
+   "file": "archipelago-301000212.json.gz",
+   "sha256": "962e477456f850f939e14bd873e697c10ec680ee550b6d1e138c77e80f187760"
+  },
+  "archipelago-301000214": {
+   "bytes": 34198,
+   "file": "archipelago-301000214.json.gz",
+   "sha256": "dc200574a03e3525c174afe2f6c7c3e291e8d3a35a7ad01f7b1e25ec8b924510"
+  },
+  "archipelago-301000216": {
+   "bytes": 35909,
+   "file": "archipelago-301000216.json.gz",
+   "sha256": "15c275318e01da775a98e044425730bdf318bc90b6f3dbc130f7e424f7f5f975"
+  },
+  "archipelago-301000218": {
+   "bytes": 35156,
+   "file": "archipelago-301000218.json.gz",
+   "sha256": "bceeae151db6825ea43c63a6b0bb8facbe78aca038a37d72354f4ddd46d22b98"
+  },
+  "archipelago-301000219": {
+   "bytes": 32795,
+   "file": "archipelago-301000219.json.gz",
+   "sha256": "5356b2eadd9e20656b1797d992e5bbab71bd6b3f734b913ee5af2403fc35a4e5"
+  },
+  "archipelago-301000222": {
+   "bytes": 27654,
+   "file": "archipelago-301000222.json.gz",
+   "sha256": "69864fd2ea91a180ae7b390575f8399dee27f90d161d506079cca03bcc74ce40"
+  },
+  "bunker_nest-302000065": {
+   "bytes": 41082,
+   "file": "bunker_nest-302000065.json.gz",
+   "sha256": "30dd0c2f51afb192a38f4244a3f6bfa497953c80da4523f639f552aadeaaf7e6"
+  },
+  "bunker_nest-302000066": {
+   "bytes": 39028,
+   "file": "bunker_nest-302000066.json.gz",
+   "sha256": "fc43ba282e2f37e786c2a7387775a20b96fb229687fb13a4bdc35dbe075e0ecd"
+  },
+  "bunker_nest-302000067": {
+   "bytes": 34668,
+   "file": "bunker_nest-302000067.json.gz",
+   "sha256": "6de3c429184c8cfdc7a9ea902fdcf87caf24b9114807b4aad508bdce8c60d731"
+  },
+  "bunker_nest-302000068": {
+   "bytes": 36948,
+   "file": "bunker_nest-302000068.json.gz",
+   "sha256": "5b33654aaac987cf3acaf4e3777b0031bdb49e99a07b20a0cdfc45349a7d2f5d"
+  },
+  "bunker_nest-302000069": {
+   "bytes": 40698,
+   "file": "bunker_nest-302000069.json.gz",
+   "sha256": "749e5f604b3e752374ce8eccf1ee611a7c74c36abed70dfa5028ae6d98670d04"
+  },
+  "bunker_nest-302000070": {
+   "bytes": 34020,
+   "file": "bunker_nest-302000070.json.gz",
+   "sha256": "ba1f2c6ccf32849fda8037c40dacbea284a274212fcf38abe654be4c1807cf31"
+  },
+  "bunker_nest-302000072": {
+   "bytes": 38295,
+   "file": "bunker_nest-302000072.json.gz",
+   "sha256": "0ba1265c6cc305d257813e80359b180c5cfdc83ff00315e36ad7b007df1ee626"
+  },
+  "bunker_nest-302000073": {
+   "bytes": 35135,
+   "file": "bunker_nest-302000073.json.gz",
+   "sha256": "ba1387f956051338c9544bf2e72ddeeb34365d9003aebcece70be887a9556dd7"
+  },
+  "bunker_nest-302000074": {
+   "bytes": 31530,
+   "file": "bunker_nest-302000074.json.gz",
+   "sha256": "53946316732e59730e12e3062ffb6f2a381fb9834b1b06dd439c769e4aedc4ca"
+  },
+  "bunker_nest-302000076": {
+   "bytes": 38362,
+   "file": "bunker_nest-302000076.json.gz",
+   "sha256": "9eacbbefbc83e5926896d9ca5b4aa6c45cd19dae73a1d57ddc091e7840211e38"
+  },
+  "spine_pods-300000056": {
+   "bytes": 32363,
+   "file": "spine_pods-300000056.json.gz",
+   "sha256": "a3727fdc5ff8df0051a9cf8cac035a30bdd9373d7f28316d6bdd94e4b6dd86ad"
+  },
+  "spine_pods-300000058": {
+   "bytes": 32745,
+   "file": "spine_pods-300000058.json.gz",
+   "sha256": "409d439479a00238cf385cd3be58c64c1ff6655c071d0bc1e216d057118770da"
+  },
+  "spine_pods-300000059": {
+   "bytes": 27701,
+   "file": "spine_pods-300000059.json.gz",
+   "sha256": "fa3062967ed98bd69de37456489ef1e48eff3261f189cee53c5d84df682a78dd"
+  },
+  "spine_pods-300000060": {
+   "bytes": 34844,
+   "file": "spine_pods-300000060.json.gz",
+   "sha256": "9e35c26d39dd1674d5b2bdc6b0089ea07c8686fbba7ca91d8629594064d9d5fd"
+  },
+  "spine_pods-300000061": {
+   "bytes": 31280,
+   "file": "spine_pods-300000061.json.gz",
+   "sha256": "4dcc7faae1bdece4703333b5dbbb5f856e40d5f5af2d048557d1e9f942a42fc2"
+  },
+  "spine_pods-300000062": {
+   "bytes": 29083,
+   "file": "spine_pods-300000062.json.gz",
+   "sha256": "2d40c51467b36b3c6aa2c13a919bfdc24ee4822ec2563fce831979f570569691"
+  },
+  "spine_pods-300000063": {
+   "bytes": 33466,
+   "file": "spine_pods-300000063.json.gz",
+   "sha256": "322054dfa84bbf6a548e8e40939af2189e301144d9c24be037fb684d039dd4fc"
+  },
+  "spine_pods-300000064": {
+   "bytes": 28982,
+   "file": "spine_pods-300000064.json.gz",
+   "sha256": "cb49edeb9081f32a4b77f9e7f2d0682db28c5512d4eee5fa1808848aa8d7e9a3"
+  },
+  "spine_pods-300000065": {
+   "bytes": 30301,
+   "file": "spine_pods-300000065.json.gz",
+   "sha256": "8aab533d09fa3b31c91319cf01b4b354b3690f7d28eeccfe84e8b5f07eccb199"
+  },
+  "spine_pods-300000066": {
+   "bytes": 36314,
+   "file": "spine_pods-300000066.json.gz",
+   "sha256": "8eb79053c881fa97f6383ba9a108bf3671d5c2647d45ca1ff3bfd8a525a24972"
+  }
+ },
+ "models": {
+  "ddqn": {
+   "algo": "ddqn",
+   "checkpoint": "final.pt",
+   "run": "grid_ddqn_s0",
+   "sha256": "eb0be3471a465d56e838d87186f3593d6c532a21a2f3714836450a1fbb3b171f"
+  },
+  "ppo_d4": {
+   "algo": "ppo",
+   "checkpoint": "final.zip",
+   "run": "grid_ppo_d4_s0",
+   "sha256": "0f92e1aec02a7456dac4829a7949d5338a57cfc628683869beb01c04dcb7fe35"
+  },
+  "ppo_plain": {
+   "algo": "ppo",
+   "checkpoint": "final.zip",
+   "run": "grid_ppo_plain_s0",
+   "sha256": "43f29c0df831e1e11b0dea64acccbbb59b65a600a0d3fe45d260d0e9dbe0ab9a"
+  }
+ },
+ "provenance": {
+  "code_commit": "288fedc647ba3d5cf405c32740ef8d4149e1a81e",
+  "score_version": "b7-single-rounding",
+  "sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338"
+ },
+ "split": "DEV-validation",
+ "total_bytes": 1000837,
+ "version": 1,
+ "views": [
+  "plain",
+  "tta"
+ ]
+}
