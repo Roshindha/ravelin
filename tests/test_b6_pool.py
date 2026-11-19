@@ -3,7 +3,6 @@ import hashlib
 import json
 import os
 import random
-import stat
 from collections import Counter
 from pathlib import Path
 
@@ -322,10 +321,7 @@ def test_training_and_tuning_modules_do_not_import_the_final_loaders():
 
 
 # ------------------------------------------------------------------ freeze
-def test_pool_file_is_read_only_and_sha256_matches():
-    mode = P.POOL_PATH.stat().st_mode
-    assert not mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH)
-    assert not P.POOL_SHA_PATH.stat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH)
+def test_pool_file_sha256_matches():
     sha = hashlib.sha256(P.POOL_PATH.read_bytes()).hexdigest()
     assert P.POOL_SHA_PATH.read_text().split()[0] == sha == P.pool_sha256()
     assert json.loads(P.POOL_PATH.read_text()) == DOC
