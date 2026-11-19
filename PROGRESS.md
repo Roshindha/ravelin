@@ -6,7 +6,7 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 ## Setup / commands
     cd ~/base-siege
     python3.11 -m venv .venv                      # already created
-    .venv/bin/pip install -r requirements.txt     # full set already installed (torch/sb3-contrib/streamlit included)
+    .venv/bin/pip install -r requirements-dev.txt # research + test stack; requirements.txt is the deployed app only (B21)
     .venv/bin/pytest                              # run all tests
     .venv/bin/python scripts_smoke.py             # 100 random masked steps
     .venv/bin/python scripts_balance.py --n 200   # balance table: mean destruction by army x family
@@ -759,3 +759,15 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Real-browser click check (Chrome DevTools, mouse and touch emulation): a click on tile 5 deployed the Sniper, a second click on tile 5 showed "illegal action: border tile 5 (0, 5) is already occupied" and changed nothing; at 390 px a tap deployed on tile 6 and a second tap on it showed the same message.
 
 - Suite: first full run 731 passed, 2 failed: `test_committed_replays_equal_fresh_generation` (expected: code_commit provenance moved; replays regenerated from the clean tree in a separate commit, 19 files, one provenance line each, outcomes / actions / frames identical, a second run produced no diff) and `test_b13c_shaped::test_first_validation_eval_is_identical_...` (passes alone and in the second full run; unrelated to this step, no training code touched, looks order- or load-dependent, not investigated further). Second full run: `exit=0`, 733 passed in 1015 s.
+
+### STEP B21 (README, docs polish, deployable lightweight app) -- no training, no new results
+- Item 0 (commit c8da359): Gate changelog (qq), written before any change. Owner decision recorded there: NO "Inspired by" line anywhere (supersedes the B21 plan row and decision 11); the B21 README test asserts the placeholders and the line are absent.
+- **Deploy bundle**: `scripts/build_app_bundle.py` (refuses a dirty tree) -> `data/app_bundle/` (30 DEV-validation layouts x 3 seed-0 arms x plain/TTA = 180 episodes, one gzip JSON per layout + `manifest.json` with code commit, model run names + checkpoint sha256, sim_version, SCORE_VERSION, file sha256). Size 1,000,837 bytes (about 0.95 MiB). `app/bundle.py` reads it (stdlib only). The app uses it when torch is not importable or `RAVELIN_DEPLOY=1`; Watch the AI then offers DEV-validation only (DEV-train needs the live models).
+- **Equality**: the bundle equals the live `run_episode` output for all 180 episodes (actions and ints exact, floats within 1e-9; in fact identical, the replays' 4-decimal rounding is applied before storage). App runs with the torch import blocked (tests/test_b21_deploy.py).
+- **Deploy duel**: `_runs_path()` returns None when deployed, so `Duel(human_runs_path=None)`: no file is opened for writing (tested with an `open` spy, `BREACHLENS_DUEL_RUNS` ignored). Opponents come from `data/v2/duel_cache.json` + the simulator.
+- **Requirements**: `requirements.txt` = numpy, gymnasium, streamlit (pinned); `requirements-dev.txt` = `-r requirements.txt` + pandas, matplotlib, torch, stable-baselines3, sb3-contrib, pytest (pinned, test compares with the installed versions). `.python-version` 3.11; `.streamlit/config.toml` + `fileWatcherType = "none"`, `runOnSave = false`. Cloud: Python 3.11 in Advanced settings, env var `RAVELIN_DEPLOY=1`, main file `app/streamlit_app.py`.
+- **Memory** (local `streamlit run` with `RAVELIN_DEPLOY=1`, real Chrome driving Play, report and Watch pages, RSS of the server process tree sampled every 0.5 s): idle 69 MB, peak 136 MB.
+- README rewritten (LICENSE added: MIT, "Ravelin contributors"); RESULTS / LIMITATIONS / SPEC_V2 start with a 3-line reader summary; `tests/test_b21_docs.py` checks the README rules, that its table numbers equal RESULTS.md, the summaries and that every relative link in every tracked `*.md` resolves (no broken link was found; the dead `docs/troops.md` link left with the old README).
+- Not done (outside B21): the B19 cleanup (package rename, `docs/dev_log.md`, root `scripts_*.py` move) is still pending its owner decision; the log stays PROGRESS.md. SPEC.md / SPEC_V2.md keep the historical name "Base Siege" / "BreachLens" (record, not README).
+- Replays: no regeneration needed (no file under the replay CODE_PATHS changed).
+
