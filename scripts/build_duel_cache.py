@@ -16,13 +16,11 @@ import json
 import multiprocessing as mp
 import sys
 import time
-import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import numpy as np  # noqa: E402
 
 from breachlens import duel as D  # noqa: E402
 from breachlens import evaluator as EV  # noqa: E402

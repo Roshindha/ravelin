@@ -15,7 +15,6 @@ import torch as th
 
 from breachlens import evaluator as E
 from breachlens import pool as P
-from breachlens.constants import N_UNIT_TYPES
 from breachlens.env import BreachEnv, END_BUY, N_ACTIONS, WAIT
 from breachlens.score import score_ratio, score_value
 from rl import planner as PL
@@ -335,7 +334,6 @@ def _replay(layout, actions):
 
 def test_rps_full_masking_rules_hold_at_every_step_of_every_plan(items):
     from breachlens.constants import BUY_BASE, N_UNIT_TYPES
-    from breachlens.env import UNIT_COST
     for rec, layout in items[:2]:
         for p in _plans("RPSfull", rec, layout, 3, 64):
             for env, mask, a in _replay(layout, p["actions"]):

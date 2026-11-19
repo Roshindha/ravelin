@@ -16,7 +16,6 @@ from breachlens.env import UNIT_COST, BreachEnv
 from rl import budget
 from rl import eval_ppo_v2 as E
 from rl import train_ppo_v2 as T
-from rl.augment import N_SYMMETRIES, transform_mask, transform_obs
 from rl.features import SiegeFeaturesExtractor
 from rl.tta import tta_action, tta_scores
 
@@ -94,7 +93,7 @@ def test_phase_a_random_armies_are_always_legal_and_varied(aug):
     venv = T.build_venv("TUNE-train", aug, 3, 3, "random")
     venv.seed(3)
     seen, n = np.zeros(N_UNIT_TYPES, bool), 0
-    obs = venv.reset()
+    venv.reset()
     for _ in range(120):
         for env in venv.envs:
             u = env.unwrapped
@@ -282,7 +281,7 @@ def test_tta_with_a_real_model_identity_only_equals_predict_and_logprob_tta_is_l
             obs = env._obs()
 
 
-# ------------------------------------------------------------------------------------------------ throughput record (written by scripts_b10_throughput.py)
+# ------------------------------------------------------------------------------------------------ throughput record (written by scripts/b10_throughput.py)
 def test_throughput_verdict_function_on_synthetic_values():
     assert budget.t_cap(110) == pytest.approx(1_980_000)
     v = budget.throughput_verdict(110)
@@ -296,7 +295,7 @@ def test_throughput_verdict_function_on_synthetic_values():
 def test_throughput_record_exists_with_required_fields_and_matches_the_verdict():
     f = ROOT / "data" / "v2" / "b10_throughput.json"
     if not f.exists():
-        pytest.skip("b10_throughput.json is written by scripts_b10_throughput.py (B10 benchmark run)")
+        pytest.skip("b10_throughput.json is written by scripts/b10_throughput.py (B10 benchmark run)")
     rec = json.loads(f.read_text())
     for k in ("hardware", "ppo_config", "thread_choice", "six_parallel", "verdict", "single_process", "env_only", "inference_only", "peak_memory_mb"):
         assert k in rec, k
@@ -307,7 +306,7 @@ def test_throughput_record_exists_with_required_fields_and_matches_the_verdict()
 
 def test_negative_control_resume_without_restoring_the_rng_streams_is_not_bit_identical(monkeypatch):
     """The bit-identity test has teeth: skipping the torch / numpy RNG restore (the prototype's behaviour) changes the result."""
-    full = run("nc_full")
+    run("nc_full")
     with pytest.raises(T.Interrupted):
         run("nc_part", ["--debug-interrupt-at", "320"])
     monkeypatch.setattr(T.th, "set_rng_state", lambda s: None)
@@ -322,7 +321,7 @@ def test_negative_control_resume_without_restoring_the_rng_streams_is_not_bit_id
 def test_real_config_determinism_record():
     f = ROOT / "data" / "v2" / "b10_determinism.json"
     if not f.exists():
-        pytest.skip("written by scripts_b10_determinism.py")
+        pytest.skip("written by scripts/b10_determinism.py")
     rec = json.loads(f.read_text())
     assert rec["all_identical"] is True and rec["rollout_size"] == 2500
     for aug in ("none", "d4"):

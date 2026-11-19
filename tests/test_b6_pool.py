@@ -122,7 +122,7 @@ def test_walk_redraws_on_a_d4_collision_and_counts_it():
 
 # ------------------------------------------------------------------ acceptance under the current simulator
 def test_every_dev_layout_is_still_accepted():
-    """DEV only. The FINAL re-check is the manual script scripts_b6_verify_final.py (it writes to the real ledger; not part of the suite)."""
+    """DEV only. The FINAL re-check is the manual script scripts/b6_verify_final.py (it writes to the real ledger; not part of the suite)."""
     for r in RECS:
         if r["pool"] == "DEV":
             L = Y.generate(r["family"], r["seed"])
@@ -144,7 +144,7 @@ def test_final_candidate_log_holds_only_bits_and_rule_ids():
         assert set(r) == {"id", "family", "seed", "content_hash", "split", "pool"}
     text = json.dumps({k: v for k, v in DOC.items() if k != "note"})
     assert not any(k in text for k in ("score", "oracle", "baseline", "best_single_mean"))
-    src = (ROOT / "scripts_b6_build_pool.py").read_text().split('"""')[2]          # code after the docstring
+    src = (ROOT / "scripts/b6_build_pool.py").read_text().split('"""')[2]          # code after the docstring
     assert "score" not in src and "oracle" not in src.lower() and "stat_check" not in src   # the build script never touches a score
 
 
@@ -192,9 +192,9 @@ def _call_names(path):
 
 def test_no_code_outside_tests_loads_final_layouts_without_the_ledger():
     import ast
-    allowed_generators = {"pool.py", "layouts.py", "gates.py", "acceptance.py", "scripts_b5r1_sweep.py", "scripts_b5r1b_sweep.py", "scripts_b5r3_sweep.py", "scripts_b8_checks.py"}
-    pool_users = {"pool.py", "env.py", "scripts_b6_build_pool.py", "scripts_b6_verify_final.py",
-                 "evaluator.py", "scripts_b8_checks.py"}   # env.py: BreachEnv, role-guarded (tests/test_b7_env.py); evaluator.py: role-guarded loaders; scripts_b8_checks.py: DEV walks only (tests/test_b8_baselines.py)
+    allowed_generators = {"pool.py", "layouts.py", "gates.py", "acceptance.py", "b5r1_sweep.py", "b5r1b_sweep.py", "b5r3_sweep.py", "b8_checks.py"}
+    pool_users = {"pool.py", "env.py", "b6_build_pool.py", "b6_verify_final.py",
+                 "evaluator.py", "b8_checks.py"}   # env.py: BreachEnv, role-guarded (tests/test_b7_env.py); evaluator.py: role-guarded loaders; scripts/b8_checks.py: DEV walks only (tests/test_b8_baselines.py)
     for p in _non_test_py():
         src = p.read_text()
         calls = _call_names(p)
@@ -346,7 +346,7 @@ def test_id_and_split_lists_rederive_from_the_walk_log():
 def test_build_refuses_to_overwrite_a_frozen_pool():
     import subprocess
     import sys
-    r = subprocess.run([sys.executable, str(ROOT / "scripts_b6_build_pool.py")], cwd=ROOT, capture_output=True, text=True)
+    r = subprocess.run([sys.executable, str(ROOT / "scripts/b6_build_pool.py")], cwd=ROOT, capture_output=True, text=True)
     assert r.returncode != 0 and "frozen" in (r.stdout + r.stderr)
 
 
@@ -413,7 +413,7 @@ def test_design_set_role_matrix():
 
 def test_gate_and_balance_code_does_not_use_pool_roles_and_lab_design_stays_out_of_rl():
     # Gate / design scripts read design sets through breachlens.layouts (never through pool.py), so no pool role applies to them.
-    for p in [ROOT / "breachlens" / n for n in ("gates.py", "acceptance.py", "oracle.py")] + list(ROOT.glob("scripts_b[45]*.py")) + [ROOT / "scripts_gates.py"]:
+    for p in [ROOT / "breachlens" / n for n in ("gates.py", "acceptance.py", "oracle.py")] + list(ROOT.glob("scripts/b[45]*.py")) + [ROOT / "scripts/gates.py"]:
         if p.exists():
             assert "breachlens.pool" not in p.read_text() and "import pool" not in p.read_text(), p
     for p in (ROOT / "rl").glob("*.py"):

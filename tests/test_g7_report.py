@@ -1,4 +1,4 @@
-"""B13a: G7 decision logic (breachlens/g7.py, scripts_g7_report.py) on synthetic logs: pass, fail, per-seed, collapse (both kinds), extension branch."""
+"""B13a: G7 decision logic (breachlens/g7.py, scripts/g7_report.py) on synthetic logs: pass, fail, per-seed, collapse (both kinds), extension branch."""
 from __future__ import annotations
 
 import csv
@@ -15,7 +15,7 @@ from breachlens import pool as P
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import scripts_g7_report as R  # noqa: E402
+from scripts import g7_report as R  # noqa: E402
 
 BAR = 0.4369
 FAMS = ("spine_pods", "archipelago", "bunker_nest")
@@ -242,4 +242,4 @@ def test_cli_refuses_to_call_a_two_seed_or_unfinished_run_a_valid_g7(tmp_path, c
 
 
 def test_the_report_never_writes_the_gate_file():
-    assert "gates.json" not in (ROOT / "scripts_g7_report.py").read_text().replace("never writes data/v2/gates.json", "")
+    assert "gates.json" not in (ROOT / "scripts/g7_report.py").read_text().replace("never writes data/v2/gates.json", "")

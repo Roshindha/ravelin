@@ -1,11 +1,10 @@
-"""B14a: grid launcher (scripts_b14_grid.py): frozen configs, queue order, commands, preflight refusals, disk rule, scheduler (slots, never two copies, kill +
+"""B14a: grid launcher (scripts/b14_grid.py): frozen configs, queue order, commands, preflight refusals, disk rule, scheduler (slots, never two copies, kill +
 resume, retention, end-of-job manifest checker, restart limit) and status. No real training: the scheduler tests drive a fake trainer process.
 Nothing is launched; FINAL ledger unchanged."""
 from __future__ import annotations
 
 import json
 import os
-import signal
 import subprocess
 import sys
 import textwrap
@@ -16,8 +15,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import scripts_b14_grid as G  # noqa: E402
-from breachlens import manifest as MF  # noqa: E402
+from scripts import b14_grid as G  # noqa: E402
 from breachlens import pool as P  # noqa: E402
 from rl import train_ddqn_v2 as TD  # noqa: E402
 from rl import train_ppo_v2 as TP  # noqa: E402
@@ -172,7 +170,7 @@ def test_refuses_when_a_row_or_a_config_sha_is_missing(clean, monkeypatch):
 
 def test_refuses_foreign_trainers_pilots_and_leaves_own_orphans_alone(clean, monkeypatch):
     for line in (f"  555 {sys.executable} -m rl.train_ppo_v2 --run-name pilot_plain_s9001", f"  556 {sys.executable} -m rl.train_ddqn_v2 --run-name other",
-                 f"  557 {sys.executable} scripts_b13_pilot.py --wait", f"  558 {sys.executable} scripts_b13_ddqn_pilot.py"):
+                 f"  557 {sys.executable} scripts/b13_pilot.py --wait", f"  558 {sys.executable} scripts/b13_ddqn_pilot.py"):
         monkeypatch.setattr(G.B, "ps_text", lambda line=line: line + "\n")
         assert any("foreign trainer" in p for p in pf(clean)), line
     monkeypatch.setattr(G.B, "ps_text", lambda: f"  559 {sys.executable} -m rl.train_ppo_v2 --run-name grid_ppo_plain_s0 --resume\n")

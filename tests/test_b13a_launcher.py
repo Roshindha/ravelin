@@ -10,7 +10,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import scripts_b13_pilot as L  # noqa: E402
+from scripts import b13_pilot as L  # noqa: E402
 from rl.train_ppo_v2 import PPO_CONFIG  # noqa: E402
 
 
@@ -18,7 +18,7 @@ from rl.train_ppo_v2 import PPO_CONFIG  # noqa: E402
 def clean(monkeypatch, build_only_ledger):
     monkeypatch.setattr(L, "LEDGER", build_only_ledger)                       # B15d: the real ledger now has a finished eval session; "would start" paths use a synthetic one
     monkeypatch.setattr(L, "dirty_tracked", lambda: [])
-    monkeypatch.setattr(L, "ps_text", lambda: "  101 /bin/zsh -c eval 'python -m rl.train_ppo_v2 scripts_b13_pilot.py'\n  102 /usr/bin/vim notes.txt\n")
+    monkeypatch.setattr(L, "ps_text", lambda: "  101 /bin/zsh -c eval 'python -m rl.train_ppo_v2 scripts/b13_pilot.py'\n  102 /usr/bin/vim notes.txt\n")
     for k in L.FORBIDDEN_ENV:
         monkeypatch.delenv(k, raising=False)
 
@@ -53,10 +53,10 @@ def test_refuses_when_an_item0_row_or_the_config_hash_is_missing(clean, monkeypa
 def test_refuses_when_any_copy_is_already_running(clean, monkeypatch):
     own = os.getpid()
     for line in (f"  555 caffeinate -dimsu {sys.executable} -m rl.train_ppo_v2 --seed 1", f"  556 {sys.executable} -m rl.train_ppo_v2 --seed 2",
-                 f"  557 {sys.executable} scripts_b13_pilot.py --wait"):
+                 f"  557 {sys.executable} scripts/b13_pilot.py --wait"):
         monkeypatch.setattr(L, "ps_text", lambda line=line: line + "\n")
         assert any("already running" in p for p in L.preflight()), line
-    monkeypatch.setattr(L, "ps_text", lambda: f"  {own} {sys.executable} scripts_b13_pilot.py\n")
+    monkeypatch.setattr(L, "ps_text", lambda: f"  {own} {sys.executable} scripts/b13_pilot.py\n")
     assert L.preflight() == []                                    # the launcher itself is not "another copy"
 
 

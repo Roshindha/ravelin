@@ -1,7 +1,6 @@
 """B4: layout generators, structural acceptance, design sets (TUNE / LAB-DESIGN), seed-stream separation, labyrinth exactness."""
 import copy
 import json
-import re
 from pathlib import Path
 
 import numpy as np
@@ -254,7 +253,7 @@ def test_final_access_ledger_has_no_entries_from_this_step(tmp_path):
 
 # ------------------------------------------------------------------ contact sheets
 def test_contact_sheets_render_for_every_family(tmp_path, monkeypatch):
-    import scripts_b4_contact_sheets as C
+    from scripts import b4_contact_sheets as C
     monkeypatch.setattr(C, "OUT", tmp_path)
     for fam in Y.FAMILIAR:
         C.sheet(fam, Y.load_design_set("TUNE-train", fam), f"{fam}.png")
@@ -309,10 +308,10 @@ def test_every_labyrinth_layout_can_be_breached_by_some_single_unit_walk():
         assert r.ticks > 0 and (r.d_num > 0 or r.walls_destroyed > 0 or r.defenders_destroyed > 0)
 
 
-# ------------------------------------------------------------------ B4 report file (full-scale run, scripts_b4_report.py)
+# ------------------------------------------------------------------ B4 report file (full-scale run, scripts/b4_report.py)
 def test_b4_report_is_current_and_meets_the_step_requirements():
     rep = json.loads((ROOT / "data" / "v2" / "b4_report.json").read_text())
-    assert rep["sim_version"] == config.sim_version(), "stats or simulator changed: rerun scripts_b4_report.py"
+    assert rep["sim_version"] == config.sim_version(), "stats or simulator changed: rerun scripts/b4_report.py"
     plain = [r for r in rep["d4"] if r["mode"] == "plain"]
     shuf = [r for r in rep["d4"] if r["mode"] == "shuffle"]
     assert sum(r["battles"] for r in plain) >= 2000 and all(r["symmetries"] == 8 for r in rep["d4"])

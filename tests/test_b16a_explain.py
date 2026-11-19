@@ -1,7 +1,6 @@
 """B16a: explainability core (rl/explain.py, Gate changelog row (ii)). Display models: seed 0 of each arm; DEV layouts only; one checkpoint at a time."""
 import hashlib
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -37,7 +36,7 @@ def b15_actions(arm, tta, rec, layout, monkeypatch):
     """The action sequence the B15 evaluator's own code path takes on one layout: `scripts_b15_final._task` (the function the B15 session runs per
     (cell, layout)) builds the policy (ModelPolicy / DDQNPolicy.act / tta_policy + rl.tta.tta_action) and plays the episode; BreachEnv.step is wrapped
     only to record the chosen actions. Nothing from rl.explain is used here."""
-    import scripts_b15_final as F
+    from scripts import b15_final as F
     from breachlens.env import BreachEnv
     run, algo = X.DISPLAY_MODELS[arm]
     taken, orig = [], BreachEnv.step

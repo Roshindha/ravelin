@@ -68,7 +68,7 @@ def test_replay_set_fixed_by_index(runs):
 
 def _b15_episode(arm, tta, rec, layout, monkeypatch):
     """Actions and the evaluation row of the B15 evaluator's own code path (`scripts_b15_final._task`); nothing from rl.explain / make_replays."""
-    import scripts_b15_final as F
+    from scripts import b15_final as F
     from breachlens.env import BreachEnv
     run, algo = X.DISPLAY_MODELS[arm]
     taken, orig = [], BreachEnv.step

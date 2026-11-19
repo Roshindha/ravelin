@@ -12,7 +12,7 @@ import pytest
 from breachlens import duel as D
 from breachlens import evaluator as EV
 from breachlens import pool as P
-from breachlens.constants import END_BUY, UNIT_TYPES, WAIT
+from breachlens.constants import UNIT_TYPES
 from breachlens.env import BreachEnv
 from breachlens.score import result_score
 from breachlens.sim import Prepared, simulate
@@ -119,7 +119,7 @@ def test_cache_refuses_non_dev_validation_ids(cache, tmp_path):
 def test_cache_agent_actions_equal_b15_eval_path(cache, models, monkeypatch):
     """The cached TTA rows are the B15 evaluator path's: `scripts_b15_final._task` (policy built there) is run with env.step wrapped to record actions;
     the cache row's bought counts, deploy list in order and score must equal what those actions produce, and our chooser's actions must be identical."""
-    import scripts_b15_final as F
+    from scripts import b15_final as F
     from rl import explain as X
     orig = BreachEnv.step
     for arm, key in (("ppo_plain", "ppo_plain_tta"), ("ppo_d4", "ppo_d4_tta"), ("ddqn", "ddqn_tta")):

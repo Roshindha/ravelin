@@ -13,7 +13,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import torch as th
 
 from breachlens import evaluator as EV
 from breachlens import pool as P
@@ -194,8 +193,8 @@ def test_shaped_resume_after_sigkill_is_bit_identical(tmp_path):
 
 # ------------------------------------------------------------------------------------------------ launcher + report (scripts)
 sys.path.insert(0, str(ROOT))
-import scripts_b13_ddqn_pilot as L  # noqa: E402
-import scripts_b13_ddqn_report as R  # noqa: E402
+from scripts import b13_ddqn_pilot as L  # noqa: E402
+from scripts import b13_ddqn_report as R  # noqa: E402
 
 
 @pytest.fixture

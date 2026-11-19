@@ -20,8 +20,8 @@ from rl import train_ppo_v2 as T
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import scripts_b13_pilot as L  # noqa: E402
-import scripts_g7_report as R  # noqa: E402
+from scripts import b13_pilot as L  # noqa: E402
+from scripts import g7_report as R  # noqa: E402
 from tests.test_g7_report import curve, good_manifest, make_run, write_run  # noqa: E402
 
 TINY = ["--n-envs", "2", "--n-steps", "16", "--batch-size", "16", "--n-epochs", "2", "--val-freq", "320", "--checkpoint-freq", "160", "--phase-a-steps", "200"]
@@ -232,7 +232,7 @@ def test_shaped_report_flags_runs_trained_without_shaping(tmp_path, capsys):
 
 # ------------------------------------------------------------------------------------------------ Gate changelog (aa): Oracle-deploy diagnostic
 def test_oracle_deploy_search_is_deterministic_budgeted_and_never_below_scripted():
-    import scripts_b13_diag as D
+    from scripts import b13_diag as D
     from breachlens import oracle as O
     from breachlens.sim import Prepared
     items = EV.load_set("TUNE-val", "validation", entry_point="tests")[::20]
@@ -247,7 +247,7 @@ def test_oracle_deploy_search_is_deterministic_budgeted_and_never_below_scripted
 
 
 def test_oracle_deploy_is_not_part_of_the_default_run_and_row_aa_gates_the_shaped_launcher(clean, monkeypatch, tmp_path):
-    src = (ROOT / "scripts_b13_diag.py").read_text()
+    src = (ROOT / "scripts/b13_diag.py").read_text()
     assert src.count("run_oracle_deploy(") == 2 and "if a.oracle_deploy:" in src            # definition + the one flagged call
     spec = L.SPEC.read_text()
     assert "(aa) **B13c" in spec and "7.4 skip clause NOT invoked" in spec and "[layout seed, 4444]" in spec

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .constants import (
-    BUY_BASE, DEPLOY_BASE, END_BUY, GRID, N_ACTIONS, N_BORDER, N_UNIT_TYPES, WAIT,
+    BUY_BASE, DEPLOY_BASE, END_BUY, GRID, N_ACTIONS, N_BORDER, N_UNIT_TYPES,
 )
 
 

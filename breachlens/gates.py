@@ -1,12 +1,11 @@
 """B5 gate machinery (docs/SPEC_V2.md 3.4, 3.5, 11): per-layout raw evaluation, paired bootstraps, gates G1-G6, G8, G9, the B5 report.
 
 Pure functions of (design sets, stats, simulator, thresholds): the same inputs give byte-identical `raw` and `gates`.
-The CLI is `scripts_gates.py`. Thresholds / bootstrap settings come from data/v2/gate_thresholds.json only.
+The CLI is `scripts/gates.py`. Thresholds / bootstrap settings come from data/v2/gate_thresholds.json only.
 """
 from __future__ import annotations
 
 import hashlib
-import json
 import math
 import multiprocessing as mp
 import os
@@ -19,8 +18,8 @@ import numpy as np
 from . import layouts as Y
 from . import oracle as O
 from .acceptance import TEMPLATE_BULWARK_MENDER, thresholds, warm_starts
-from .armies import free_tiles, greedy_types, place_on_border, random_types, scripted_army, single_unit_types
-from .config import CFG, sim_version
+from .armies import greedy_types, place_on_border, random_types, scripted_army, single_unit_types
+from .config import CFG
 from .constants import N_BORDER, UNIT_TYPES
 from .sim import Prepared, simulate
 

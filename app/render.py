@@ -207,7 +207,7 @@ def legend_svg(xmlns: bool = True, fonts: bool = True) -> str:
     items, rowh, w = legend_items(), 26, 270
     out = [font_style() if fonts else "", _defs(False)]
     for i, (kind, text) in enumerate(items):
-        y, cx, cy = i * rowh + 4, 14, i * rowh + 14
+        _y, cx, cy = i * rowh + 4, 14, i * rowh + 14
         if kind.startswith("unit:"):
             t = T.UNIT_ORDER.index(kind[5:])
             out.append(f'<circle cx="{cx}" cy="{cy}" r="10" fill="{UCOL[t]}" stroke="{T.OUTLINE}" stroke-width="1.5"/><text x="{cx}" y="{cy + 4}" text-anchor="middle" fill="{T.UNIT_INK[kind[5:]]}" font-size="10" '

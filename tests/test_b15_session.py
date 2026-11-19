@@ -1,4 +1,4 @@
-"""B15a tests: the session runner (scripts_b15_final.py), the cell registry and the analysis script (scripts_b15_analysis.py).
+"""B15a tests: the session runner (scripts/b15_final.py), the cell registry and the analysis script (scripts/b15_analysis.py).
 
 No test loads a FINAL layout and none writes the real ledger (P.LEDGER_PATH is monkeypatched to a temp copy wherever a ledger could be written).
 """
@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import csv
 import json
-import shutil
 import subprocess
 import sys
 import zlib
@@ -15,9 +14,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import scripts_b15_analysis as A
-import scripts_b15_cells as C
-import scripts_b15_final as F
+from scripts import b15_analysis as A
+from scripts import b15_cells as C
+from scripts import b15_final as F
 from breachlens import evaluator as EV
 from breachlens import pool as P
 
@@ -155,7 +154,7 @@ def test_pinned_values_match_repo_files():
 
 @needs_models
 def test_audit_rerun_is_read_only(temp_ledger):
-    import scripts_b14_audit as AU
+    from scripts import b14_audit as AU
     before = F.sha256_file(F.AUDIT_JSON), F.sha256_file(F.AUDIT_JSON.with_suffix(".md"))
     out, _, dev = AU.run(write=False)
     assert not dev and out["n_runs"] == 30
@@ -348,7 +347,7 @@ def synth_session(root: Path, planner_bonus: float = 0.1, seed: int = 0) -> tupl
                     "d": sc / 2, "breach": float(sc > 0.5), "n_bought": 8.0, "n_deployed": 8.0, "session_id": "synthetic-session", "git_commit": "c" * 40,
                     **({} if cell["cond"] in ("random", "oracle") else {a: 1.0 + (j == i % 5) for j, a in enumerate(C.ARMY_COLS)})})
         F.write_cell(ctx, cell["name"], rows, "c" * 40, "synthetic-session")
-    ids = [x[2] for x in lay if x[0] == "FINAL-familiar"]
+    [x[2] for x in lay if x[0] == "FINAL-familiar"]
     dev = [f"dev-{i}" for i in range(15)]
     with open(root / "seen.csv", "w", newline="") as f:
         w = csv.DictWriter(f, ["run", "cond", "seed", "set", "id", "family", "score", "breach", "d", "n_bought"])
@@ -369,7 +368,7 @@ def synth_session(root: Path, planner_bonus: float = 0.1, seed: int = 0) -> tupl
 def test_analysis_is_deterministic_correct_and_raw_only(tmp_path):
     sess, seen, b8 = synth_session(tmp_path)
     r1 = A.analyze(sess, tmp_path / "t1", label="TEST", seen_path=seen, b8_path=b8)
-    r2 = A.analyze(sess, tmp_path / "t2", label="TEST", seen_path=seen, b8_path=b8)
+    A.analyze(sess, tmp_path / "t2", label="TEST", seen_path=seen, b8_path=b8)
     assert F._tree_hash(tmp_path / "t1") == F._tree_hash(tmp_path / "t2")                              # same inputs, same bytes
     prim = r1["primary"]
     assert len(prim) == 16 * 2 * 2 and {p["id"] for p in prim} == {"P1", "P2", "P3", "P4", "P5"}

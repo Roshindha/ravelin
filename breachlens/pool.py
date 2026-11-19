@@ -218,7 +218,7 @@ def load_layout(rec: dict, role: str, purpose: str | None = None, unlock: bool =
     return L
 
 
-def verify_final_acceptance(entry_point: str = "scripts_b6_verify_final.py") -> dict:
+def verify_final_acceptance(entry_point: str = "scripts/b6_verify_final.py") -> dict:
     """Manual build check (never run by the test suite): re-run acceptance on every FINAL / transfer layout of the frozen pool.
     Refuses if the ledger holds any 'eval' entry; writes ONE 'build' entry to the real ledger; returns counts only
     ({family: {n, accepted}}, {rule id: rejections}), no score, baseline or Oracle value."""
@@ -327,7 +327,7 @@ def design_set_hashes() -> dict:
     return {r["content_hash"]: name for name, recs in d["sets"].items() for r in recs}
 
 
-def build_pool(procs: int | None = None, entry_point: str = "scripts_b6_build_pool.py") -> dict:
+def build_pool(procs: int | None = None, entry_point: str = "scripts/b6_build_pool.py") -> dict:
     """Build the whole pool document (not yet written). One 'build' ledger entry per FINAL walk."""
     prov = check_frozen()
     procs = procs or min(8, os.cpu_count() or 1)

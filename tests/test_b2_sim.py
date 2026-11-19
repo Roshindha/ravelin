@@ -12,9 +12,7 @@ import numpy as np
 import pytest
 
 from breachlens import config as K
-from breachlens import sim
 from breachlens._bench_layouts import FAMILIES, make_layout, random_army
-from breachlens.actions import BORDER
 from breachlens.constants import GRID, MAX_BATTLE_TICKS
 from breachlens.sim import Prepared
 from breachlens.sim import simulate as _simulate
@@ -96,7 +94,7 @@ def test_changing_the_stats_file_changes_the_battle():
 
 # ------------------------------------------------------------------ hand-built scenarios
 def test_range_sniper_attacks_at_its_range_scout_must_close_in():
-    sn, sc = CFG.units[SNIPER], CFG.units[SCOUT]
+    sn, _sc = CFG.units[SNIPER], CFG.units[SCOUT]
     far = sn.range_x10 // 10  # integer range in this config's geometry
     L = layout(buildings=[((far, 3), 1)], core=(13, 13))
     r_sn = simulate(L, [(SNIPER, 3)], record=True, max_ticks=1)   # tile 3 = (0, 3)

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from .actions import BORDER
 from .constants import GRID
 
 FAMILIES = ("spine_pods", "archipelago", "bunker_nest", "labyrinth")

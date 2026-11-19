@@ -73,15 +73,6 @@ class Chrome:
                 self.events.append(msg)
         return self.loop.run_until_complete(go())
 
-    def drain(self, seconds: float = 0.2):
-        async def go():
-            end = time.time() + seconds
-            while time.time() < end:
-                try:
-                    self.events.append(json.loads(await asyncio.wait_for(self.ws.recv(), timeout=max(0.01, end - time.time()))))
-                except asyncio.TimeoutError:
-                    break
-        self.loop.run_until_complete(go())
 
     def viewport(self, w: int, h: int, mobile: bool = False):
         self.send("Emulation.setDeviceMetricsOverride", width=w, height=h, deviceScaleFactor=1, mobile=mobile)
@@ -121,9 +112,6 @@ class Chrome:
         self.mouse("mousePressed", x, y)
         self.mouse("mouseReleased", x, y)
 
-    def tap(self, x: float, y: float):
-        self.send("Input.dispatchTouchEvent", type="touchStart", touchPoints=[{"x": x, "y": y}])
-        self.send("Input.dispatchTouchEvent", type="touchEnd", touchPoints=[])
 
     def close(self):
         try:

@@ -9,7 +9,6 @@ import pytest
 
 from breachlens import baselines as B
 from breachlens import evaluator as E
-from breachlens import oracle as O
 from breachlens import pool as P
 from breachlens.armies import greedy_types, place_on_border, single_unit_types
 from breachlens.score import SCORE_VERSION, score_value
@@ -165,14 +164,14 @@ def test_b8_outputs_exist_with_meta_and_precede_pilot():
 
 def test_b8_scripts_touch_only_dev_and_design_sets():
     import ast
-    chk = ast.parse((ROOT / "scripts_b8_checks.py").read_text())
+    chk = ast.parse((ROOT / "scripts/b8_checks.py").read_text())
     walks = [c for c in ast.walk(chk) if isinstance(c, ast.Call) and getattr(c.func, "attr", "") == "walk"]
     assert walks and all(isinstance(c.args[0], ast.Constant) and c.args[0].value == "DEV" for c in walks)
-    for f in ("scripts_b8_baselines.py", "scripts_b8_checks.py"):
+    for f in ("scripts/b8_baselines.py", "scripts/b8_checks.py"):
         tree = ast.parse((ROOT / f).read_text())
         for n in ast.walk(tree):                                   # string constants other than the module docstring / comments
             if isinstance(n, ast.Constant) and isinstance(n.value, str) and n.value != ast.get_docstring(tree):
-                assert not n.value.startswith("FINAL-") and n.value != "LAB-DESIGN" or f == "scripts_b8_checks.py", (f, n.value)
+                assert not n.value.startswith("FINAL-") and n.value != "LAB-DESIGN" or f == "scripts/b8_checks.py", (f, n.value)
         names = {getattr(c.func, "attr", getattr(c.func, "id", "")) for c in ast.walk(tree) if isinstance(c, ast.Call)}
         assert not names & {"log_final_access", "verify_final_acceptance", "build_pool", "load_pool_records"}, f
         assert not any(k.arg == "unlock" for c in ast.walk(tree) if isinstance(c, ast.Call) for k in c.keywords), f

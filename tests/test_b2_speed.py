@@ -1,4 +1,4 @@
-"""B2 simulator speed gate: speed.json (written by scripts_speed.py) is asserted against the SPEC_V2 gate."""
+"""B2 simulator speed gate: speed.json (written by scripts/speed.py) is asserted against the SPEC_V2 gate."""
 import json
 import re
 import time
@@ -8,7 +8,7 @@ import numpy as np
 
 from breachlens import config
 from breachlens._bench_layouts import FAMILIES, make_layout, random_army
-from breachlens.sim import Prepared, simulate
+from breachlens.sim import simulate
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEED = ROOT / "data" / "v2" / "speed.json"
@@ -29,7 +29,7 @@ def test_gate_thresholds_equal_the_spec():
 
 def test_speed_json_is_current_and_meets_the_gate():
     d = json.loads(SPEED.read_text())
-    assert d["sim_version"] == config.sim_version(), "stats or simulator changed: rerun scripts_speed.py"
+    assert d["sim_version"] == config.sim_version(), "stats or simulator changed: rerun scripts/speed.py"
     mean_ms, p95_ms, sps = _spec_gate()
     assert d["battle_warm"]["n"] >= 200 and d["battle_warm"]["mean_units"] >= 10
     assert d["battle_warm"]["mean_ms"] <= mean_ms

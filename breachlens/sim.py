@@ -312,8 +312,6 @@ class Prepared:
         return v
 
 
-def prepare(layout: dict, cfg=CFG) -> Prepared:
-    return Prepared(layout, cfg)
 
 
 def _hpfrac(hp: int, mx: int) -> int:
@@ -324,7 +322,6 @@ def simulate(layout, army, record: bool = False, max_ticks: int = MAX_BATTLE_TIC
              _no_attackers_exit: bool = True) -> BattleResult:
     P = layout if isinstance(layout, Prepared) else Prepared(layout)
     cfg = P.cfg
-    S = cfg.S
     units_cfg = cfg.units
     n_s = P.n_s
     s_cell, s_class, s_value, s_dtype = P.s_cell, P.s_class, P.s_value, P.s_dtype

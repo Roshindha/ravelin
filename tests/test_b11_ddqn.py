@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import gymnasium as gym
 import numpy as np
 import pytest
 import torch as th
@@ -336,8 +335,6 @@ def test_epsilon_schedule_and_resume_restores_target_net_and_counters():
 # ------------------------------------------------------------------------------------------------ 4. learning on a toy layout
 def test_tiny_run_improves_over_random_on_a_toy_layout():
     """One TUNE-train layout, a fixed pre-bought army (deployment-only game): DDQN's greedy deployment beats uniformly random legal deployment."""
-    from breachlens.baselines import Policy
-    from breachlens import evaluator as EV
     recs = BreachEnv(source="TUNE-train", role="train").records[:1]
     army = [0, 3, 3, 0, 0]
     hp = {**D.DDQN_CONFIG, "n_envs": 8, "buffer_size": 20_000, "batch_size": 64, "learning_starts": 1000, "target_update_interval": 200, "eps_decay_fraction": 0.3}

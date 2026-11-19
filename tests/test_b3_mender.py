@@ -201,7 +201,7 @@ def test_heal_split_between_two_equally_damaged_allies_is_equal_and_conserves_hp
 
 
 def test_mender_between_two_equally_damaged_allies_is_d4_symmetric():
-    gun = CFG.defenders[CFG.defender_index["gun"]]
+    CFG.defenders[CFG.defender_index["gun"]]
     cfg = ally_cfg()
     L = layout(buildings=[((12, 12), 1)], core=(13, 13), defenders=[((7, 3), "gun"), ((7, 11), "gun")])
     army = [(SCOUT, (7, 6)), (SCOUT, (7, 8)), (MENDER, (7, 7))]

@@ -4,7 +4,6 @@ Stats come from breachlens.config only. B4 moved these out of the provisional be
 """
 from __future__ import annotations
 
-import numpy as np
 
 from .actions import BORDER
 

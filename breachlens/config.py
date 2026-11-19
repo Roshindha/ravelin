@@ -16,7 +16,7 @@ from .constants import UNIT_TYPES
 
 SIM_CODE_VERSION = "breachlens-sim-b5.1-rev1"  # bump on ANY change to simulator behaviour
 STATS_PATH = Path(__file__).resolve().parents[1] / "data" / "v2" / "unit_stats.json"
-# Exploration hook (B5-R1 sweep only): scripts_b5r1_sweep.py points this at a per-arm stats file in a subprocess. The real gate run and the
+# Exploration hook (B5-R1 sweep only): scripts/b5r1_sweep.py points this at a per-arm stats file in a subprocess. The real gate run and the
 # tests assert it is unset (`stats_override_active()`), so no gate result can silently come from an override.
 if os.environ.get("BREACHLENS_STATS_PATH"):
     STATS_PATH = Path(os.environ["BREACHLENS_STATS_PATH"])

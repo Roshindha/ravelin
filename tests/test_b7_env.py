@@ -2,7 +2,6 @@
 
 No test here loads FINAL / transfer layout content: FINAL ids appear only as plain record dicts to check that the guards refuse them.
 """
-import copy
 import re
 from fractions import Fraction
 from pathlib import Path
@@ -15,9 +14,8 @@ from breachlens import layouts as Y
 from breachlens import pool as P
 from breachlens import score as SC
 from breachlens.actions import BORDER
-from breachlens.armies import place_on_border
 from breachlens.config import CFG
-from breachlens.constants import (DEPLOY_BASE, END_BUY, GRID, N_ACTIONS, N_BORDER, PHASE_BATTLE, PHASE_BUY, PHASE_DEPLOY, WAIT)
+from breachlens.constants import (DEPLOY_BASE, END_BUY, N_ACTIONS, N_BORDER, PHASE_BUY, PHASE_DEPLOY, WAIT)
 from breachlens.env import (BORDER_CELL, MAX_STEPS, BreachEnv, IllegalActionError, d4_action_perm, d4_border_perm, d4_cell_perm,
                             d4_transform_grid, d4_transform_mask)
 from breachlens.oracle import oracle_rng, oracle_search, score_key
@@ -180,7 +178,7 @@ def test_mask_fuzz_1000_masked_random_episodes():
     for ep in range(1000):
         pre = "random" if ep % 3 == 0 else None
         env.reset(seed=ep, options={"layout_index": ep % len(recs), "prebought": pre})
-        done, steps, gold_before = False, 0, env.gold
+        done, steps, _gold_before = False, 0, env.gold
         while not done:
             m = env.action_masks()
             assert np.array_equal(m, expected_mask(env))
@@ -338,7 +336,7 @@ def test_observation_channels_on_a_hand_built_layout():
     assert g[4, 6, 6] == 1.0 and g[4, 4, 9] == pytest.approx(1 / 3) and g[4, 8, 8] == 1.0       # value / 3 (3 -> 1.0), core = 1
     assert g[5].sum() == 1 and g[5, 8, 8] == 1.0
     S = CFG.S
-    gun, lancer, flak = CFG.defenders[CFG.defender_index["gun"]], CFG.defenders[CFG.defender_index["lancer"]], CFG.defenders[CFG.defender_index["flak"]]
+    gun, _lancer, flak = CFG.defenders[CFG.defender_index["gun"]], CFG.defenders[CFG.defender_index["lancer"]], CFG.defenders[CFG.defender_index["flak"]]
     thr = lambda d: d.damage / S / d.period / 20.0
     assert g[6, 2, 2] == pytest.approx(thr(gun)) and g[6, 2, 6] == pytest.approx(thr(gun)) and g[6, 2, 7] == 0.0         # gun: range 4 incl. centre
     assert g[6, 10, 3] == 0.0 and g[6, 10, 4] == 0.0 and g[6, 10, 5] > 0 and g[6, 10, 9] > 0 and g[6, 10, 10] == 0.0   # lancer: hollow r < 2, outer 6

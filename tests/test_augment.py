@@ -9,7 +9,7 @@ from breachlens import pool as P
 from breachlens._d4check import tr as ind_tr
 from breachlens.actions import BORDER
 from breachlens.constants import DEPLOY_BASE, END_BUY, GRID, N_ACTIONS, N_BORDER, N_GRID_CHANNELS, WAIT
-from breachlens.env import BreachEnv, d4_action_perm, d4_cell_perm, d4_transform_grid, d4_transform_mask
+from breachlens.env import BreachEnv, d4_action_perm, d4_cell_perm, d4_transform_grid
 from breachlens.sim import Prepared, simulate
 from rl.augment import (ACTION_PERM, ACTION_PERM_INV, CELL_DEST, D4Wrapper, N_SYMMETRIES, TILE_PERM, compose, inverse_symmetry,
                         transform_action, transform_army, transform_cell, transform_grid, transform_mask, transform_obs,

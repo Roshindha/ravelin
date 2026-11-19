@@ -69,7 +69,7 @@ def runs(tmp_path, monkeypatch):
 def clicks(runs, monkeypatch):
     """Replace the v2 component by a stand-in that records what the app mounts and, when ``st.session_state['_sim_click']`` holds a border index, delivers it exactly
     like the browser does: the component's value lands in ``st.session_state[key]`` and the app's ``on_tile_change`` callback runs. The routing from there (callback ->
-    ``Duel.deploy`` -> action 5 + 52*u + b) is the app's real code; the real JS is exercised in real Chrome (PROGRESS.md) and checked statically below."""
+    ``Duel.deploy`` -> action 5 + 52*u + b) is the app's real code; the real JS is exercised in real Chrome (docs/dev_log.md) and checked statically below."""
     mounted = {}
 
     def register(name, **kw):
@@ -253,7 +253,7 @@ def test_no_sidebar_and_theme():
 
 @pytest.mark.parametrize("tta", [True, False])
 def test_decision_lens_equals_b16b_replay_and_b15_eval_path(tta, monkeypatch):
-    import scripts_b15_final as F
+    from scripts import b15_final as F
     at = watch_app()
     at.radio(key="w_view").set_value("TTA" if tta else "plain").run()
     assert not at.exception
@@ -672,7 +672,6 @@ def test_board_edge_numbers_are_ink_on_snow_inside_the_card():
 
 
 def test_buildings_are_small_houses_distinct_from_walls_and_the_keep():
-    import itertools
 
     import numpy as np
     for n, pips in (("b1", 1), ("b2", 2), ("b3", 3)):

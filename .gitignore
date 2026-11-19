@@ -1,26 +1,44 @@
-.venv/
+# Python / tooling caches
 __pycache__/
 *.pyc
-.pytest_cache/
-.DS_Store
 *.egg-info/
-# large artifacts: keep folders, ignore contents
-models/*
-!models/.gitkeep
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# virtual environments
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
+
+# Streamlit Cloud secrets (never committed)
+.streamlit/secrets.toml
+
+# logs
+logs/
+logs_*/
+*.log
+!data/v2/*.log
+!data/v2/baselines/*.log
+
+# local models: trained checkpoints are not tracked (see README, "Reproduce")
+models/
+models_v2/
+
+# local, human-run files (never reported as results)
+results_v2/
+
+# results/: evaluation evidence is force-tracked under results/b13, results/b14 and results/b15 plus the frozen layout pool;
+# new local outputs here stay untracked unless added on purpose
 results/*
-!results/.gitkeep
-# the frozen layout pool is a tracked artifact: training/eval integrity depends on it being
-# exactly reproducible and never silently regenerated.
+!results/b13/
+!results/b14/
+!results/b15/
 !results/layouts.json
 !results/layouts.sha256
 !results/layout_contact_sheet.png
-
-# run logs
-logs_*/
-
-models_v2/*
-!models_v2/.gitkeep
-results_v2/*
-
-# B17 duel: local human demo runs, never reported as results
-results_v2/duel_human_runs.jsonl

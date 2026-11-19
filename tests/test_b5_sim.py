@@ -1,6 +1,5 @@
 """B5: `no_attackers` early exit (spec 3.3 rule 8), wall counters, sim version bump."""
 import numpy as np
-import pytest
 
 from breachlens import config as K
 from breachlens import layouts as Y

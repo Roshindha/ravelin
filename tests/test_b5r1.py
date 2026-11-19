@@ -1,11 +1,9 @@
 """B5-R1: generator parameters (Lancer share, defender count), sweep arm definitions and the pre-registered selection rule."""
 import json
-import os
 from pathlib import Path
 
-import pytest
 
-import scripts_b5r1_sweep as SW
+from scripts import b5r1_sweep as SW
 from breachlens import config as K
 from breachlens import layouts as Y
 

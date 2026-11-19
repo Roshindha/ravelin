@@ -7,13 +7,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import scripts_b5r1b_sweep as SW
+from scripts import b5r1b_sweep as SW
 from breachlens import config as K
 from breachlens import gates as G
 from breachlens import layouts as Y
 from breachlens import oracle as O
 from breachlens.acceptance import warm_starts
-from breachlens.armies import army_cost, greedy_types, random_types, single_unit_types
+from breachlens.armies import greedy_types, random_types, single_unit_types
 from breachlens.sim import Prepared, simulate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -91,7 +91,7 @@ def test_unit_cap_is_read_from_rules_and_used_by_every_army_builder():
     assert cfg.unit_cap == 14
     import breachlens.armies as AR
     import breachlens.oracle as OR
-    old_a, old_o = AR.CFG if hasattr(AR, "CFG") else None, OR.CFG
+    _old_a, old_o = AR.CFG if hasattr(AR, "CFG") else None, OR.CFG
     try:
         OR.CFG = cfg
         import breachlens.config as KC
@@ -174,8 +174,8 @@ def test_monotone_ban_loss_is_never_negative_and_full_is_never_below_ablated():
 
 def test_monotone_estimator_is_non_negative_even_on_tiny_budgets_where_the_independent_one_is_noisy():
     for rec, L in Y.load_design_set("TUNE-train")[::12]:
-        P, ws = Prepared(L), warm_starts()
-        full = O.oracle_search(L, O.oracle_rng(rec["seed"]), n_random=4, n_refine=4, warm_starts=(), prepared=P)
+        P, _ws = Prepared(L), warm_starts()
+        O.oracle_search(L, O.oracle_rng(rec["seed"]), n_random=4, n_refine=4, warm_starts=(), prepared=P)
         ab = O.oracle_search(L, O.oracle_rng(rec["seed"]), n_random=4, n_refine=4, allowed=(0, 1, 2, 3), warm_starts=(), prepared=P)
         m = O.monotone_ban_pair(L, rec["seed"], MENDER, ab, warm_starts=(), prepared=P, n_random=4, n_refine=4)
         assert m["loss"] >= 0
@@ -248,4 +248,4 @@ def test_spec_carries_the_changelog_and_the_preregistered_r1b_rule():
 
 def test_no_override_is_active_and_gate_script_asserts_it():
     assert not K.stats_override_active() and not Y.gen_override_active()
-    assert "stats_override_active() or Y.gen_override_active()" in (ROOT / "scripts_gates.py").read_text()
+    assert "stats_override_active() or Y.gen_override_active()" in (ROOT / "scripts/gates.py").read_text()

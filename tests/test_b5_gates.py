@@ -1,5 +1,4 @@
 """B5: gate machinery, thresholds file vs SPEC_V2, stat-dependent acceptance, seed-stream disjointness, stat pins, B5 report fields."""
-import copy
 import json
 import re
 from pathlib import Path
@@ -7,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import scripts_gates as SG
+from scripts import gates as SG
 from breachlens import acceptance as A
 from breachlens import config as K
 from breachlens import gates as G
@@ -152,7 +151,7 @@ def test_design_sets_file_records_stat_acceptance_and_is_consistent():
         assert s["stat_evaluated"] == n_acc + s["stat_rejected"]
         lo, hi = Y.stream_range("L" if fam == "labyrinth" else "T", fam)
         assert all(lo <= x < lo + META["stream_use"][fam]["seeds_consumed"] <= hi for x in s["stat_rejected_seeds"])
-    assert META["sim_version"] == K.sim_version(), "stats or simulator changed: rebuild the design sets (scripts_b5_design_sets.py)"
+    assert META["sim_version"] == K.sim_version(), "stats or simulator changed: rebuild the design sets (scripts/b5_design_sets.py)"
 
 
 def test_accepted_records_pass_and_rejected_seeds_fail_the_stat_rules():

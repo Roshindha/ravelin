@@ -98,6 +98,6 @@ def test_best_of_search_is_monotone_in_budget_on_nested_streams():
 def test_oracle_module_is_the_only_search_implementation():
     import pathlib
     root = pathlib.Path(__file__).resolve().parents[1]
-    hits = [p.name for p in list((root / "breachlens").glob("*.py")) + list(root.glob("scripts_*.py"))
+    hits = [p.name for p in list((root / "breachlens").glob("*.py")) + list(root.glob("scripts/*.py"))
             if "def oracle_search" in p.read_text() or "def army_search" in p.read_text()]
     assert hits == ["oracle.py"]

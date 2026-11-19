@@ -16,8 +16,8 @@ GUARDS = {SELF, ROOT / "tests" / "test_b10_hygiene.py"}          # these name th
 
 REMOVED = ["siege", "rl/augment_v1.py", "rl/train_ppo.py", "rl/eval.py", "rl/eval_all.py", "rl/eval_ppo.py", "rl/evaluation.py",
            "rl/policy_io.py", "rl/split.py", "rl/train.py", "rl/diagnose_buy_deploy.py", "rl/diagnose_grid.py",
-           "scripts_balance.py", "scripts_contact_sheet.py", "scripts_diag_deploy.py", "scripts_rebuild_pool.py", "scripts_smoke.py",
-           "scripts_sweep_splash.py", "scripts_tuning.py", "scripts/run_one.sh", "scripts/run_ppo_grid.sh"]
+           "scripts/balance.py", "scripts/contact_sheet.py", "scripts/diag_deploy.py", "scripts/rebuild_pool.py", "scripts/smoke.py",
+           "scripts/sweep_splash.py", "scripts/tuning.py", "scripts/run_one.sh", "scripts/run_ppo_grid.sh"]
 REMOVED_RL = {"augment_v1", "train_ppo", "eval", "eval_all", "eval_ppo", "evaluation", "policy_io", "split", "train",
               "diagnose_buy_deploy", "diagnose_grid"}
 TEXT_PAT = re.compile(r"\b(rl\.train_ppo|rl\.augment_v1)\b(?!_)")

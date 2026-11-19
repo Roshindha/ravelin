@@ -23,7 +23,7 @@ from torch import nn
 
 from breachlens.baselines import Policy, _ep
 from breachlens.constants import N_UNIT_TYPES
-from breachlens.env import GRID, N_ACTIONS, N_GRID_CHANNELS, N_STATE, BreachEnv
+from breachlens.env import GRID, N_GRID_CHANNELS, N_STATE, BreachEnv
 
 from .features import SiegeFeaturesExtractor
 

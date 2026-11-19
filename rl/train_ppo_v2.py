@@ -44,9 +44,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 
 from breachlens import evaluator as EV
 from breachlens import manifest as MF
-from breachlens.config import sim_version
 from breachlens.env import BreachEnv
-from breachlens.score import SCORE_VERSION
 
 from .augment import D4Wrapper
 from .eval_ppo_v2 import ModelPolicy
