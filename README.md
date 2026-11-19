@@ -61,6 +61,8 @@ Intervals, the planner results and the per-family notes are in [docs/RESULTS.md]
 
 `requirements.txt` is what the deployed app needs (numpy, gymnasium, streamlit); `requirements-dev.txt` adds the research and test stack. In deployed mode "Watch the AI" reads `data/app_bundle/`, the duel uses the simulator and `data/v2/duel_cache.json`, and visitors' plays are not logged.
 
+The three seed-0 checkpoints the app bundle was built from (`grid_ppo_plain_s0`, `grid_ppo_d4_s0`, `grid_ddqn_s0`) and a `SHA256SUMS` file are attached to the [v1.0 release](https://github.com/Roshindha/ravelin/releases/tag/v1.0); the `models_v2/` directory is not in the repository.
+
 Rebuilding the bundle, replays and duel cache needs the trained checkpoints in `models_v2/`, which are not tracked in git; all three scripts refuse to run from a dirty tree:
 
     .venv/bin/python scripts/build_app_bundle.py
