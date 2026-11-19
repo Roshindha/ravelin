@@ -76,7 +76,7 @@ def test_score_is_monotone_in_both_terms():
 def test_no_second_score_formula_outside_score_module():
     pat = re.compile(r"0\.6 ?\*|0\.4 ?\*|\b6 ?\* ?\w*d_num|\b4 ?\* ?den\b|\bd_num ?/ ?\(?10")
     files = [p for p in ROOT.rglob("*.py") if "tests" not in p.relative_to(ROOT).parts and ".venv" not in p.parts
-             and p.relative_to(ROOT).parts[0] != "siege" and p.name != "score.py"]       # siege/ = removed-in-B20 prototype
+             and p.name != "score.py"]
     assert files
     for p in files:
         assert not pat.search(p.read_text()), f"{p}: score formula outside breachlens/score.py"

@@ -731,3 +731,5 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - `tests/test_b18b_duel_app.py` (11 tests); `tests/test_b18a_app.py` screenshot-list assertion narrowed to `b18a_*` files.
 - Screenshots: `docs/screenshots/b18b_duel_mid_buy.png`, `b18b_duel_results_table.png`.
 - Full suite: exit=0, 764 passed in 1026 s.
+
+- B20: prototype code removed (siege/, prototype rl/ modules and scripts, prototype tests); it lives at tag prototype-v1 (ef43f63). rl/augment_v1.py was a later copy of the prototype rl/augment.py, which is in the tag.
