@@ -38,3 +38,7 @@ gatherUsageStats = false
 [server]
 headless = true
 enableStaticServing = true
+fileWatcherType = "none"
+runOnSave = false
+# Streamlit Cloud: Python 3.11 (Advanced settings), main file app/streamlit_app.py, secrets none; set the environment variable RAVELIN_DEPLOY=1.
+

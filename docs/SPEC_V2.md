@@ -1,5 +1,9 @@
 # BreachLens (v2) — design spec
 
+> **Summary for readers.** The design and pre-registration record of Ravelin (working name BreachLens v2): game rules, balance gates, training and evaluation protocol, and the build plan.
+> Every rule change after the first commit is a dated row in the Gate changelog, written and committed before the step it governs; the held-out FINAL layouts were evaluated once.
+> Outcomes are in RESULTS.md and caveats in LIMITATIONS.md; this file is the plan and its amendments, not a result.
+
 Status: **design only** (step 10a; amended in step 10b: gates G7–G9, movement tie rule, planner control, speed gate, step-budget rule, shaped-reward fallback, siege/ removal; amended in step 10c: paired-bootstrap gates, G7 BestSingle definition and 600k extension, revision budget 3+1, defender types, B5 report, README placeholders; amended in step B5-R1: per-layout niche G3, sweep selection rule; amended in step B5: `no_attackers` exit, one-sided 98.75 % bound for G2/G3, pre-registered B5 gate-script interpretations, extra wall metrics). No code has been written for v2. The prototype is frozen at git tag `prototype-v1`; all v2 work lives on branch `v2-redesign`.
 Supersedes: [SPEC.md](SPEC.md) (Base Siege). Where this file is silent, SPEC.md's rules still apply (PROGRESS.md after every step, pytest per module, fixed seeds, one step at a time, report in ≤ 5 lines).
 

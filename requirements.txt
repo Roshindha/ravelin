@@ -1,10 +1,5 @@
-# Python 3.11, CPU only
-numpy>=1.26,<3
-pandas>=2.1
-matplotlib>=3.8
-gymnasium>=0.29,<2
-torch>=2.2
-stable-baselines3>=2.3
-sb3-contrib>=2.3
+# Deployed app only (Python 3.11): no torch, no stable-baselines. "Watch the AI" reads data/app_bundle; the duel uses the simulator + data/v2/duel_cache.json.
+# Set RAVELIN_DEPLOY=1 in the host's environment (also implied when torch is not installed).
+numpy==2.4.6
+gymnasium==1.4.0
 streamlit==1.67.0
-pytest>=8.0

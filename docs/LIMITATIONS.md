@@ -1,5 +1,9 @@
 # Known limitations (running list, feeds the README)
 
+> **Summary for readers.** A running list of known weak points of the game design, the training and the final evaluation, each with its numbers; entries are added, never deleted.
+> Design: some balance gates are unmet at the closed revision (for example Blaster is rarely worth buying) and are recorded as limitations, not redefined; learnability was reached only with potential-based reward shaping.
+> Evaluation: 10 seeds, 60 layouts per group, one session, 64 uncorrected primary checks, one transfer family; the planner has simulator access, and Oracle is a fixed-budget search, not the optimum.
+
 Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gates.json`), R3 sweep (`data/v2/b5r3_sweep/`), PROGRESS.md. Add to this list; do not delete entries.
 
 ## BreachLens v2 design (B5 closed at revision 1; docs/SPEC_V2.md 3.6)

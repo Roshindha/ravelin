@@ -1,5 +1,9 @@
 # B15 results: FINAL, one session
 
+> **Summary for readers.** One-time final evaluation on 120 held-out layouts (60 familiar, 60 labyrinth transfer): 10 seeds each of PPO, PPO+D4 and DDQN, compared with scripted baselines and a search planner.
+> No learned policy beats the fixed 8-Sniper army (BestSingle) on breach rate; on score the learners are no better on familiar layouts and worse on transfer, and test-time augmentation helps every learner (12 of 12 checks).
+> 27 of 64 primary checks hold, with no multiplicity correction and wide intervals (10 seeds, 60 layouts per group); "not established" is not "no effect". Caveats are in LIMITATIONS.md.
+
 Source: `results/b15/tables/` only (`tables.md` and the CSVs beside it). No number here was computed outside those tables; the P1-P5 table below is those rows reformatted. Session `3ccef86e0e2349d4af22e210d4b46a07`, run at commit `7e3aa42`, evaluated once; the tables were rebuilt from the raw files into a temporary directory and match byte for byte. Protocol: SPEC_V2 rows (gg) and (hh).
 
 Setup in brief: 120 FINAL layouts, reported as **FINAL-familiar** (60: spine_pods, archipelago, bunker_nest, 20 each) and **FINAL-transfer** (60, all labyrinth). Learners are 10 seeds each of PPO plain, PPO+D4 and DDQN (deterministic masked argmax, final checkpoint). Intervals are 95 % hierarchical bootstrap (seeds, then layouts; 10 000 resamples). A primary comparison "holds" only if its paired-difference interval excludes 0 in the direction claimed. "Breach rate" is the headline metric; "score" is the true (unshaped) mean score.
