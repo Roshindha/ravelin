@@ -125,7 +125,7 @@ def test_disclaimer_text_a1_and_one_per_screen():
                             "they were never used to select models.")
     assert "model selection" not in R.DISCLAIMER and "used for model selection" not in (ROOT / "breachlens" / "duel.py").read_text()
     src = "".join(p.read_text() for p in APP_FILES if p.name != "theme.py")
-    assert src.count("DISCLAIMER}") == 1                          # rendered in exactly one place (the line under the top bar)
+    assert src.count("html.escape(R.DISCLAIMER)") == 1            # rendered in exactly one place (the line under the top bar of app/streamlit_app.py)
 
 
 def test_legend_covers_units_defender_shapes_core_walls_buildings():
@@ -143,15 +143,16 @@ def test_legend_covers_units_defender_shapes_core_walls_buildings():
 def test_defender_shapes_are_type_specific_in_both_modes():
     assert "<rect" in R.defender_shape("gun", 10, 10) and R.defender_shape("lancer", 10, 10).count(",") == 3
     assert len(R.defender_shape("flak", 10, 10).split("points=")[1].split('"')[1].split()) == 6
-    import app.duel_ui as _  # noqa: F401  (import only: the duel board no longer blanks the defender type)
-    assert 'if k == "d" else ex' not in (ROOT / "app" / "duel_ui.py").read_text()
+    from app import game_view as GV                              # the game app draws every board through game_view: Play and Watch the AI share one defender icon per type
+    assert [GV._struct_icon("d", t) for t in ("gun", "lancer", "flak")] == ["gun", "lancer", "flak"]
+    assert not (ROOT / "app" / "duel_ui.py").exists()
 
 
 def test_deploy_tiles_are_row_col_not_tile_at():
     assert R.deploy_text("sniper", 0, 3) == "Sniper (0,3)"
     assert R.pretty_label("Deploy sniper at border tile 3 (row 0, col 3)") == ("Deploy Sniper (0,3)", "border tile 3")
     assert R.pretty_label("Buy bulwark") == ("Buy bulwark", "")
-    assert "{u}@{b}" not in (ROOT / "app" / "duel_ui.py").read_text()
+    assert "{u}@{b}" not in (ROOT / "app" / "streamlit_app.py").read_text()
 
 
 def test_board_svg_uses_theme_and_has_no_blueprint_texture():

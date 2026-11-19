@@ -249,7 +249,7 @@ def app_css() -> str:
         "[data-testid='stHeader']{background:transparent}"
         "*{box-shadow:none!important;text-shadow:none!important}"
         "[data-testid='stMarkdownContainer'],[data-testid='stWidgetLabel'] p,.stButton button p,label,input,select{font-family:var(--f-body)}"
-        "[data-testid='stNumberInput'] input,[data-baseweb='select'] [data-testid='stSelectboxVirtualDropdown'],[data-testid='stSliderThumbValue'],"
+        "[data-testid='stNumberInput'] input,[data-testid='stSliderThumbValue'],"
         "[data-testid='stSliderTickBarMin'],[data-testid='stSliderTickBarMax']{font-family:var(--f-num);font-variant-numeric:tabular-nums}"
         ".bar{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px 0}"
         f".badge{{border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:2px 10px;font-size:14px;border-radius:var(--r)}}"

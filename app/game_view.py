@@ -17,6 +17,23 @@ from app import theme as T
 GRID = 14
 CELL = 46                                                    # 14 * 46 = 644 px board
 BOARD_PX = GRID * CELL
+GUT = 20                                                     # gutter above / left of the board for the row and column numbers (ink on the snow card)
+VIEW = f"{-GUT} {-GUT} {BOARD_PX + GUT} {BOARD_PX + GUT}"
+FULL_PX = BOARD_PX + GUT
+
+
+def axis_svg() -> str:
+    """Small column numbers above and row numbers left of the board (ink; Atkinson Hyperlegible Mono, numbers only). Tile (row, col) = the engine's border table."""
+    f = f'font-family="\'{T.FONT_NUM}\', monospace" font-size="12" font-weight="600" fill="{T.TEXT}"'
+    cols = "".join(f'<text x="{i * CELL + CELL / 2}" y="-7" text-anchor="middle" {f}>{i}</text>' for i in range(GRID))
+    rows = "".join(f'<text x="-7" y="{i * CELL + CELL / 2 + 4}" text-anchor="end" {f}>{i}</text>' for i in range(GRID))
+    return f'<g class="axis" aria-hidden="true">{cols}{rows}</g>'
+
+
+def core_tick(structs: list, frames: list):
+    """The first battle tick at which the core's hp is 0 (read from the frames), or None if the core never falls."""
+    ci = next(i for i, s in enumerate(structs) if s[0] == "c")
+    return next((int(f["t"]) for f in frames if f["s"][ci] <= 0), None)
 
 
 def _esc_json(obj) -> str:
@@ -48,7 +65,7 @@ def board_svg(structs: list, s_hp: list | None = None, units: list | None = None
     """The board as one SVG string (for st.image). structs = [[kind, row, col, extra]]; s_hp = permille per struct (None = all full);
     units = [(type index, row, col, hp permille)]; overlay = {(row, col): colour} heatmap on border tiles; zone = the border start zone (azure tape stripes); selected = tile the player is about to use (dashed frame); preview = (type index, row, col) translucent icon on that tile;
     chosen = (row, col) the AI's chosen tile (3 px ink frame with a light keyline, as in the replays)."""
-    out = [IC.symbol_defs(), f'<rect width="{BOARD_PX}" height="{BOARD_PX}" rx="10" fill="{T.BOARD_BG}"/>']
+    out = [IC.symbol_defs(), axis_svg(), f'<rect width="{BOARD_PX}" height="{BOARD_PX}" rx="10" fill="{T.BOARD_BG}"/>']
     for i in range(1, GRID):
         out.append(f'<path d="M{i * CELL} 0V{BOARD_PX}M0 {i * CELL}H{BOARD_PX}" stroke="{T.GRID_LINE}" stroke-width="1" fill="none"/>')
     for r, c in zone or []:
@@ -80,7 +97,7 @@ def board_svg(structs: list, s_hp: list | None = None, units: list | None = None
         fr = f'x="{c * CELL + 2}" y="{r * CELL + 2}" width="{CELL - 4}" height="{CELL - 4}" rx="4" fill="none"'
         out.append(f'<rect {fr} stroke="{T.CHOSEN_KEYLINE}" stroke-width="6"/><rect {fr} stroke="{T.CHOSEN_FRAME}" stroke-width="3"/>')
     out.append(f'<rect x="{T.FRAME_W / 2}" y="{T.FRAME_W / 2}" width="{BOARD_PX - T.FRAME_W}" height="{BOARD_PX - T.FRAME_W}" rx="10" fill="none" stroke="{T.OUTLINE}" stroke-width="{T.FRAME_W}"/>')
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {BOARD_PX} {BOARD_PX}" width="{BOARD_PX}" height="{BOARD_PX}" role="img" '
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{VIEW}" width="{FULL_PX}" height="{FULL_PX}" role="img" '
             f'aria-label="{GRID} by {GRID} board">' + "".join(out) + "</svg>")
 
 
@@ -95,10 +112,10 @@ button{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:
 button:hover{background:var(--panel)}button:focus-visible,input:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
 button[aria-pressed=true]{background:var(--danger);color:var(--fg);border-color:var(--fg)}
 button.go{background:var(--primary);color:var(--on-primary);border-color:var(--fg);font-size:17px;min-width:96px}
-.tick{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-size:16px;min-width:116px;text-align:right}
+.tick{font-size:16px;min-width:116px;text-align:right}.n{font-family:var(--f-num);font-variant-numeric:tabular-nums}
 .speed{display:inline-flex;gap:4px}
 #wrap{position:relative;line-height:0}
-#board{width:100%;height:auto;display:block;background:var(--board);border-radius:10px;border:3px solid var(--fg)}
+#board{width:100%;height:auto;display:block}
 .u{transition:transform var(--mv,.2s) ease,opacity .2s ease}.u.dead{opacity:0}
 .s.dead>.ico{opacity:.25}.s .x{opacity:0;transition:opacity .2s ease}.s.dead .x{opacity:1}
 .ring{fill:none;stroke:var(--fg);stroke-width:2.5;opacity:0;pointer-events:none}
@@ -112,14 +129,15 @@ button.go{background:var(--primary);color:var(--on-primary);border-color:var(--f
 #banner.show{opacity:1;animation:pop .22s ease-out}
 @keyframes pop{0%{transform:translate(-50%,-50%) rotate(-4deg) scale(.9);opacity:0}100%{transform:translate(-50%,-50%) rotate(-4deg) scale(1);opacity:1}}
 #banner b{display:block;font-family:var(--f-body);font-weight:600;font-size:58px;letter-spacing:.07em}
-#banner span{display:block;font-size:15px;font-weight:600;letter-spacing:.04em;margin-top:6px}
+#banner #bs{display:block;font-size:15px;font-weight:600;letter-spacing:.04em;margin-top:6px}
 #banner.breach{background:var(--danger);color:var(--fg)}
 #banner.held{background:var(--bg);color:var(--fg)}
-.status{font-size:14px;color:var(--mut);margin-top:8px;min-height:21px;font-family:var(--f-num)}
+.status{font-size:14px;color:var(--mut);margin-top:8px;min-height:21px}
 input[type=range]{flex:1 1 160px;accent-color:var(--primary);min-width:120px}
 .zone{fill:url(#tape);stroke:var(--primary);stroke-width:1.5}
+@media (max-width:520px){button{min-height:44px}button.go{min-width:84px}#banner b{font-size:36px}#banner{padding:8px 18px 10px}.tick{min-width:0;flex:1 1 100%;text-align:left}input[type=range]{min-height:44px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-""".replace("__PX__", str(BOARD_PX))
+""".replace("__PX__", str(FULL_PX))
 
 PLAYER_JS = r"""
 const T = JSON.parse(document.getElementById('theme').textContent);
@@ -144,6 +162,7 @@ function ringOn(g, cls) {
   r.classList.remove('hit', 'boom'); void r.getBoundingClientRect(); r.classList.add(cls);
 }
 const board = $('board'), layer = el('g', {}, board);
+const n = x => '<span class="n">' + x + '</span>';
 for (let i = 1; i < N; i++) el('path', {d: 'M' + i * CELL + ' 0V' + N * CELL + 'M0 ' + i * CELL + 'H' + N * CELL, stroke: T.gridLine, 'stroke-width': 1, fill: 'none'}, layer);
 D.zone.forEach(([r, c]) => el('rect', {class: 'zone', x: c * CELL + 2, y: r * CELL + 2, width: CELL - 4, height: CELL - 4, rx: 4}, layer));
 const S = D.structs.map(([k, r, c, ex], i) => {
@@ -192,9 +211,9 @@ function show(i, animate) {
     setBar(o, hp);
     o.hp = hp;
   });
-  $('tick').textContent = 'Tick ' + f.t + ' / ' + F[last].t;
+  $('tick').innerHTML = 'Tick ' + n(f.t) + ' / ' + n(F[last].t);
   $('scrub').value = i;
-  $('status').textContent = alive + ' of ' + U.length + ' units alive · ' + bd + ' of ' + D.nb + ' buildings destroyed · core ' + (core ? 'destroyed' : 'standing');
+  $('status').innerHTML = n(alive) + ' of ' + n(U.length) + ' units alive · ' + n(bd) + ' of ' + n(D.nb) + ' buildings destroyed · core ' + (core ? 'destroyed' : 'standing');
   const b = $('banner');
   b.classList.toggle('show', i === last);
 }
@@ -217,7 +236,8 @@ $('scrub').max = last; $('scrub').oninput = e => { stop(); go(+e.target.value, f
 const b = $('banner'), bt = $('bt'), bs = $('bs');
 b.classList.add(D.outcome.breach ? 'breach' : 'held');
 bt.textContent = D.outcome.breach ? 'BREACH' : 'HELD';
-bs.textContent = D.outcome.breach ? 'core destroyed at tick ' + D.outcome.ticks : 'the core stood · ' + D.outcome.reasonText;
+bs.innerHTML = D.outcome.breach ? 'core destroyed at tick ' + n(D.outcome.coreTick) : 'the core stood · ' + D.outcome.reasonText;
+board.appendChild($('frame'));                                  // the frame is drawn last so that nothing covers it
 go(Math.min(D.start, last), false);
 if (D.autoplay && !reduce && D.start < last) play();
 """
@@ -226,6 +246,8 @@ if (D.autoplay && !reduce && D.start < last) play();
 def player_html(structs: list, frames: list, army_types: list, outcome: dict, *, tick_ms: int = 480, autoplay: bool = True, start: int = 0) -> str:
     """One self-contained page. structs = [[kind, row, col, extra]]; frames = ``_battle(env)["frames"]`` ({t, u: [[cell, hp, state]], s: [hp]});
     army_types = unit type index per deployed unit; outcome = {breach, ticks, reasonText}."""
+    ct = core_tick(structs, frames)
+    outcome = {**outcome, "coreTick": ct if ct is not None else int(outcome["ticks"])}        # the banner names the tick the core fell (the battle can go on after it)
     data = {"grid": GRID, "cell": CELL, "structs": structs, "frames": frames, "units": [int(t) for t in army_types], "unitNames": list(IC.UNITS),
             "nb": sum(1 for s in structs if s[0] == "b"), "outcome": outcome, "tickMs": tick_ms, "autoplay": bool(autoplay), "start": int(start), "zone": [list(b) for b in BORDER]}
     sym = f'<svg width="0" height="0" style="position:absolute" aria-hidden="true">{IC.symbol_defs()}</svg>'
@@ -235,7 +257,7 @@ def player_html(structs: list, frames: list, army_types: list, outcome: dict, *,
             f'<button type="button" data-s="1" aria-pressed="true">1x</button><button type="button" data-s="2" aria-pressed="false">2x</button>'
             f'<button type="button" data-s="4" aria-pressed="false">4x</button></span>'
             f'<input type="range" id="scrub" min="0" max="0" value="0" aria-label="battle tick"><span class="tick" id="tick">Tick 0</span></div>'
-            f'<div id="wrap"><svg id="board" viewBox="0 0 {BOARD_PX} {BOARD_PX}" role="img" aria-label="battle board"></svg>'
+            f'<div id="wrap"><svg id="board" viewBox="{VIEW}" role="img" aria-label="battle board">{axis_svg()}<rect width="{BOARD_PX}" height="{BOARD_PX}" rx="10" fill="{T.BOARD_BG}"/><rect id="frame" x="{T.FRAME_W / 2}" y="{T.FRAME_W / 2}" width="{BOARD_PX - T.FRAME_W}" height="{BOARD_PX - T.FRAME_W}" rx="10" fill="none" stroke="{T.OUTLINE}" stroke-width="{T.FRAME_W}"/></svg>'
             f'<div id="banner" role="status"><b id="bt"></b><span id="bs"></span></div></div>'
             f'<div class="status" id="status" aria-live="polite"></div></div>'
             f'<script type="application/json" id="theme">{T.js_theme()}</script><script type="application/json" id="data">{_esc_json(data)}</script>'

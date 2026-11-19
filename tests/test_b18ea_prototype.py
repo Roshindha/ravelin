@@ -68,7 +68,7 @@ def test_board_svg_is_valid_and_hero_sized():
     structs = [["c", 2, 5, ""], ["d", 3, 5, "lancer"], ["w", 4, 5, ""], ["b", 5, 8, 3]]
     svg = GV.board_svg(structs, None, [(1, 0, 3, 1000)], overlay={(0, 1): "x"}, zone=[(0, 2)], selected=(0, 2), preview=(0, 0, 2), chosen=(0, 3))
     ET.fromstring(svg)
-    assert GV.BOARD_PX >= 640 and f'width="{GV.BOARD_PX}"' in svg and "#ic-core" in svg and "#ic-b3" in svg and "#ic-lancer" in svg and "#ic-sniper" in svg
+    assert GV.BOARD_PX >= 640 and f'width="{GV.FULL_PX}"' in svg and "#ic-core" in svg and "#ic-b3" in svg and "#ic-lancer" in svg and "#ic-sniper" in svg
 
 
 # ------------------------------------------------------------------------------------------------ player
@@ -122,7 +122,7 @@ def test_prototype_play_flow_and_opponents_stay_hidden_until_report(runs, monkey
     at = AppTest.from_file(APP, default_timeout=120).run()
     assert not at.exception
     text = md(at)
-    assert "Breach Lens" in text and R.DISCLAIMER in text and text.count(R.DISCLAIMER) == 1
+    assert "Ravelin" in text and "Breach Lens" not in text and R.DISCLAIMER in text and text.count(R.DISCLAIMER) == 1
     assert [r.label for r in at.radio][0] == "Mode" and list(at.radio[0].options) == ["Play", "Watch the AI"]
     assert at.button(key="g_buy_scout").disabled is False and at.button(key="g_end").disabled is True and at.button(key="g_undo").disabled is True
     for _ in range(30):                                                      # 240 gold: 30 Scouts is over the 20-unit cap, the cap must disable the buy
@@ -160,11 +160,12 @@ def test_prototype_honesty_items_and_about_panel(runs):
         assert needle in src, needle
 
 
-def test_legacy_app_is_kept_marked_and_no_dependency_was_added():
-    assert (ROOT / "app" / "legacy_app.py").exists() and "LEGACY, to be removed in B18e-b" in (ROOT / "app" / "legacy_app.py").read_text()
-    assert not (ROOT / "app" / "game_prototype.py").exists()
+def test_legacy_app_is_removed_and_no_dependency_was_added():
+    for gone in ("legacy_app.py", "duel_ui.py", "game_prototype.py"):
+        assert not (ROOT / "app" / gone).exists(), gone
+    assert not (ROOT / "tests" / "test_b18a_app.py").exists() and not (ROOT / "tests" / "test_b18b_duel_app.py").exists()
     reqs = (ROOT / "requirements.txt").read_text().lower()
-    assert "image-coordinates" not in reqs and "components" not in reqs
+    assert "image-coordinates" not in reqs and "components" not in reqs and "streamlit==1.67.0" in reqs
 
 
 

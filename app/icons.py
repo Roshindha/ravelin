@@ -3,9 +3,9 @@
 Every icon is drawn here from plain shapes (viewBox 0 0 32 32) with colour tokens from ``app/theme.py``; nothing is copied from any game, icon set or
 earlier project. Silhouettes are distinct on purpose (the shape carries the identity, colour only supports it):
 
-units      Scout = arrow with speed trails | Sniper = crosshair | Bulwark = shield | Blaster = burst | Mender = plus
+units      Scout = winged boot | Sniper = crosshair | Bulwark = shield | Blaster = burst | Mender = plus
 turrets    Gun = squat block with a short barrel | Lancer = tall spear on a plinth | Flak = hexagon with three fanned barrels (all coral)
-structures Core = fortified keep with battlements and a gate | Building = small block with 1-3 value pips | Wall = masonry (SVG pattern)
+structures Core = fortified keep with battlements and a gate | Building = small pitched-roof house with a chimney and 1-3 value pips | Wall = masonry (SVG pattern)
 misc       coin, troops (pawn), contestant glyphs (you / learner / script / search)
 """
 from __future__ import annotations
@@ -46,8 +46,9 @@ def _body() -> dict:
     s = _stroke()
     d = {}
     # ---- units
-    d["scout"] = (f'<polygon points="{_pts([(17, 3), (28, 23), (17, 18), (6, 23)])}" fill="{_F["scout"]}" {s}/>'
-                  f'<path d="M11 27h12M14 30h6" fill="none" {_stroke(2, INK)}/>')
+    d["scout"] = (f'<path d="M12 4h8v13l6 3c2 1 3 2 3 4v3H11z" fill="{_F["scout"]}" {s}/>'
+                  f'<path d="M11 24h18" fill="none" {_stroke(1.3, INK)}/>'
+                  f'<path d="M12 8C8 4 3 5 2 9c3-1 5 0 7 2-3 0-5 2-5 5 3-2 5-2 8-1z" fill="{SNOW}" {s}/>')
     d["sniper"] = (f'<circle cx="16" cy="16" r="9" fill="{_F["sniper"]}" {s}/>'
                    f'<circle cx="16" cy="16" r="3.2" fill="none" {_stroke(1.6, _I["sniper"])}/>'
                    f'<path d="M16 4v8M16 20v8M4 16h8M20 16h8" fill="none" {_stroke(1.8, INK)}/>'
@@ -71,9 +72,10 @@ def _body() -> dict:
                  f'<path d="M12 29v-8a4 4 0 018 0v8z" fill="{T.CORE_INK}" {_stroke(1.2, INK)}/>'
                  f'<path d="M16 3v6M16 3l5 2-5 2" fill="{T.CORE_BORDER}" {_stroke(1.4, T.CORE_BORDER)}/>')
     for n in (1, 2, 3):
-        pips = "".join(f'<circle cx="{16 + (i - (n - 1) / 2) * 6:.1f}" cy="22.5" r="2" fill="{INK}"/>' for i in range(n))
-        d[f"b{n}"] = (f'<rect x="5" y="7" width="22" height="20" rx="2" fill="{T.BG}" {_stroke(2)}/>'
-                      f'<rect x="5" y="7" width="22" height="6" rx="2" fill="{INK}"/>{pips}')
+        pips = "".join(f'<circle cx="{16 + (i - (n - 1) / 2) * 4.6:.1f}" cy="22.5" r="1.7" fill="{INK}"/>' for i in range(n))
+        d[f"b{n}"] = (f'<rect x="8" y="13" width="16" height="16" fill="{SNOW}" {_stroke(2)}/>'
+                      f'<polygon points="{_pts([(5, 14), (16, 3), (27, 14)])}" fill="{INK}" {_stroke(1.6)}/>'
+                      f'<rect x="21" y="5" width="3.4" height="6" fill="{INK}"/>{pips}')
     d["wall"] = f'<rect x="1.5" y="1.5" width="29" height="29" fill="url(#wallstone)" {_stroke(1.2, T.WALL_HATCH)}/>'
     # ---- misc
     d["coin"] = (f'<circle cx="16" cy="16" r="12" fill="{_F["scout"]}" {s}/><circle cx="16" cy="16" r="7.5" fill="none" {_stroke(1.3, INK)}/>'
@@ -138,3 +140,38 @@ def disc_img(name: str, size: int = 64) -> str:
 
 def building_icon(value: int) -> str:
     return f"b{min(max(int(value), 1), 3)}"
+
+
+def _circle(cx, cy, r, n=48):
+    return [(cx + r * math.cos(2 * math.pi * k / n), cy + r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
+# The outline of each piece as filled polygons in the 32-box (curves sampled / simplified): used only by the distinctness test (no two pieces may share a
+# silhouette). Each follows the primary shapes drawn in ``_body``.
+SILHOUETTE = {
+    "scout": [[(12, 4), (20, 4), (20, 17), (26, 20), (29, 24), (29, 27), (11, 27)], [(12, 8), (8, 5.5), (3, 6), (2, 9), (5, 9), (9, 11), (4, 16), (12, 15)]],
+    "sniper": [_circle(16, 16, 9)],
+    "bulwark": [[(16, 3), (27, 7), (27, 16), (22, 25), (16, 29), (10, 25), (5, 16), (5, 7)]],
+    "blaster": [[(16 + (13.5 if k % 2 == 0 else 6.5) * math.cos(math.pi * k / 8 - math.pi / 2), 16 + (13.5 if k % 2 == 0 else 6.5) * math.sin(math.pi * k / 8 - math.pi / 2)) for k in range(16)]],
+    "mender": [[(12, 4), (20, 4), (20, 12), (28, 12), (28, 20), (20, 20), (20, 28), (12, 28), (12, 20), (4, 20), (4, 12), (12, 12)]],
+    "gun": [[(4, 18), (28, 18), (28, 27), (4, 27)], [(9, 18), (11, 13), (16, 11), (21, 13), (23, 18)], [(20, 10), (29, 10), (29, 14), (20, 14)]],
+    "lancer": [[(16, 2), (21, 22), (11, 22)], [(7, 22), (25, 22), (25, 28), (7, 28)]],
+    "flak": [[(16 + 10 * math.cos(math.radians(60 * k + 30)), 21 + 8 * math.sin(math.radians(60 * k + 30))) for k in range(6)], [(14.7, 14), (17.3, 14), (17.3, 4), (14.7, 4)],
+             [(10.5, 15), (13.5, 16), (7.5, 6), (4.5, 7)], [(18.5, 16), (21.5, 15), (27.5, 7), (24.5, 6)]],
+    "core": [[(4, 29), (4, 12), (8, 12), (8, 8), (12, 8), (12, 12), (14, 12), (14, 8), (18, 8), (18, 12), (20, 12), (20, 8), (24, 8), (24, 12), (28, 12), (28, 29)]],
+    "wall": [[(1.5, 1.5), (30.5, 1.5), (30.5, 30.5), (1.5, 30.5)]],
+}
+for _n in ("b1", "b2", "b3"):
+    SILHOUETTE[_n] = [[(8, 13), (24, 13), (24, 29), (8, 29)], [(5, 14), (16, 3), (27, 14)], [(21, 5), (24.4, 5), (24.4, 11), (21, 11)]]
+
+
+def silhouette_mask(name: str):
+    """The silhouette as a 64x64 boolean numpy mask (the 32-box sampled at half-unit centres)."""
+    import numpy as np
+    from matplotlib.path import Path
+    g = (np.arange(64) + 0.5) / 2
+    pts = np.array([(x, y) for y in g for x in g])
+    m = np.zeros(len(pts), bool)
+    for poly in SILHOUETTE[name]:
+        m |= Path(poly).contains_points(pts)
+    return m.reshape(64, 64)
