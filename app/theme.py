@@ -25,7 +25,7 @@ OUTLINE = TEXT               # 1.5px outline of units and defenders; 3px frame o
 CORE_FILL = TEXT             # ink diamond ...
 CORE_BORDER = DANGER         # ... with a 2px coral ring
 CORE_INK = BG                # the 'C' on the ink diamond
-UNIT_FILL = {"scout": "#F2C14E", "sniper": PRIMARY, "bulwark": "#6BAF92", "blaster": "#9B7BD4", "mender": "#F4A6C0"}
+UNIT_FILL = {"scout": "#F2C14E", "sniper": PRIMARY, "bulwark": "#6BAF92", "blaster": "#A788DD", "mender": "#F4A6C0"}
 UNIT_INK = {"scout": TEXT, "sniper": BG, "bulwark": TEXT, "blaster": TEXT, "mender": TEXT}
 UNIT_ORDER = ("scout", "sniper", "bulwark", "blaster", "mender")          # the engine's UNIT_TYPES order (index t)
 UNIT_ABBR = ("Sc", "Sn", "Bu", "Bl", "Me")
@@ -63,7 +63,7 @@ STATIC_URL_PREFIX = "app/static/fonts/"                                 # Stream
 
 # ----------------------------------------------------------------------------------------------------------------------------- contrast
 # (name, foreground, background, kind). kind: "normal" text 4.5:1; "large" = bold text >= 16px / large text / a graphic or UI shape, 3:1;
-# "exception" = a registered shortfall (4.3:1 floor, reported to the owner); "shape" = coral fills (identity carried by the ink outline pair, ratio reported only);
+# "shape" = coral fills (identity carried by the ink outline pair, ratio reported only);
 # "decorative" = hairlines and tints that carry no information alone (>= 1.1:1, ratio reported).
 TEXT_PAIRS = (
     ("body text on page", TEXT, BG, "normal"),
@@ -93,9 +93,8 @@ TEXT_PAIRS = (
     ("wall hatch on wall", WALL_HATCH, WALL_FILL, "decorative"),
     ("grid line on board", GRID_LINE, BOARD_BG, "decorative"),
     ("panel border on page", PANEL_BORDER, BG, "decorative"),
-) + tuple((f"unit letter on {u}" + (" (exception)" if u == "blaster" else ""), UNIT_INK[u], UNIT_FILL[u],
-           "large" if u == "sniper" else "exception" if u == "blaster" else "normal") for u in UNIT_ORDER)
-THRESHOLD = {"normal": 4.5, "large": 3.0, "exception": 4.3, "shape": 0.0, "decorative": 1.1}
+) + tuple((f"unit letter on {u}", UNIT_INK[u], UNIT_FILL[u], "large" if u == "sniper" else "normal") for u in UNIT_ORDER)
+THRESHOLD = {"normal": 4.5, "large": 3.0, "shape": 0.0, "decorative": 1.1}
 LARGE_ONLY = (PRIMARY,)                                                 # never the foreground of normal-size text (checked by a test)
 SHAPE_ONLY = (DANGER,)                                                  # never a text colour (checked by a test)
 

@@ -48,7 +48,7 @@ def test_palette_is_the_spec():
     assert (T.PRIMARY, T.ON_PRIMARY, T.PRIMARY_TEXT) == ("#3283BE", "#FEFDFE", "#245F8C")
     assert (T.DANGER, T.ON_DANGER, T.DANGER_TEXT) == ("#FD614B", "#132A3E", "#C4402C")
     assert (T.CORE_FILL, T.CORE_BORDER, T.OUTLINE, T.CHOSEN_FRAME) == ("#132A3E", "#FD614B", "#132A3E", "#132A3E")
-    assert T.UNIT_FILL == {"scout": "#F2C14E", "sniper": "#3283BE", "bulwark": "#6BAF92", "blaster": "#9B7BD4", "mender": "#F4A6C0"}
+    assert T.UNIT_FILL == {"scout": "#F2C14E", "sniper": "#3283BE", "bulwark": "#6BAF92", "blaster": "#A788DD", "mender": "#F4A6C0"}
     assert T.UNIT_INK == {"scout": "#132A3E", "sniper": "#FEFDFE", "bulwark": "#132A3E", "blaster": "#132A3E", "mender": "#132A3E"}
     assert (T.BOARD_BG, T.GRID_LINE, T.WALL_FILL, T.WALL_HATCH, T.ZEBRA, T.HUMAN_ROW) == ("#EEF4FA", "#D5E2EE", "#C9D6E3", "#A9BCCF", "#F3F7FB", "#3283BE")
     assert T.HEAT_STOPS == ("#FEFDFE", "#3283BE", "#132A3E")
