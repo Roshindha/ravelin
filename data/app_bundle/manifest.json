@@ -177,7 +177,7 @@
   }
  },
  "provenance": {
-  "code_commit": "288fedc647ba3d5cf405c32740ef8d4149e1a81e",
+  "code_commit": "f0a6b5eea3fe720ed77a033712d9e400d5cf7d20",
   "score_version": "b7-single-rounding",
   "sim_version": "3048422b62c94dcd28cc1d578e1de322750c577b1875dc9e5b283e0d26c1a338"
  },
