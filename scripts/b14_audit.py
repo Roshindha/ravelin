@@ -1,7 +1,7 @@
 """B14c item 1: integrity audit of the finished 30-run grid -> results/b14/grid_audit.md (+ .json). Read-only: no training, no FINAL access.
 
 Checks per run (all 30): identity finished at exactly T = 1 500 000; zero resumes (identity `resumes` list AND exactly one scheduler start in the run log);
-the manifest checker re-run (`scripts_b14_grid.check_job_outputs`, i.e. `breachlens.manifest.check_manifest_file` + val ids inside the manifest);
+the manifest checker re-run (`scripts.b14_grid.check_job_outputs`, i.e. `breachlens.manifest.check_manifest_file` + val ids inside the manifest);
 one git commit in every identity file and every validation row, git_dirty False everywhere; the frozen config files hash to the shas of row (ee) and every
 identity's hyperparameters equal the frozen file; shaping on; final model present with its sha256. Also: ledger 5 build / 0 eval, 61 validation evals per run.
 Any deviation is listed and the exit code is 1.

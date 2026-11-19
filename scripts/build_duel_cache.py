@@ -4,7 +4,7 @@
     .venv/bin/python scripts/build_duel_cache.py --procs 6           # full build of data/v2/duel_cache.json (all 30 DEV-validation layouts)
 
 Per layout and contestant: score, D, breach, units bought per type, deploy tiles. Contestants: the three seed-0 arms WITH TTA (B15 aggregation, same
-chooser code as ``scripts_b15_final.tta_policy``), BestSingle (B8 per-family type), Oracle (B8 ``oracle_search``, 200 + 200, B8 warm starts, rng
+chooser code as ``scripts.b15_final.tta_policy``), BestSingle (B8 per-family type), Oracle (B8 ``oracle_search``, 200 + 200, B8 warm starts, rng
 [layout seed, 4242]). Layouts only through ``breachlens.evaluator.load_dev_layout`` (DEV-validation); nothing else can be loaded. No timestamps:
 the file is a deterministic function of (code, models, layouts). Not a result: demo data.
 """
@@ -47,7 +47,7 @@ def best_single_map() -> dict:
 
 def tta_episode(model, algo: str, rec: dict, layout: dict) -> tuple[dict, list]:
     """The learner's B15 TTA episode (reset seed crc32(id)); returns (row, actions). Chooser = rl.explain._choose(tta=True), i.e. rl.tta.tta_action
-    with the row (gg) aggregation; the test compares its actions with `scripts_b15_final._task`."""
+    with the row (gg) aggregation; the test compares its actions with `scripts.b15_final._task`."""
     from rl import explain as X
     choose = X._choose(model, algo, True)
     env = BreachEnv(layouts=[layout], role="train")

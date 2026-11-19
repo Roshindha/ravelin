@@ -59,7 +59,7 @@ Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototy
     `test_layouts.py` x7).
 - STEP 4: finalized `SiegeEnv` interface and masks for the frozen DEV pool, with action encode/decode
   helpers, fully documented observation/action/reward specs (`docs/observation.md`, `docs/actions.md`,
-  `docs/reward.md`), and a legal-action mask contract that still passes Gymnasium `check_env`.
+  `docs/reward.md`), and a legal-action mask contract that still passes Gymnasium `check_env`. (B19: these three prototype specs are removed from the working tree; they live at tag `prototype-v1`.)
   `RandomLegalAgent`, `GreedyAgent`, the best single-troop army per family, and an `Oracle` (300-sample
   random search per layout) were evaluated on DEV/familiar plus held-out transfer layouts and saved to
   `results/baselines.csv`. The strongest family-wise signal is `Oracle` at 0.8967 overall destruction,
@@ -305,7 +305,7 @@ Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototy
 
 ### STEP 10a: v2 redesign decision (BreachLens) -- DESIGN ONLY, no code
 - **Decision:** prototype frozen at git tag `prototype-v1` (commit ef43f63); redesign continues on branch `v2-redesign`. `master` untouched.
-  Design lives in [docs/SPEC_V2.md](docs/SPEC_V2.md): drone fleet vs automated citadel, 14x14, budget 240, 240 ticks, max 20 units, 52 border tiles,
+  Design lives in [docs/SPEC_V2.md](SPEC_V2.md): drone fleet vs automated citadel, 14x14, budget 240, 240 ticks, max 20 units, 52 border tiles,
   5 units (Scout/Sniper/Bulwark/Blaster/Mender), Discrete(267), 9 channels + 11 state, 4 families (labyrinth held out), pool of 300 (180 DEV / 120 FINAL),
   learners PPO / PPO+D4 / masked DDQN / policy-guided planner (N = 8, 32, 128), D4 TTA, "Why this move?", duel mode, blueprint-theme app.
 - **Why:** prototype PPO stayed far below Oracle (0.27 vs 0.93), D4 underfit, one unit (splash/tank) was weak in every tuning pass, and phase A used a single fixed army.
@@ -744,7 +744,7 @@ Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototy
 
 ### STEP B18e-a follow-up 2 (default entry point, outcome check, Fraunces italic)
 - Outcome check: the row (mm) script (buy sniper x4, bulwark x2, END BUY, deploy in order on the lowest legal tiles 0-5; actions [1,1,1,1,2,2,265,57,58,59,60,113,114]) gives score 0.400, D 0.000, breach yes, 32 ticks through (a) `breachlens.duel`, (b) the old app's duel path and (c) the new app's tile dropdown (dropdown value = border index = action 5 + 52u + b); identical action sequences; no mapping bug, game logic unchanged. The earlier prototype screenshots had used a different demo army (3 scouts, 2 snipers, 2 bulwarks, 2 blasters, 1 mender; HELD, 0.270); the screenshot helper now plays the row (mm) script. Test `test_row_mm_script_is_identical_through_breachlens_duel_and_the_default_app`.
-- `.venv/bin/streamlit run app/streamlit_app.py` now opens the game-style app ("Breach Lens"). The report-style app is `app/legacy_app.py` (marked "legacy, to be removed in B18e-b", still runnable); `app/game_prototype.py` is gone. Old-app tests point at legacy_app.py, the game-app tests at streamlit_app.py; no assertion changed.
+- `.venv/bin/streamlit run app/streamlit_app.py` now opens the game-style app (the previous working title). The report-style app is `app/legacy_app.py` (marked "legacy, to be removed in B18e-b", still runnable); `app/game_prototype.py` is gone. Old-app tests point at legacy_app.py, the game-app tests at streamlit_app.py; no assertion changed.
 - Fonts: real Fraunces italic (Google Fonts release, OFL, Latin subset, wght 600-700, opsz kept; 70,844 B) used for the tagline; SOURCES.txt and the fonts tests updated. Not embedded in the replays.
 - Screenshots retaken from the default entry point: `docs/screenshots/b18ea_*.png` (1500x1000).
 
@@ -768,6 +768,6 @@ Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototy
 - **Requirements**: `requirements.txt` = numpy, gymnasium, streamlit (pinned); `requirements-dev.txt` = `-r requirements.txt` + pandas, matplotlib, torch, stable-baselines3, sb3-contrib, pytest (pinned, test compares with the installed versions). `.python-version` 3.11; `.streamlit/config.toml` + `fileWatcherType = "none"`, `runOnSave = false`. Cloud: Python 3.11 in Advanced settings, env var `RAVELIN_DEPLOY=1`, main file `app/streamlit_app.py`.
 - **Memory** (local `streamlit run` with `RAVELIN_DEPLOY=1`, real Chrome driving Play, report and Watch pages, RSS of the server process tree sampled every 0.5 s): idle 69 MB, peak 136 MB.
 - README rewritten (LICENSE added: MIT, "Ravelin contributors"); RESULTS / LIMITATIONS / SPEC_V2 start with a 3-line reader summary; `tests/test_b21_docs.py` checks the README rules, that its table numbers equal RESULTS.md, the summaries and that every relative link in every tracked `*.md` resolves (no broken link was found; the dead `docs/troops.md` link left with the old README).
-- Not done (outside B21): the B19 cleanup (package rename, `docs/dev_log.md`, root `scripts_*.py` move) is still pending its owner decision; the log stays PROGRESS.md. SPEC.md / SPEC_V2.md keep the historical name "Base Siege" / "BreachLens" (record, not README).
+- The B19 cleanup that was pending here (rename, `docs/dev_log.md`, root `scripts_*.py` move) is done in B19 (entry below).
 - Replays: no regeneration needed (no file under the replay CODE_PATHS changed).
 

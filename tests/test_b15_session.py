@@ -405,7 +405,7 @@ def test_analysis_refuses_tampered_or_mixed_raw_files(tmp_path):
 
 
 def test_analysis_imports_no_simulator_model_or_pool():
-    code = ("import sys, scripts_b15_analysis, scripts_b15_cells\n"
+    code = ("import sys, scripts.b15_analysis, scripts.b15_cells\n"
             "bad = [m for m in sys.modules if m.split('.')[0] in ('torch', 'sb3_contrib', 'stable_baselines3', 'gymnasium') or m in ('breachlens.sim', 'breachlens.pool', 'breachlens.env', 'breachlens.evaluator')]\n"
             "assert not bad, bad\n")
     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True)

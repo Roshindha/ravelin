@@ -117,7 +117,7 @@ def test_cache_refuses_non_dev_validation_ids(cache, tmp_path):
 
 
 def test_cache_agent_actions_equal_b15_eval_path(cache, models, monkeypatch):
-    """The cached TTA rows are the B15 evaluator path's: `scripts_b15_final._task` (policy built there) is run with env.step wrapped to record actions;
+    """The cached TTA rows are the B15 evaluator path's: `scripts.b15_final._task` (policy built there) is run with env.step wrapped to record actions;
     the cache row's bought counts, deploy list in order and score must equal what those actions produce, and our chooser's actions must be identical."""
     from scripts import b15_final as F
     from rl import explain as X

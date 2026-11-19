@@ -11,7 +11,7 @@ What the session does (row (gg) (e)):
   2. <out>/session.json (exclusive create) BEFORE any FINAL layout is loaded; its session_id is the ONE eval session (`pool.eval_session`) of every
      FINAL load and ledger entry;
   3. the two FINAL groups are loaded once through the loaders (role eval, unlock), their ids asserted against the declared groups;
-  4. the cells of `scripts_b15_cells.all_cells()` in the pinned order; each writes <out>/raw/<cell>.csv in exclusive-create mode and then appends one
+  4. the cells of `scripts.b15_cells.all_cells()` in the pinned order; each writes <out>/raw/<cell>.csv in exclusive-create mode and then appends one
      line (cell, path, rows, sha256, commit) to <out>/manifest.jsonl; a finished cell is never recomputed;
   5. crash rule: exception -> <out>/crash_log.md at once; a restart reuses session.json, keeps verified cells, discards incomplete cell files.
 The statistics are NOT here: `scripts/b15_analysis.py` reads the raw files only.

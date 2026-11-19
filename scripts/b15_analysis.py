@@ -5,7 +5,7 @@
 
 Inputs: <session>/manifest.jsonl and the raw cell files it lists (each verified against its sha256 and row count), plus two seen-data files for the
 generalisation gap (`results/b14/seen_layout_rows.csv`, sha256 pinned in row (gg); `data/v2/baselines/b8_layout_rows.csv`, DEV-train baselines).
-No simulator call, no model call, no pool or ledger access: this module imports only numpy, the standard library and `scripts_b15_cells`
+No simulator call, no model call, no pool or ledger access: this module imports only numpy, the standard library and `scripts.b15_cells`
 (a test asserts that torch, the simulator and the pool are not imported).
 
 Statistics (row (gg) (d)):

@@ -30,8 +30,9 @@ logs_*/
 models/
 models_v2/
 
-# local, human-run files (never reported as results)
+# local, human-run files (never reported as results; B17 duel plays)
 results_v2/
+results_v2/duel_human_runs.jsonl
 
 # results/: evaluation evidence is force-tracked under results/b13, results/b14 and results/b15 plus the frozen layout pool;
 # new local outputs here stay untracked unless added on purpose

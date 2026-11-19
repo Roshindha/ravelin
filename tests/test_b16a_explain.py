@@ -33,7 +33,7 @@ def _states(model, algo, tta):
 
 
 def b15_actions(arm, tta, rec, layout, monkeypatch):
-    """The action sequence the B15 evaluator's own code path takes on one layout: `scripts_b15_final._task` (the function the B15 session runs per
+    """The action sequence the B15 evaluator's own code path takes on one layout: `scripts.b15_final._task` (the function the B15 session runs per
     (cell, layout)) builds the policy (ModelPolicy / DDQNPolicy.act / tta_policy + rl.tta.tta_action) and plays the episode; BreachEnv.step is wrapped
     only to record the chosen actions. Nothing from rl.explain is used here."""
     from scripts import b15_final as F
