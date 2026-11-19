@@ -6,6 +6,8 @@ Modes: "Play" (the duel, B17 engine) and "Watch the AI" (the B16b/B18a replay + 
 cache and every outcome) comes unchanged from ``breachlens.duel`` and ``scripts/make_replays`` (``run_episode`` / ``_battle`` / ``_struct_table``); this file only
 draws and routes input. Opponents are revealed only through ``Duel.reveal`` and only after the human's battle has resolved AND the player pressed "Show report"
 (the cache file is not opened before that). Human runs go only to the gitignored ``results_v2/duel_human_runs.jsonl`` (``BREACHLENS_DUEL_RUNS`` overrides it).
+Deployed (``RAVELIN_DEPLOY=1``, or torch not installed): "Watch the AI" reads ``data/app_bundle`` (``app/bundle.py``, DEV-validation only), the duel uses the simulator and
+``data/v2/duel_cache.json`` only, and visitors' plays are NOT logged (no file is written).
 Layouts: DEV-validation (Play, and the default of Watch) or DEV-train (Watch only, always badged IN-SAMPLE), only through ``breachlens.evaluator``. Models: the three
 seed-0 arms, plain or TTA, only through ``rl.explain.load_display_model``. Nothing is trained or evaluated here.
 
@@ -35,6 +37,7 @@ if str(ROOT) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from app import board_component as BC  # noqa: E402
+from app import bundle as BU  # noqa: E402
 from app import game_view as GV  # noqa: E402
 from app import icons as IC  # noqa: E402
 from app import render as R  # noqa: E402
@@ -130,6 +133,8 @@ def duel_ids() -> list:
 
 @st.cache_data(show_spinner=False)
 def layout_ids(split: str) -> list:
+    if BU.deploy_mode():
+        return BU.layout_ids() if split == BU.BUNDLE_SPLIT else []
     return EV.dev_layout_ids(split, entry_point="app.streamlit_app")
 
 
@@ -141,6 +146,10 @@ def get_model(arm: str):
 
 @st.cache_data(show_spinner="playing the episode and explaining every decision step")
 def episode(split: str, layout_id: str, arm: str, tta: bool) -> dict:
+    if BU.deploy_mode():                                                   # deployed: the precomputed bundle (no torch), same data as the live path below
+        if split != BU.BUNDLE_SPLIT:
+            raise PermissionError(f"the deployed app has {BU.BUNDLE_SPLIT} episodes only; {split!r} is not bundled")
+        return BU.load_episode(layout_id, arm, tta)
     from rl import explain as X
     M = replay_module()
     rec, layout = X.load_dev_layout(split, layout_id=layout_id)
@@ -163,7 +172,10 @@ def results_headline() -> str:
     return txt[a:txt.index("\n## ", a + 5)].strip()
 
 
-def _runs_path() -> Path:
+def _runs_path() -> Path | None:
+    """Where human runs are logged; None (nothing is written, nothing is opened for writing) when deployed (RAVELIN_DEPLOY=1 or no torch)."""
+    if BU.deploy_mode():
+        return None
     return Path(os.environ.get("BREACHLENS_DUEL_RUNS", str(D.HUMAN_RUNS_PATH)))
 
 
@@ -490,7 +502,7 @@ def watch_controls() -> tuple:
     from rl import explain as X
     c = st.columns([1.5, 1.1, 2.4, 1.3, 1.0])
     mode = c[0].radio("Mode", MODES, index=1, key="mode_sel", horizontal=True)
-    split = c[1].selectbox("Split", SPLITS, key="w_split")
+    split = c[1].selectbox("Split", SPLITS[:1] if BU.deploy_mode() else SPLITS, key="w_split")
     ids = layout_ids(split)
     layout = c[2].selectbox("Layout", ids, index=ids.index(DEFAULT_LAYOUT) if DEFAULT_LAYOUT in ids else 0, key=f"w_layout_{split}")
     arm = c[3].selectbox("Agent (seed 0)", tuple(X.DISPLAY_MODELS), key="w_arm", format_func=lambda a: X.DISPLAY_MODELS[a][0])
