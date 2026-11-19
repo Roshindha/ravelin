@@ -31,8 +31,8 @@ def page_data(path: Path) -> dict:
 @pytest.fixture(scope="module")
 def runs(tmp_path_factory):
     a, b = tmp_path_factory.mktemp("run_a"), tmp_path_factory.mktemp("run_b")
-    rows_a = M.write_replays(a)
-    rows_b = M.write_replays(b)
+    rows_a = M.write_replays(a, allow_dirty=True)
+    rows_b = M.write_replays(b, allow_dirty=True)
     return a, b, rows_a, rows_b
 
 
@@ -45,11 +45,11 @@ def test_generator_refuses_non_dev_splits(tmp_path):
     before = ledger_sha()
     for split in ("FINAL-familiar", "FINAL-transfer", "LAB-DESIGN", "TUNE-val", "TUNE-train", "nonsense"):
         with pytest.raises(PermissionError):
-            M.write_replays(tmp_path / "x", split)
+            M.write_replays(tmp_path / "x", split, allow_dirty=True)
         with pytest.raises(PermissionError):
             M.main(["--out", str(tmp_path / "x"), "--split", split])
     with pytest.raises(PermissionError):                       # DEV-train is a DEV split but not in the replay set of row (jj)
-        M.write_replays(tmp_path / "x", "DEV-train")
+        M.write_replays(tmp_path / "x", "DEV-train", allow_dirty=True)
     assert not (tmp_path / "x").exists()
     assert ledger_sha() == before == LEDGER_SHA
 
@@ -192,3 +192,18 @@ def test_committed_replays_equal_fresh_generation(runs):
     stale = [n for n in fresh if (d / n).read_bytes() != (a / n).read_bytes()]
     assert not stale, f"committed replays are stale (regenerate with scripts/make_replays.py): {stale[:3]}"
     assert max(f.stat().st_size for f in d.iterdir()) <= M.FILE_CAP and sum(f.stat().st_size for f in d.iterdir()) <= M.TOTAL_CAP
+
+
+# ------------------------------------------------------------------------------------------------ B18e-a: provenance must be clean
+def test_generator_refuses_a_dirty_tree(tmp_path, monkeypatch):
+    monkeypatch.setattr(M, "tree_dirty", lambda: True)
+    with pytest.raises(SystemExit, match="dirty tree"):
+        M.write_replays(tmp_path / "x")
+    assert not (tmp_path / "x").exists()                                  # refused before anything was written or any model loaded
+
+
+def test_no_committed_replay_provenance_is_dirty():
+    files = sorted((ROOT / "docs" / "replays").glob("*.html"))
+    assert files
+    bad = [f.name for f in files if "+dirty" in f.read_text()]
+    assert not bad, f"replays built from a dirty tree: {bad[:3]}"

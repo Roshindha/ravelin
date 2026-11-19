@@ -733,3 +733,10 @@ Project spec: [docs/SPEC.md](docs/SPEC.md)
 - Full suite: exit=0, 764 passed in 1026 s.
 
 - B20: prototype code removed (siege/, prototype rl/ modules and scripts, prototype tests); it lives at tag prototype-v1 (ef43f63). rl/augment_v1.py was a later copy of the prototype rl/augment.py, which is in the tag.
+
+### STEP B18e-a (duel check, replay provenance guard, game-feel PROTOTYPE with "printed board-game box" art direction) -- no training, no new results
+- Duel check: 1 Scout at (0,3) on spine_pods-300000056 really ends at tick 1 (Lancer 15120 + Gun 10080 in range vs Scout hp 13440). Engine, raw env, direct `simulate` and UI frames agree (frames = ticks 0 and 1). Not a bug; test `test_one_scout_at_0_3_ends_in_one_tick_...`.
+- `scripts/make_replays.py` refuses a dirty tree (whole-tree `git status --porcelain`, like the duel cache builder; `--allow-dirty` for scratch builds); tests: refusal, no committed replay contains "+dirty". `docs/replays` is regenerated from the clean tree after the code commit.
+- Prototype (separate entry point, old app untouched): `app/game_prototype.py`, `app/icons.py` (original SVG icons, tape + masonry patterns, unit discs), `app/game_view.py` (board SVG, self-contained battle player), new tokens in `app/theme.py` (FIELD, FIELD_INK, halftone, CARD_*, STICKER_*, TAPE, rotations) with new contrast pairs. Art direction: flat azure field with snow halftone dots (SVG data-URI pattern, no CSS gradient), snow cards with 2.5px ink border, azure tape stripes on the border start zone, flat rotated stickers (uppercase only on stickers), only the Fraunces title block (64px / 28px, snow) sits on the field. Fraunces italic is not bundled (only the upright variable file), so the tagline italic is the browser's synthesized oblique.
+- NOT built (user decision pending): click-to-deploy (custom component / streamlit-image-coordinates / styled buttons), and the switch from the deprecated `st.components.v1.html` to `st.iframe`.
+- Tests: `tests/test_b18ea_prototype.py` (12). Screenshots (1500x1000, real Chrome via DevTools) `docs/screenshots/b18ea_*.png`.

@@ -134,6 +134,57 @@ def heat_scale_css() -> str:
     return f"linear-gradient(90deg,{HEAT_STOPS[0]},{HEAT_STOPS[1]},{HEAT_STOPS[2]})"
 
 
+# ----------------------------------------------------------------------------------------------------------------------------- B18e-a: "printed board-game box" (prototype only)
+# Palette v2 only: the page is a flat azure FIELD with snow halftone dots; the only text that may sit directly on the field is large display text (snow,
+# Fraunces >= 28 px: 4.04:1, the large-text rule). Every other piece of text sits inside a snow CARD (ink border) or a flat STICKER.
+FIELD = PRIMARY
+FIELD_INK = BG               # display text on the field: Fraunces >= SIZE_TITLE_MIN px only
+FIELD_DOT = BG               # halftone dots
+FIELD_DOT_OPACITY = 0.11
+FIELD_DOT_GRID = 6           # px between dots
+SIZE_TITLE, SIZE_TAGLINE, SIZE_FIELD_TEXT_MIN = 64, 28, 28
+CARD_BG, CARD_BORDER = BG, TEXT
+CARD_BORDER_W, CARD_RADIUS, FRAME_W = 2.5, 10, 3        # cards 2.5px ink, board frame 3px ink
+STICKER_FILL, STICKER_HOT, STICKER_INK, STICKER_BORDER_W = BG, DANGER, TEXT, 2
+TAPE = PRIMARY               # diagonal tape stripes on the border deploy tiles
+STICKER_ROT = (-1.5, 1.0, -0.6, 1.8)                    # degrees, a few stickers "placed by hand" (end banner: -4)
+BANNER_ROT = -4
+
+
+def mix(fg: str, bg: str, t: float) -> str:
+    """fg over bg at opacity t, as #rrggbb (computed, e.g. the halftone dot as seen on the field)."""
+    a, b = rgb(fg), rgb(bg)
+    return "#" + "".join(f"{round(a[i] * t + b[i] * (1 - t)):02X}" for i in range(3))
+
+
+FIELD_DOT_BLEND = mix(FIELD_DOT, FIELD, FIELD_DOT_OPACITY)
+
+
+def field_pattern_uri() -> str:
+    """The halftone as a data: URI (an SVG pattern tile, no CSS gradient, no network)."""
+    g = FIELD_DOT_GRID
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{g}" height="{g}"><circle cx="{g / 2}" cy="{g / 2}" r="1.1" fill="{FIELD_DOT}" '
+           f'fill-opacity="{FIELD_DOT_OPACITY}"/></svg>')
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+
+
+TEXT_PAIRS = TEXT_PAIRS + (
+    ("display text (>= 28px) snow on azure field", FIELD_INK, FIELD, "large"),
+    ("ink on snow card", TEXT, CARD_BG, "normal"),
+    ("ink on snow sticker", STICKER_INK, STICKER_FILL, "normal"),
+    ("ink on coral sticker (price tag, breach, active phase, BREACH banner)", STICKER_INK, STICKER_HOT, "normal"),
+    ("snow on ink sticker (HELD banner)", BG, TEXT, "normal"),
+    ("ink card border on azure field (graphic)", CARD_BORDER, FIELD, "large"),
+    ("snow halftone dots on azure field (decorative)", FIELD_DOT_BLEND, FIELD, "decorative"),
+    ("azure tape stripe on snow deploy tile (decorative)", TAPE, BG, "decorative"),
+)
+
+
+def game_root_vars() -> str:
+    return (f":root{{--field:{FIELD};--field-ink:{FIELD_INK};--card-bw:{CARD_BORDER_W}px;--card-r:{CARD_RADIUS}px;--frame-w:{FRAME_W}px;--sticker-bw:{STICKER_BORDER_W}px;"
+            f"--dots:url({field_pattern_uri()});--dot-grid:{FIELD_DOT_GRID}px}}")
+
+
 def js_theme() -> str:
     """The palette as a JSON object for the replay pages' script (so the script holds no colour literal)."""
     return json.dumps({

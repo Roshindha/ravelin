@@ -78,6 +78,11 @@ def provenance() -> dict:
     return {"code_commit": commit + ("+dirty" if dirty else ""), "sim_version": sim_version(), "score_version": SCORE_VERSION}
 
 
+def tree_dirty() -> bool:
+    """Whole-tree check, the same rule as scripts/build_duel_cache.py (any modified or untracked, non-ignored file)."""
+    return bool(subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True).stdout.strip())
+
+
 # ----------------------------------------------------------------------------------------------------------------------------- one episode
 def _r(x, n=4):
     return None if x is None else round(float(x), n)
@@ -379,9 +384,12 @@ def build_index(rows: list, prov: dict) -> str:
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- driver
-def write_replays(out_dir: Path = OUT_DIR, split: str = SPLIT) -> list:
-    """Write the 18 replays + index.html into `out_dir`; return the per-replay rows. Refuses non-DEV splits before loading anything."""
-    jobs = replay_set(split)
+def write_replays(out_dir: Path = OUT_DIR, split: str = SPLIT, allow_dirty: bool = False) -> list:
+    """Write the 18 replays + index.html into `out_dir`; return the per-replay rows. Refuses non-DEV splits before loading anything, and refuses a
+    dirty tree (provenance would say "+dirty"; same rule as the duel cache builder) unless `allow_dirty` (scratch builds, never committed)."""
+    jobs = replay_set(split)                                             # refuses non-DEV splits first
+    if tree_dirty() and not allow_dirty:
+        raise SystemExit("refusing to write replays from a dirty tree (provenance would be wrong); commit first or pass --allow-dirty for a scratch build")
     layouts = first_layouts(split)
     prov = provenance()
     out_dir = Path(out_dir)
@@ -420,8 +428,9 @@ def main(argv=None) -> list:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--out", default=str(OUT_DIR))
     p.add_argument("--split", default=SPLIT, help=f"only {SPLIT} is accepted (row (jj)); any other split is refused")
+    p.add_argument("--allow-dirty", action="store_true", help="scratch builds only; the provenance then carries +dirty and must not be committed")
     a = p.parse_args(argv)
-    rows = write_replays(Path(a.out), a.split)
+    rows = write_replays(Path(a.out), a.split, a.allow_dirty)
     for r in rows:
         o = r["outcome"]
         print(f"{r['arm']:10s} {'TTA  ' if r['tta'] else 'plain'} {r['family']:12s} score {o['score']:.4f} D {o['d']:.4f} breach {'yes' if o['core'] else 'no ':3s} {r['file']} {r['size']:,} B rate {r['rate']}")
