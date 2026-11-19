@@ -15,7 +15,7 @@ from breachlens import pool as P
 from breachlens.actions import encode_deploy
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = str(ROOT / "app" / "streamlit_app.py")
+APP = str(ROOT / "app" / "legacy_app.py")
 LEDGER_SHA = "20a8b2877c91c9cf45c3692617ad3bd08d860ef0f7783ca3610a9a3fc44c9dbd"
 LAYOUT = "spine_pods-300000056"
 BUYS = ["sniper"] * 4 + ["bulwark"] * 2                      # the row (mm) (g) script

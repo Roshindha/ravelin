@@ -1,4 +1,4 @@
-"""B18e-a: the short-battle check (the engine is right, the battle really lasts 1 tick) and the game-feel prototype (app/game_prototype.py, app/icons.py,
+"""B18e-a: the short-battle check (the engine is right, the battle really lasts 1 tick) and the game-feel prototype (app/streamlit_app.py, app/icons.py,
 app/game_view.py). DEV-validation only; no training, no FINAL / transfer / LAB-DESIGN."""
 import base64
 import importlib.util
@@ -22,7 +22,7 @@ from breachlens.env import BreachEnv
 from breachlens.sim import simulate
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = str(ROOT / "app" / "game_prototype.py")
+APP = str(ROOT / "app" / "streamlit_app.py")
 LAYOUT = "spine_pods-300000056"
 _spec = importlib.util.spec_from_file_location("make_replays", ROOT / "scripts" / "make_replays.py")
 M = importlib.util.module_from_spec(_spec)
@@ -155,13 +155,14 @@ def test_prototype_honesty_items_and_about_panel(runs):
     text = md(at)
     assert "DEV-validation" in text
     assert any("About this demo" == e.label for e in at.expander)
-    src = (ROOT / "app" / "game_prototype.py").read_text()
+    src = (ROOT / "app" / "streamlit_app.py").read_text()
     for needle in ("What is TTA", "Who are the agents", "results_headline()", "IN-SAMPLE", "not a policy"):
         assert needle in src, needle
 
 
-def test_prototype_does_not_touch_the_existing_app_and_adds_no_dependency():
-    assert (ROOT / "app" / "streamlit_app.py").exists() and "game_prototype" not in (ROOT / "app" / "streamlit_app.py").read_text()
+def test_legacy_app_is_kept_marked_and_no_dependency_was_added():
+    assert (ROOT / "app" / "legacy_app.py").exists() and "LEGACY, to be removed in B18e-b" in (ROOT / "app" / "legacy_app.py").read_text()
+    assert not (ROOT / "app" / "game_prototype.py").exists()
     reqs = (ROOT / "requirements.txt").read_text().lower()
     assert "image-coordinates" not in reqs and "components" not in reqs
 
@@ -169,7 +170,7 @@ def test_prototype_does_not_touch_the_existing_app_and_adds_no_dependency():
 
 # ------------------------------------------------------------------------------------------------ B18e-a follow-up: "printed board-game box" art direction
 def proto_css() -> str:
-    return re.search(r'PROTO_CSS = """(.*?)"""', (ROOT / "app" / "game_prototype.py").read_text(), re.S).group(1)
+    return re.search(r'PROTO_CSS = """(.*?)"""', (ROOT / "app" / "streamlit_app.py").read_text(), re.S).group(1)
 
 
 def test_contrast_pairs_for_the_field_cards_and_stickers_are_registered():
@@ -228,3 +229,48 @@ def test_player_banner_is_a_rotated_sticker():
     page = GV.player_html([["c", 3, 3, ""]], [{"t": 0, "u": [], "s": [1000]}], [], {"breach": True, "ticks": 0, "reasonText": "x"})
     assert f"rotate({T.BANNER_ROT}deg)" in page and "#banner.breach{background:var(--danger)" in page and "#banner.held{background:var(--bg)" in page
     assert page.count("text-transform:uppercase") == 1 and 'class="zone"' not in page and "url(#tape)" in page
+
+
+# ------------------------------------------------------------------------------------------------ B18e-a follow-up: the row (mm) script through the default app
+MM_BUYS = ["sniper"] * 4 + ["bulwark"] * 2                                 # row (mm) (g): buy sniper x4, bulwark x2, END BUY, deploy in order on the lowest legal tiles (0-5)
+
+
+def _lowest(duel, unit):
+    from breachlens.actions import encode_deploy
+    m, u = duel.env.action_masks(), D.parse_unit(unit)
+    return next(b for b in range(52) if m[encode_deploy(u, b)])
+
+
+def test_row_mm_script_is_identical_through_breachlens_duel_and_the_default_app(runs):
+    d = D.Duel(LAYOUT, human_runs_path=None)
+    for u in MM_BUYS:
+        d.buy(u)
+    d.end_buy()
+    for u in MM_BUYS:
+        d.deploy(u, _lowest(d, u))
+        if d.finished:
+            break
+    row = d.human_row()
+    assert (round(row["score"], 3), round(row["d"], 3), row["breach"], d.env.result.ticks) == (0.400, 0.0, True, 32)          # the B18b numbers
+    assert d.actions == [1, 1, 1, 1, 2, 2, 265, 57, 58, 59, 60, 113, 114]                                                        # tiles 0..5 = actions 5 + 52u + b
+    at = AppTest.from_file(APP, default_timeout=300).run()
+    for u in MM_BUYS:
+        at.button(key=f"g_buy_{u}").click().run()
+    at.button(key="g_end").click().run()
+    for u in MM_BUYS:
+        g = at.session_state["g_duel"]
+        at.selectbox(key="g_unit").select(u)
+        at.selectbox(key="g_tile").select(_lowest(g, u))                       # the dropdown value is the border index; the label shows (row,col)
+        at.button(key="g_deploy").click().run()
+        assert not at.exception
+        if at.session_state["g_duel"].finished:
+            break
+    g = at.session_state["g_duel"]
+    assert g.actions == d.actions and g.human_row() == row and g.env.result.ticks == 32
+
+
+def test_tagline_uses_the_real_fraunces_italic():
+    css = proto_css()
+    assert re.search(r"\.tagline\{[^}]*font-style:italic", css) and "font-family:var(--f-head)" in re.search(r"\.tagline\{([^}]*)\}", css).group(1)
+    assert (T.FONT_DIR / T.FONT_ITALIC[1]).read_bytes()[:4] == b"wOF2" and T.FONT_ITALIC[1] in T.italic_face_css()
+    assert "italic_face_css()" in (ROOT / "app" / "streamlit_app.py").read_text()

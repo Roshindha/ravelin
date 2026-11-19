@@ -59,6 +59,7 @@ FONTS = (
     (FONT_BODY, "AtkinsonHyperlegibleNext-wght400-600.woff2", "400 600", "OFL-AtkinsonHyperlegibleNext.txt"),
     (FONT_NUM, "AtkinsonHyperlegibleMono-wght400-600.woff2", "400 600", "OFL-AtkinsonHyperlegibleMono.txt"),
 )
+FONT_ITALIC = (FONT_HEADING, "Fraunces-Italic-opsz-wght600-700.woff2", "600 700", "OFL-Fraunces.txt")      # real italic (tagline of the game app); not embedded in replays
 STATIC_URL_PREFIX = "app/static/fonts/"                                 # Streamlit static serving (relative URL, same origin)
 
 # ----------------------------------------------------------------------------------------------------------------------------- contrast
@@ -208,6 +209,12 @@ def font_face_css(embed: bool) -> str:
             src = f"url({STATIC_URL_PREFIX}{fn}) format('woff2')"
         out.append(f"@font-face{{font-family:'{fam}';font-style:normal;font-weight:{weight};font-display:swap;src:{src}}}")
     return "".join(out)
+
+
+def italic_face_css() -> str:
+    """@font-face for the real Fraunces italic (relative static-serving URL, same origin; the replays do not use it)."""
+    fam, fn, weight, _ = FONT_ITALIC
+    return f"@font-face{{font-family:'{fam}';font-style:italic;font-weight:{weight};font-display:swap;src:url({STATIC_URL_PREFIX}{fn}) format('woff2')}}"
 
 
 def root_vars() -> str:

@@ -25,7 +25,7 @@ from breachlens.constants import BUDGET, GRID, N_BORDER, UNIT_TYPES
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LAYOUT = "spine_pods-300000056"                       # row (mm) (a)
-DISCLAIMER = R.DISCLAIMER                                     # row (nn) A1 / A2: shown once per screen, by app/streamlit_app.py
+DISCLAIMER = R.DISCLAIMER                                     # row (nn) A1 / A2: shown once per screen, by app/legacy_app.py
 
 
 @st.cache_resource

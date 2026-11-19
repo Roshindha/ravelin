@@ -13,7 +13,7 @@ from breachlens.env import BreachEnv
 from rl import explain as X
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = str(ROOT / "app" / "streamlit_app.py")
+APP = str(ROOT / "app" / "legacy_app.py")
 LEDGER_SHA = "20a8b2877c91c9cf45c3692617ad3bd08d860ef0f7783ca3610a9a3fc44c9dbd"
 DEFAULT_LAYOUT = "spine_pods-300000056"                  # row (ll) (c)
 TIMEOUT = 300

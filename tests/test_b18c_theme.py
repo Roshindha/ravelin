@@ -63,7 +63,7 @@ def test_old_palette_and_fonts_are_gone():
         t = p.read_text().lower()
         assert not [c for c in old if c.lower() in t], p.name
         assert not re.search(r"maroon|tomato|neon|cream|bricolage|instrument sans|plex", t), p.name
-    assert sorted(f.name for f in (ROOT / "app" / "static" / "fonts").glob("*.woff2")) == sorted(fn for _, fn, _, _ in T.FONTS)
+    assert sorted(f.name for f in (ROOT / "app" / "static" / "fonts").glob("*.woff2")) == sorted([fn for _, fn, _, _ in T.FONTS] + [T.FONT_ITALIC[1]])
 
 
 def test_hex_colours_only_in_theme():
@@ -90,12 +90,15 @@ def test_config_toml_matches_theme_and_enables_static_serving():
 
 
 def test_fonts_and_license_files_present():
-    for fam, fn, weight, lic in T.FONTS:
+    for fam, fn, weight, lic in (*T.FONTS, T.FONT_ITALIC):
         f, l = T.FONT_DIR / fn, T.FONT_DIR / lic
         assert f.exists() and f.stat().st_size > 5_000 and f.read_bytes()[:4] == b"wOF2", fn
         assert l.exists() and "SIL OPEN FONT LICENSE" in l.read_text().upper(), lic
         assert not re.search(r'with Reserved Font Name', l.read_text(), re.I), lic           # no RFN declared: the subsets may keep the family names
     assert (T.FONT_DIR / "SOURCES.txt").exists()
+    src = (T.FONT_DIR / "SOURCES.txt").read_text()
+    assert "Fraunces-Italic" in src and "b24448c43702fac4" in src and "Fraunces-Italic-opsz-wght600-700.woff2" in src
+    assert "font-style:italic" in T.italic_face_css() and T.FONT_ITALIC[1] in T.italic_face_css() and T.FONT_ITALIC[1] not in T.font_face_css(True)
 
 
 def test_no_network_urls_in_app_or_replays():

@@ -9,3 +9,8 @@ Processing (fontTools instancer + subsetter, woff2): Latin (U+0020-007E, U+00A0-
   Fraunces: SOFT = 0, WONK = 0 pinned; wght limited to 600-700; opsz axis (9-144) kept (CSS font-optical-sizing: auto).
   Atkinson Hyperlegible Next: wght limited to 400-600 (tnum / pnum kept).
   Atkinson Hyperlegible Mono: wght limited to 400-600. Monospaced, so its figures are tabular by construction.
+
+Added (B18e-b prep): Fraunces italic, for the tagline of the game app. Same source and license as the upright:
+  https://github.com/google/fonts/blob/main/ofl/fraunces/Fraunces-Italic[SOFT,WONK,opsz,wght].ttf, fetched 2026-11-19 (414,904 B), source sha256 b24448c43702fac4ee856781d461a0dfba8d8e594b6e8e190234b75fed2c0e01.
+  Same OFL 1.1 as the upright (OFL-Fraunces.txt, no Reserved Font Name). Same processing: SOFT = 0, WONK = 0 pinned; wght limited to 600-700; opsz axis kept; Latin subset; woff2
+  -> Fraunces-Italic-opsz-wght600-700.woff2 (70,844 B). Used only by the app (@font-face with font-style: italic); not embedded in the replays.
