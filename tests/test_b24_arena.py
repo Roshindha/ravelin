@@ -175,7 +175,7 @@ def test_hud_totals_are_raw_sums_and_key_moments_follow_the_rules():
     b = AD.raw_battle(P, d.env.army)
     kinds = AD.struct_kinds(P)
     tot = AD.totals(b["frames"], kinds, b["umax"], b["smax"])
-    fort = [i for i, k in enumerate(kinds) if k != "w"]
+    fort = [i for i, k in enumerate(kinds) if k in ("b", "d")]
     for t in (0, 3, 10, 24, 32):
         f = b["frames"][t]
         assert tot[t]["army"] == sum(u[1] for u in f["u"]) and tot[t]["army_max"] == sum(b["umax"]) == sum(P.cfg.units[u].hp for u, _ in d.env.army)
@@ -198,7 +198,7 @@ def test_the_core_falls_at_tick_24_in_the_row_mm_battle_and_the_page_says_so():
     data = json.loads(page.split('id="data">')[1].split("</script>")[0])
     assert data["outcome"]["coreTick"] == 24 and data["outcome"]["ticks"] == 32 and data["outcome"]["breach"] is True
     assert data["S"] == 840 and len(data["frames"]) == 33 and data["who"] == "your"
-    assert 'id="m-mine"' in page and "Your army" in page and "Fortress" in page and "Core" in page
+    assert 'id="m-mine"' in page and "Your army" in page and "Fortress (defenders + buildings)" in page and "Core" in page
     agent = AR.battle_page(P, d.env.army, M._struct_table(P), d.env.result, mode="agent")
     assert _html.escape("Agent's army") in agent and "Your army" not in agent.split('<div id="app">')[1].split('<div class="bar">')[0]
 

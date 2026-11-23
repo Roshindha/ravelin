@@ -16,6 +16,7 @@ import textwrap
 from pathlib import Path
 
 import pytest
+from tests import _ckpt as CK
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
@@ -99,7 +100,7 @@ def test_build_script_refuses_a_dirty_tree(monkeypatch, tmp_path):
         sys.path.remove(str(ROOT / "scripts"))
 
 
-@pytest.mark.skipif(not HAVE_MODELS, reason="seed-0 checkpoints not present locally")
+@CK.needs_checkpoints
 def test_bundle_equals_live_for_every_layout_arm_view():
     sys.path.insert(0, str(ROOT / "scripts"))
     try:

@@ -93,7 +93,7 @@ def test_the_three_hud_bars_show_the_simulators_raw_sums_at_several_ticks(browse
 
 def test_hud_labels_icons_and_colours_per_side(browser, mm):
     pg, _ = open_player(browser, mm["page"])
-    assert [pg.locator(f"#m-{k} .lab").inner_text() for k in ("mine", "fort", "core")] == ["Your army", "Fortress", "Core"]
+    assert [pg.locator(f"#m-{k} .lab").inner_text() for k in ("mine", "fort", "core")] == ["Your army", "Fortress (defenders + buildings)", "Core"]
     fill = lambda k: pg.evaluate(f"getComputedStyle(document.getElementById('f-{k}')).backgroundColor")
     assert fill("mine") == _rgb(T.PRIMARY) == "rgb(50, 131, 190)" and fill("fort") == fill("core") == _rgb(T.DANGER) == "rgb(253, 97, 75)"
     assert pg.locator("#m-mine svg").count() == 1 and pg.locator("#m-fort svg").count() == 1                   # shield and tower icons

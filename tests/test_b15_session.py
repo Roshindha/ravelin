@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from tests import _ckpt as CK
 
 from scripts import b15_analysis as A
 from scripts import b15_cells as C
@@ -22,7 +23,7 @@ from breachlens import pool as P
 
 ROOT = Path(__file__).resolve().parents[1]
 HAVE_MODELS = (F.MODELS / "grid_ppo_plain_s0" / "final.zip").exists() and F.AUDIT_JSON.exists()
-needs_models = pytest.mark.skipif(not HAVE_MODELS, reason="grid models not present locally")
+needs_models = pytest.mark.skipif(not (HAVE_MODELS and CK.present() and CK.GRID_ONLY.exists()), reason=CK.GRID_REASON)
 
 
 @pytest.fixture

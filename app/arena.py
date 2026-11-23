@@ -5,7 +5,7 @@
 
 * controls: Play / Pause (Space), Step back / Step 1 tick (arrow keys), speed 1x / 2x / 4x, scrubber, "Pause on key moments" (a defender or building is destroyed,
   one of your troops dies, the core takes damage) with a Continue button, "Ranges" and "Paths" overlays;
-* health, two clearly different styles. HUD bars above the board: your army (azure, shield), the fortress (coral, tower) and the core (smaller coral bar), each with a
+* health, two clearly different styles. HUD bars above the board: your army (azure, shield), the fortress (defenders + buildings, coral, tower) and the core (smaller coral bar), each with a
   text label, ``role=progressbar`` and ``aria-valuenow`` / ``aria-valuemax`` in raw fixed-point hp, animated between ticks and flashing when they drop.
   On the board: troops carry a thin azure bar ABOVE the piece; defenders and buildings carry a coral RING that drains clockwise (shape, not colour alone);
   a dead piece shows the destroyed mark;
@@ -27,16 +27,16 @@ CSS = T.font_face_css(True) + T.root_vars() + """
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px}
 #app{max-width:__PX__px;margin:0 auto;padding:2px 0}
 .n{font-family:var(--f-num);font-variant-numeric:tabular-nums}
-.hud{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:0 0 8px}
+.hud{display:grid;grid-template-columns:1fr;gap:6px;margin:0 0 8px}
 .meter{display:flex;align-items:center;gap:8px;min-width:0}.meter svg{flex:none}
-.meter .lab{font-weight:600;white-space:nowrap}
+.meter .lab{font-weight:600;white-space:nowrap;min-width:9.5em}
 .meter .track{position:relative;flex:1 1 auto;height:14px;background:var(--line);border:2px solid var(--fg);border-radius:7px;overflow:hidden;min-width:60px}
 .meter .fill{position:absolute;left:0;top:0;bottom:0;width:100%;transition:width .25s ease}
 .meter.mine .fill{background:var(--primary)}.meter.fort .fill,.meter.core .fill{background:var(--danger)}
 .meter .val{font-size:14px;white-space:nowrap}
 .meter.drop .track{animation:drop .3s ease-out}
 @keyframes drop{0%{border-color:var(--danger-text);border-width:4px}100%{border-color:var(--fg);border-width:2px}}
-.meter.core{grid-column:1 / -1;max-width:60%}.meter.core .track{height:9px;border-width:1.5px}.meter.core .lab,.meter.core .val{font-size:13px}
+.meter.core{max-width:62%}.meter.core .track{height:9px;border-width:1.5px}.meter.core .lab,.meter.core .val{font-size:13px}
 .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 8px}
 button{font:inherit;font-weight:600;color:var(--fg);background:var(--bg);border:2px solid var(--fg);border-radius:var(--r);padding:4px 14px;cursor:pointer;min-height:44px;
  transition:background-color .15s ease}
@@ -73,7 +73,7 @@ input[type=range]{flex:1 1 160px;accent-color:var(--primary);min-width:120px;min
 #banner #bs{display:block;font-size:15px;font-weight:600;letter-spacing:.04em;margin-top:6px}
 #banner.breach{background:var(--danger);color:var(--fg)}#banner.held{background:var(--bg);color:var(--fg)}
 .status{font-size:14px;color:var(--mut);margin-top:8px;min-height:21px}
-@media (max-width:520px){#banner b{font-size:36px}#banner{padding:8px 18px 10px}.tick{min-width:0;flex:1 1 100%;text-align:left}.hud{grid-template-columns:1fr}.meter.core{max-width:100%}
+@media (max-width:520px){#banner b{font-size:36px}#banner{padding:8px 18px 10px}.tick{min-width:0;flex:1 1 100%;text-align:left}.meter,.meter.core{flex-wrap:wrap;max-width:100%}.meter .lab{white-space:normal;line-height:1.15;flex:1 1 auto;min-width:0}.meter .val{margin-left:auto}.meter .track{order:5;flex:1 1 100%}
  button.go{min-width:84px}.meter .val{font-size:13px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 """.replace("__PX__", str(GV.FULL_PX))
@@ -96,7 +96,8 @@ function el(tag, attrs, parent) {
   return e;
 }
 const n = x => '<span class="n">' + x + '</span>';
-const layer = el('g', {}, board), rngL = el('g', {}, board), pathL = el('g', {}, board), unitL = el('g', {}, board), fx = el('g', {}, board);
+const clip = el('clipPath', {id: 'bclip'}, board); el('rect', {width: N * CELL, height: N * CELL, rx: 10}, clip);        // overlays stay inside the board
+const layer = el('g', {}, board), rngL = el('g', {'clip-path': 'url(#bclip)'}, board), pathL = el('g', {'clip-path': 'url(#bclip)'}, board), unitL = el('g', {}, board), fx = el('g', {}, board);
 for (let i = 1; i < N; i++) el('path', {d: 'M' + i * CELL + ' 0V' + N * CELL + 'M0 ' + i * CELL + 'H' + N * CELL, stroke: T.gridLine, 'stroke-width': 1, fill: 'none'}, layer);
 D.zone.forEach(([r, c]) => el('rect', {class: 'zone', x: c * CELL + 2, y: r * CELL + 2, width: CELL - 4, height: CELL - 4, rx: 4}, layer));
 // ring path: starts at 12 o'clock and runs clockwise; pathLength = 1, so the dash is the share of hp left and the lost part is the arc that follows the start
@@ -155,7 +156,7 @@ function setMeter(m, cur, max, animate) {
   if (animate && m.last !== null && cur < m.last && !reduce) { m.root.classList.remove('drop'); void m.root.offsetWidth; m.root.classList.add('drop'); }
   m.last = cur;
 }
-const fortIdx = K.map((k, i) => k === 'w' ? -1 : i).filter(i => i >= 0), coreI = K.indexOf('c');
+const fortIdx = K.map((k, i) => (k === 'w' || k === 'c') ? -1 : i).filter(i => i >= 0), coreI = K.indexOf('c');   // fortress = defenders + buildings; the core has its own bar
 const fortMax = fortIdx.reduce((a, i) => a + D.smax[i], 0), armyMax = D.umax.reduce((a, b) => a + b, 0);
 // ---- floating numbers: one per piece per tick, the drop in raw hp between two frames
 function floater(x, y, raw, left, max, cls, ofs) {
@@ -279,7 +280,7 @@ bt.textContent = D.outcome.breach ? 'BREACH' : 'HELD';
 bs.innerHTML = D.outcome.breach ? 'core destroyed at tick ' + n(D.outcome.coreTick) : 'the core stood &middot; ' + D.outcome.reasonText;
 board.appendChild($('frame'));
 window.rv = {go: i => { stop(); release(); pos = i; show(i, false); }, step: stepBy, play, frames: F, state: () => ({pos, held, speed, playing})};
-pos = Math.min(D.start, last); show(pos, false);
+pos = Math.min(D.start, last); show(pos, false); stop();
 if (D.autoplay && !reduce && D.start < last) play();
 """
 
@@ -299,7 +300,7 @@ def hud_html(army_label: str) -> str:
                 f'<div class="track" id="t-{key}" role="progressbar" aria-label="{html.escape(label)} hp" aria-valuemin="0" aria-valuenow="0" aria-valuemax="0">'
                 f'<div class="fill" id="f-{key}"></div></div><span class="val n" id="v-{key}"></span></div>')
     return ('<div class="hud" aria-label="health">' + meter("mine", "mine", army_label, _SHIELD.format(f=f, i=i)) +
-            meter("fort", "fort", "Fortress", _TOWER.format(f=T.DANGER, i=i, b=b)) + meter("core", "core", "Core", _KEEP.format(f=T.DANGER, i=i)) + "</div>")
+            meter("fort", "fort", "Fortress (defenders + buildings)", _TOWER.format(f=T.DANGER, i=i, b=b)) + meter("core", "core", "Core", _KEEP.format(f=T.DANGER, i=i)) + "</div>")
 
 
 def player_html(structs: list, battle: dict, outcome: dict, ranges: dict, *, mode: str = "human", tick_ms: int = 480, autoplay: bool = True, start: int = 0,

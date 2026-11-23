@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from tests import _ckpt as CK
 
 from breachlens import pool as P
 
@@ -30,6 +31,7 @@ def page_data(path: Path) -> dict:
 
 @pytest.fixture(scope="module")
 def runs(tmp_path_factory):
+    CK.require()
     a, b = tmp_path_factory.mktemp("run_a"), tmp_path_factory.mktemp("run_b")
     rows_a = M.write_replays(a, allow_dirty=True)
     rows_b = M.write_replays(b, allow_dirty=True)

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from tests import _ckpt as CK
 
 from breachlens import duel as D
 from breachlens import evaluator as EV
@@ -38,6 +39,7 @@ def cache():
 
 @pytest.fixture(scope="module")
 def models():
+    CK.require()
     return B.load_models()
 
 
@@ -88,6 +90,7 @@ def test_cache_matches_fresh_recomputation(cache, models, idx):
     assert fresh == cache["layouts"][rec["id"]]["contestants"]                      # all five opponent types, Oracle included, exactly
 
 
+@CK.needs_checkpoints
 def test_cache_models_are_the_recorded_checkpoints(cache):
     from rl import explain as X
     for arm, (run, algo) in X.DISPLAY_MODELS.items():

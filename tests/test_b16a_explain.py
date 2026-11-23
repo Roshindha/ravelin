@@ -4,6 +4,7 @@ import json
 
 import numpy as np
 import pytest
+from tests import _ckpt as CK
 
 from breachlens import pool as P
 from breachlens.constants import DEPLOY_BASE, END_BUY, N_ACTIONS, N_BORDER, WAIT
@@ -64,6 +65,7 @@ def _replay_states(rec, layout, taken):
 
 @pytest.fixture(scope="module", params=ARMS)
 def loaded(request):
+    CK.require()
     m, algo, run = X.load_display_model(request.param)       # one checkpoint at a time (module scope per arm)
     yield request.param, m, algo, run
     del m
@@ -171,6 +173,7 @@ def test_ledger_unchanged_after_explain_tests():
     assert P.count_eval_sessions() == 1
 
 
+@CK.needs_checkpoints
 def test_cli_prints_text(capsys):
     ex = X.main(["--arm", "ddqn", "--split", "DEV-validation", "--index", "0", "--step", "2"])
     out = capsys.readouterr().out

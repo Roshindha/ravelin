@@ -209,7 +209,7 @@ def js_theme() -> str:
         "outline": OUTLINE, "coreFill": CORE_FILL, "coreBorder": CORE_BORDER, "coreInk": CORE_INK, "unitFill": [UNIT_FILL[u] for u in UNIT_ORDER],
         "unitInk": [UNIT_INK[u] for u in UNIT_ORDER], "unitAbbr": list(UNIT_ABBR),
         "wallFill": WALL_FILL, "wallHatch": WALL_HATCH, "boardBg": BOARD_BG, "gridLine": GRID_LINE, "buildingStroke": BUILDING_STROKE,
-        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "okTile": TILE_OK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME, "chosenKeyline": CHOSEN_KEYLINE,
+        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME, "chosenKeyline": CHOSEN_KEYLINE,
         "heat": [list(rgb(c)) for c in HEAT_STOPS], "fontHeading": FONT_HEADING, "fontBody": FONT_BODY, "fontNum": FONT_NUM,
     }, separators=(",", ":"), sort_keys=True)
 

@@ -30,7 +30,7 @@ CSS = """
 .bl-board .ghost{pointer-events:none;opacity:.6}
 .bl-board .tip{pointer-events:none;font-family:var(--f-num,'Atkinson Hyperlegible Mono',monospace);font-size:12px;font-weight:600;fill:var(--fg)}
 .pl{max-width:664px;margin:0 auto;padding-top:4px;font-family:var(--f-body,system-ui,sans-serif);color:var(--fg)}
-.pl .row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+.pl .row:first-child{padding-top:8px}.pl .row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
 .pl .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:0 0 8px}
 .pl .card{position:relative;background:var(--bg);color:var(--fg);border:2.5px solid var(--fg);border-radius:10px;padding:6px 4px 6px;text-align:center;cursor:pointer;font:inherit;min-height:44px;line-height:1.2}
 .pl .card[aria-pressed=true]{background:var(--primary);color:var(--on-primary)}.pl .card:disabled{opacity:.45;cursor:not-allowed}

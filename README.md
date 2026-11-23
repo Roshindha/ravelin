@@ -4,9 +4,13 @@ A small tactics game on a 14x14 board, and a reinforcement-learning study of how
 
 Play it: https://ravelin.streamlit.app (placeholder until the app is deployed)
 
-![Title and shop](docs/screenshots/ravelin_1a_title_top_two_units_bought.png)
+![Placing units: pick a card, tap a green border tile](docs/screenshots/ravelin_1_placing_green_tiles_and_ghosts.png)
 
-![Shop](docs/screenshots/ravelin_1b_shop_two_units_bought.png)
+![Battle: hp bars, coral rings and damage numbers](docs/screenshots/ravelin_2_battle_hp_bars_rings_and_damage_numbers.png)
+
+![Breach sticker at the core tick](docs/screenshots/ravelin_5_end_sticker_BREACH_at_the_core_tick.png)
+
+![Comparison cards and Watch buttons](docs/screenshots/ravelin_6_report_cards_and_watch_buttons.png)
 
 ## What it is
 
@@ -61,7 +65,7 @@ Intervals, the planner results and the per-family notes are in [docs/RESULTS.md]
 
 `requirements.txt` is what the deployed app needs (numpy, gymnasium, streamlit); `requirements-dev.txt` adds the research and test stack. In deployed mode "Watch the AI" reads `data/app_bundle/`, the duel uses the simulator and `data/v2/duel_cache.json`, and visitors' plays are not logged.
 
-The three seed-0 checkpoints the app bundle was built from (`grid_ppo_plain_s0`, `grid_ppo_d4_s0`, `grid_ddqn_s0`) and a `SHA256SUMS` file are attached to the [v1.0 release](https://github.com/Roshindha/ravelin/releases/tag/v1.0); the `models_v2/` directory is not in the repository.
+The three seed-0 checkpoints the app bundle was built from (`grid_ppo_plain_s0`, `grid_ppo_d4_s0`, `grid_ddqn_s0`) and a `SHA256SUMS` file are attached to the [v1.0 release](https://github.com/Roshindha/ravelin/releases/tag/v1.0); the `models_v2/` directory is not in the repository. Fetch, verify (SHA256SUMS) and place them with `.venv/bin/python scripts/fetch_checkpoints.py` (tests that need them are skipped with that hint while they are absent).
 
 Rebuilding the bundle, replays and duel cache needs the trained checkpoints in `models_v2/`, which are not tracked in git; all three scripts refuse to run from a dirty tree:
 

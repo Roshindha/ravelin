@@ -34,6 +34,7 @@ import types
 from pathlib import Path
 
 import pytest
+from tests import _ckpt as CK
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
@@ -174,6 +175,7 @@ def _walk(node):
 
 
 # ============================================================================================================================ Watch the AI (ported from test_b18a_app)
+@CK.needs_checkpoints
 def test_watch_default_view_matches_row_ll():
     at = watch_app()
     assert at.selectbox(key="w_split").value == "DEV-validation"
@@ -187,6 +189,7 @@ def test_watch_default_view_matches_row_ll():
     assert any("Demo, not a result" in m.value for m in at.markdown)
 
 
+@CK.needs_checkpoints
 def test_dev_train_shows_in_sample_badge():
     at = watch_app()
     at.selectbox(key="w_split").select("DEV-train").run()
@@ -196,6 +199,7 @@ def test_dev_train_shows_in_sample_badge():
     assert at.session_state["w_lens"]["pos"] == 0
 
 
+@CK.needs_checkpoints
 def test_no_way_to_select_a_non_dev_split_or_non_seed0_model():
     at = watch_app()
     assert list(at.selectbox(key="w_split").options) == ["DEV-validation", "DEV-train"]
@@ -214,6 +218,7 @@ def test_no_way_to_select_a_non_dev_split_or_non_seed0_model():
     assert not re.search(r"_s[1-9]\b", src) and "FINAL" not in src and "load_pool_records" not in src and not re.search(r"(?<!\[)\brole\s*=", src)      # (a CSS attribute selector [role=...] is not the pool API's role= argument)
 
 
+@CK.needs_checkpoints
 def test_no_sidebar_and_theme():
     for at in (new_app(), watch_app()):
         assert len(at.sidebar) == 0 and not at.sidebar.children
@@ -223,6 +228,7 @@ def test_no_sidebar_and_theme():
     assert 'base = "light"' in cfg and 'backgroundColor = "#FEFDFE"' in cfg and 'font = "Atkinson Hyperlegible Next"' in cfg
 
 
+@CK.needs_checkpoints
 @pytest.mark.parametrize("tta", [True, False])
 def test_decision_lens_equals_b16b_replay_and_b15_eval_path(tta, monkeypatch):
     from scripts import b15_final as F
@@ -264,6 +270,7 @@ def test_decision_lens_equals_b16b_replay_and_b15_eval_path(tta, monkeypatch):
     assert data["frames"][-1]["t"] == final["ticks"] and data["outcome"]["breach"] == final["core"]
 
 
+@CK.needs_checkpoints
 def test_ddqn_keeps_not_a_policy_and_value_label():
     at = watch_app()
     at.selectbox(key="w_arm").select_index(2).run()
@@ -274,6 +281,7 @@ def test_ddqn_keeps_not_a_policy_and_value_label():
     assert at.session_state["w_lens"]["chosen_action"] == replay_data("ddqn", True)["steps"][0]["action"]
 
 
+@CK.needs_checkpoints
 def test_headline_is_verbatim_from_results_md():
     txt = (ROOT / "docs" / "RESULTS.md").read_text()
     a = txt.index("## Plain-language summary")
@@ -281,6 +289,7 @@ def test_headline_is_verbatim_from_results_md():
     assert any(m.value == quoted for m in new_app().markdown) and any(m.value == quoted for m in watch_app().markdown)
 
 
+@CK.needs_checkpoints
 def test_ledger_sha_unchanged(runs):
     assert hashlib.sha256(P.LEDGER_PATH.read_bytes()).hexdigest() == LEDGER_SHA
     app_script(new_app())
@@ -288,6 +297,7 @@ def test_ledger_sha_unchanged(runs):
     assert hashlib.sha256(P.LEDGER_PATH.read_bytes()).hexdigest() == LEDGER_SHA
 
 
+@CK.needs_checkpoints
 def test_watch_screenshot_rule_first_deploy_step_with_heatmap_on():
     """Row (oo) (g): the Watch shot = the first DEPLOY decision step (position 9) with the heatmap on."""
     ep = replay_data("ppo_plain", True)
@@ -302,13 +312,16 @@ def test_watch_screenshot_rule_first_deploy_step_with_heatmap_on():
 
 def test_screenshots_are_the_ravelin_set():
     shots = sorted(p.name for p in (ROOT / "docs" / "screenshots").glob("*.png"))
-    assert shots == ["ravelin_1a_title_top_two_units_bought.png", "ravelin_1b_shop_two_units_bought.png", "ravelin_2_deploy_hovering_a_free_tile.png",
-                     "ravelin_3_battle_midpoint_tick_16.png", "ravelin_4_end_sticker_BREACH_row_mm_play.png", "ravelin_5_end_sticker_HELD_one_scout_at_0_3.png",
-                     "ravelin_6_report_cards.png", "ravelin_7_watch_first_deploy_step_heatmap_on.png", "ravelin_8_mobile_390x844_deploy.png"]
+    assert shots == sorted(["ravelin_1_placing_green_tiles_and_ghosts.png", "ravelin_2_battle_hp_bars_rings_and_damage_numbers.png", "ravelin_3_paused_on_a_key_moment_with_continue.png",
+                            "ravelin_4_range_and_path_overlays.png", "ravelin_5_end_sticker_BREACH_at_the_core_tick.png", "ravelin_6_report_cards_and_watch_buttons.png",
+                            "ravelin_7_watch_the_ai_paused_at_a_decision.png", "ravelin_8_watch_the_ai_battle_agents_army.png", "ravelin_9_mobile_390_placing.png",
+                            "ravelin_10_mobile_390_battle.png"])
     from PIL import Image
     for s in shots:
-        size = Image.open(ROOT / "docs" / "screenshots" / s).size
-        assert size == ((390, 844) if "mobile" in s else (1500, 1000)), (s, size)
+        w, h = Image.open(ROOT / "docs" / "screenshots" / s).size
+        assert w == (390 if "mobile" in s else 1500) and h >= 800, (s, w, h)
+    readme = (ROOT / "README.md").read_text()
+    assert all(f"docs/screenshots/{s}" in readme for s in shots[:0] or [n for n in shots if "_1_" in n or "_2_" in n or "_5_" in n or "_6_" in n]) and not (ROOT / "docs" / "screenshots_b24").exists()
 
 
 # ============================================================================================================================ Play (ported from test_b18b_duel_app)
@@ -465,6 +478,7 @@ def test_two_sessions_do_not_share_state(runs):
     assert game(a).finished and game(a).actions == game(b).actions
 
 
+@CK.needs_checkpoints
 def test_disclaimer_visible_once_and_no_sidebar(runs):
     at = new_app()
     assert md(at).count(R.DISCLAIMER) == 1 and len(at.sidebar) == 0

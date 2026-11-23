@@ -99,8 +99,8 @@ def damage_events(frames: list) -> list:
 
 
 def totals(frames: list, kinds: list, umax: list, smax: list) -> list:
-    """Per frame: raw sums shown by the three bars. army = all deployed troops; fort = every defender and building including the core (walls excluded); core = the core."""
-    fort_idx = [i for i, k in enumerate(kinds) if k in ("b", "c", "d")]
+    """Per frame: raw sums shown by the three bars. army = all deployed troops; fort = every defender and building (walls and the core excluded: the core has its own bar); core = the core."""
+    fort_idx = [i for i, k in enumerate(kinds) if k in ("b", "d")]
     ci = kinds.index("c")
     fmax = sum(smax[i] for i in fort_idx)
     return [{"army": sum(u[1] for u in f["u"]), "army_max": sum(umax), "fort": sum(f["s"][i] for i in fort_idx), "fort_max": fmax,
