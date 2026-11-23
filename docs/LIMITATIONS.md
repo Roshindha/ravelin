@@ -64,3 +64,4 @@ Numbers only. Source: revision-1 gate run (`data/v2/b5_report.md`, `data/v2/gate
 - Generalisation gap uses DEV-train in-sample scores from B14c (seen data); it is descriptive. PPO plain and DDQN lose about 0.27-0.29 in score from DEV-train to FINAL-familiar; PPO+D4 loses 0.03 but starts lower.
 - The 3 TTA rows reuse the same 30 models as the no-TTA rows; TTA adds 8 forward passes per decision and is not a separate training result. Planners were not run on DDQN or on TTA rows (pinned in (gg)).
 - Oracle is a fixed-budget search (about 400 simulations), a lower bound on the optimum.
+- Only the three seed-0 checkpoints are retained (release v1.0); the other 27 grid checkpoints were not kept, so the full grid can be re-created only by retraining. The recorded results in results/b15 remain the evidence.

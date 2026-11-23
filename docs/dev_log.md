@@ -788,3 +788,4 @@ Project spec: [SPEC_V2.md](SPEC_V2.md) (the v1 prototype spec is at tag `prototy
 - Fight timing (prefix re-runs): row (mm) 32 ticks 8 ms; a full 240-tick horizon battle 0.08 s (<< 1.5 s), so no extra cache; results are still cached by (layout, ordered army).
 - Known limits: no per-shot lines (not in the simulator); damage numbers are per piece per tick; the comparison cards appear on "Show report" (the iframe player cannot signal its end); `docs/screenshots/` (old shop flow) is left as is because a test pins its names; new shots in `docs/screenshots_b24/`.
 - Environment note: this checkout has no `models_v2/`; live-model tests fail identically on main (same 49 failures/errors), see the B24 report.
+- Only the three seed-0 checkpoints are retained (release v1.0); the other 27 grid checkpoints were not kept, so the full grid can be re-created only by retraining. The recorded results in results/b15 remain the evidence.
