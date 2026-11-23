@@ -159,7 +159,7 @@ def test_a_dead_piece_shows_the_destroyed_mark_and_an_empty_bar_or_ring(browser,
 
 # ----------------------------------------------------------------------------------------------------------------------------- floating damage numbers
 def test_every_floating_number_equals_the_raw_hp_delta_between_frames(browser, mm):
-    b, kinds, ev = mm["b"], mm["kinds"], mm["ev"]
+    kinds, ev = mm["kinds"], mm["ev"]
     pg, errs = open_player(browser, mm["page"])
     seen_fort = seen_mine = 0
     for t in range(1, 33):

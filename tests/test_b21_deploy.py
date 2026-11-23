@@ -184,7 +184,7 @@ def test_deploy_env_never_loads_a_model(monkeypatch):
 
 
 # ============================================================================================================================ the duel on deploy
-def test_deploy_duel_uses_cache_and_logs_nothing(monkeypatch, tmp_path):
+def test_deploy_duel_uses_cache_and_logs_nothing(arena, monkeypatch, tmp_path):
     runs = tmp_path / "runs.jsonl"
     monkeypatch.setenv("RAVELIN_DEPLOY", "1")
     monkeypatch.setenv("BREACHLENS_DUEL_RUNS", str(runs))              # would be honoured by a non-deploy run; deploy must ignore it
