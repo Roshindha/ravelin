@@ -181,6 +181,22 @@ TEXT_PAIRS = TEXT_PAIRS + (
 )
 
 
+# ----------------------------------------------------------------------------------------------------------------------------- B24: arena (health display, placement)
+TILE_OK = UNIT_FILL["bulwark"]       # legal border tile while placing: the Bulwark green at 50 % under an ink outline (no new colour)
+TEXT_PAIRS = TEXT_PAIRS + (
+    ("damage dealt to the fortress: azure text on board", PRIMARY_TEXT, BOARD_BG, "normal"),
+    ("damage dealt to the fortress: azure text on its snow halo", PRIMARY_TEXT, BG, "normal"),
+    ("damage taken by your troops: coral text on board", DANGER_TEXT, BOARD_BG, "normal"),
+    ("damage taken by your troops: coral text on its snow halo", DANGER_TEXT, BG, "normal"),
+    ("hp left / max label and HUD numbers: ink on board", TEXT, BOARD_BG, "normal"),
+    ("troop hp bar: azure on its track (graphic)", PRIMARY, HP_BACK, "large"),
+    ("fortress / core bar and ring: coral on its track (shape only; the ring shape and the text label carry it)", DANGER, HP_BACK, "shape"),
+    ("HUD bar track outline: ink on snow (graphic)", TEXT, BG, "large"),
+    ("placement tile: ink outline on the legal-tile green", TEXT, TILE_OK, "normal"),
+    ("card number and name: snow on azure (selected unit card, bold)", ON_PRIMARY, PRIMARY, "large"),
+)
+
+
 def game_root_vars() -> str:
     return (f":root{{--field:{FIELD};--field-ink:{FIELD_INK};--card-bw:{CARD_BORDER_W}px;--card-r:{CARD_RADIUS}px;--frame-w:{FRAME_W}px;--sticker-bw:{STICKER_BORDER_W}px;"
             f"--dots:url({field_pattern_uri()});--dot-grid:{FIELD_DOT_GRID}px}}")
@@ -193,7 +209,7 @@ def js_theme() -> str:
         "outline": OUTLINE, "coreFill": CORE_FILL, "coreBorder": CORE_BORDER, "coreInk": CORE_INK, "unitFill": [UNIT_FILL[u] for u in UNIT_ORDER],
         "unitInk": [UNIT_INK[u] for u in UNIT_ORDER], "unitAbbr": list(UNIT_ABBR),
         "wallFill": WALL_FILL, "wallHatch": WALL_HATCH, "boardBg": BOARD_BG, "gridLine": GRID_LINE, "buildingStroke": BUILDING_STROKE,
-        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME, "chosenKeyline": CHOSEN_KEYLINE,
+        "buildingInk": BUILDING_INK, "hpBack": HP_BACK, "okTile": TILE_OK, "hpFill": HP_FILL, "attackRing": ATTACK_RING, "chosenFrame": CHOSEN_FRAME, "chosenKeyline": CHOSEN_KEYLINE,
         "heat": [list(rgb(c)) for c in HEAT_STOPS], "fontHeading": FONT_HEADING, "fontBody": FONT_BODY, "fontNum": FONT_NUM,
     }, separators=(",", ":"), sort_keys=True)
 

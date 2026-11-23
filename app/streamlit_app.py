@@ -28,6 +28,8 @@ import html
 import importlib.util
 import os
 import sys
+import time
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +38,8 @@ if str(ROOT) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
+from app import arena as AR  # noqa: E402
+from app import arena_data as AD  # noqa: E402
 from app import board_component as BC  # noqa: E402
 from app import bundle as BU  # noqa: E402
 from app import game_view as GV  # noqa: E402
@@ -44,14 +48,14 @@ from app import render as R  # noqa: E402
 from app import theme as TH  # noqa: E402
 from breachlens import duel as D  # noqa: E402
 from breachlens import evaluator as EV  # noqa: E402
-from breachlens.actions import BORDER, encode_buy, encode_deploy  # noqa: E402
+from breachlens.actions import BORDER, encode_deploy  # noqa: E402
 from breachlens.armies import unit_cost  # noqa: E402
 from breachlens.config import CFG  # noqa: E402
-from breachlens.constants import END_BUY, N_BORDER, UNIT_TYPES  # noqa: E402
+from breachlens.constants import N_BORDER, UNIT_TYPES  # noqa: E402
 
 DEFAULT_LAYOUT = "spine_pods-300000056"
 MODES = ("Play", "Watch the AI")
-PHASES = ("Buy", "Deploy", "Battle", "Report")
+PHASES = ("Place", "Battle", "Report")
 SPLITS = ("DEV-validation", "DEV-train")                      # Watch the AI: nothing else is selectable
 VIEWS = ("TTA", "plain")
 HEATS = ("Chosen unit type", "Per-tile total")
@@ -62,6 +66,7 @@ ROLE = {"scout": "Cheap and quick. Rushes the buildings.", "sniper": "Long range
 CONTESTANT = {"human": ("You", "", "you"), "ppo_plain_tta": ("PPO plain + TTA", "learning agent, seed 0", "learner"), "ppo_d4_tta": ("PPO+D4 + TTA", "learning agent, seed 0", "learner"),
               "ddqn_tta": ("DDQN + TTA", "learning agent, seed 0", "learner"), "best_single": ("BestSingle", "scripted Sniper army", "script"),
               "oracle": ("Oracle", "search baseline, not the optimum", "search")}
+WATCHABLE = {"ppo_plain_tta": ("ppo_plain", True), "ppo_d4_tta": ("ppo_d4", True), "ddqn_tta": ("ddqn", True)}      # the agents that can be watched on the same base
 PLAYER_H = "content"                                   # st.iframe measures the player page, so the scaled board leaves no gap on narrow screens
 MM_BUYS = ["sniper"] * 4 + ["bulwark"] * 2             # the row (mm) (g) human script: buy sniper x4, bulwark x2, END BUY, deploy in the order bought on the lowest legal tiles (0-5)
 
@@ -138,6 +143,13 @@ def layout_ids(split: str) -> list:
     return EV.dev_layout_ids(split, entry_point="app.streamlit_app")
 
 
+@st.cache_resource(max_entries=4, show_spinner=False)
+def layout_prepared(split: str, layout_id: str):
+    """The simulator's view of one DEV layout (Watch the AI re-records the agent's battle with raw hp; the army and the outcome come from the episode)."""
+    from breachlens.sim import Prepared
+    return Prepared(EV.load_dev_layout(split, layout_id=layout_id, entry_point="app.streamlit_app")[1])
+
+
 @st.cache_resource(max_entries=1, show_spinner="loading checkpoint")
 def get_model(arm: str):
     from rl import explain as X
@@ -195,11 +207,12 @@ def title_block() -> None:
     st.markdown('<div class="card slim">' + html.escape(R.DISCLAIMER) + "</div>", unsafe_allow_html=True)        # the ONE disclaimer line of the screen (row (nn) A1 / A2)
 
 
-def hud(gold: int, bought: int, phase: int, flags: list | None = None) -> None:
+def hud(gold: int, bought: int, phase: int, flags: list | None = None, stats: bool = True) -> None:
     rot = TH.STICKER_ROT
     chips = "".join(sticker(p, hot=i == phase, rot=rot[i % len(rot)]) for i, p in enumerate(PHASES))
-    st.markdown(f'<div class="card narrow"><div class="hud"><span class="stat">{IC.img("coin", 32, "gold")}<b>{gold}</b>gold</span>'
-                f'<span class="stat">{IC.img("troops", 26, "units")}<b>{bought}</b>/ {CFG.unit_cap} units</span><span class="phases">{chips}</span></div>'
+    nums = (f'<span class="stat">{IC.img("coin", 32, "gold")}<b>{gold}</b>gold</span>'
+            f'<span class="stat">{IC.img("troops", 26, "units")}<b>{bought}</b>/ {CFG.unit_cap} units</span>') if stats else ""
+    st.markdown(f'<div class="card narrow"><div class="hud">{nums}<span class="phases">{chips}</span></div>'
                 + ('<div class="flags">' + "".join(flags) + "</div>" if flags else "") + "</div>", unsafe_allow_html=True)
 
 
@@ -237,28 +250,41 @@ def new_game(layout_id: str) -> None:
     for k in [k for k in st.session_state if k.startswith("g_") and k != "g_layout"]:
         del st.session_state[k]
     st.session_state["g_msg"] = ""
+    st.session_state["g_draft"] = []
+    st.session_state["g_gid"] = f"{layout_id}|{uuid.uuid4().hex[:8]}"          # a new id resets the browser-side draft
     st.session_state["g_duel"] = D.Duel(layout_id, human_runs_path=_runs_path())
 
 
-def act(fn: str, *args) -> None:
-    """One engine action; an illegal action puts the engine's message in session_state and changes nothing."""
+def _on_fight() -> None:
+    """The arena reported "Fight" with the placement draft. The draft becomes the env's legal sequence (buys, END_BUY, deploys in placement order) on a FRESH Duel, so a refused
+    sequence leaves the current game untouched and shows the engine's message."""
+    ss = st.session_state
+    v = ss.get("g_arena")
+    pay = v.get("fight") if isinstance(v, dict) else getattr(v, "fight", None)
+    if not pay:
+        return
+    draft = [(int(u), int(b)) for u, b in pay["draft"]]
+    ss["g_draft"] = draft
     try:
-        getattr(st.session_state["g_duel"], fn)(*args)
-        st.session_state["g_msg"] = ""
+        d = D.Duel(ss["g_duel"].layout_id, human_runs_path=_runs_path())
+        AD.play_draft(d, draft)
     except D.DuelError as e:
-        st.session_state["g_msg"] = str(e)
+        ss["g_msg"] = str(e)
+        return
+    ss["g_msg"] = ""
+    ss["g_duel"] = d
 
 
-def _deploy() -> None:
-    act("deploy", st.session_state["g_unit"], st.session_state["g_tile"])
-
-
-def _on_board_click() -> None:
-    """The board component reported a click / tap on border tile b: the same engine call as the Deploy button (action 5 + 52*u + b); illegal -> the engine's message."""
-    v = st.session_state.get("g_board")
-    b = v.get("tile") if isinstance(v, dict) else getattr(v, "tile", None)
-    if b is not None:
-        act("deploy", st.session_state.get("g_unit"), b)
+def _on_illegal() -> None:
+    """The arena refused a tap (client-side rules mirror the env's masks); the message shown is the ENGINE's own, from replaying the draft plus that tap."""
+    ss = st.session_state
+    v = ss.get("g_arena")
+    pay = v.get("illegal") if isinstance(v, dict) else getattr(v, "illegal", None)
+    if not pay:
+        return
+    draft = [(int(u), int(b)) for u, b in pay["draft"]]
+    ss["g_draft"] = draft
+    ss["g_msg"] = AD.probe_message(ss["g_duel"].layout_id, draft, int(pay["unit"]), int(pay["tile"]))
 
 
 def free_tiles(duel: D.Duel) -> list:
@@ -266,10 +292,9 @@ def free_tiles(duel: D.Duel) -> list:
     return [b for b in range(N_BORDER) if env._st.border_free[b] and all(b != bb for _, bb in env.army)]
 
 
-def show_board(svg: str, key: str, *, tiles: list | None = None, unit: str | None = None, on_click=None) -> None:
-    """Draw a board through the component (page fonts, scales to the width). tiles = every border tile as {b, row, col, ok} for click-to-deploy, None = static."""
-    kw = {"on_tile_change": on_click} if on_click else {}
-    board_component()(key=key, data={"svg": svg, "tiles": tiles or [], "unit": unit, "cell": GV.CELL}, **kw)
+def show_board(svg: str, key: str) -> None:
+    """A static board through the component (page fonts, scales to the width)."""
+    board_component()(key=key, data={"svg": svg, "tiles": [], "unit": None, "cell": GV.CELL})
 
 
 def _show_report() -> None:
@@ -277,16 +302,14 @@ def _show_report() -> None:
 
 
 def apply_demo(duel: D.Duel, stage: str) -> None:
-    """Screenshot helper: drive the real engine through the row (mm) script up to `stage` (``held`` = one Scout on tile (0,3), a 1-tick battle)."""
+    """Screenshot helper: drive the real engine through the row (mm) script (``held`` = one Scout on tile (0,3), a 1-tick battle)."""
     if stage == "held":
         duel.buy("scout"); duel.end_buy(); duel.deploy("scout", next(i for i, b in enumerate(BORDER) if tuple(b) == (0, 3)))
         return
-    for u in MM_BUYS[:2 if stage == "buy" else len(MM_BUYS)]:
+    for u in MM_BUYS:
         duel.buy(u)
-    if stage == "buy":
-        return
     duel.end_buy()
-    for u in MM_BUYS[:3 if stage == "deploy" else len(MM_BUYS)]:
+    for u in MM_BUYS:
         m = duel.env.action_masks()
         duel.deploy(u, next(b for b in range(N_BORDER) if m[encode_deploy(UNIT_TYPES.index(u), b)]))
 
@@ -296,7 +319,9 @@ def ensure_game(layout: str) -> D.Duel:
     if "g_duel" not in ss or ss["g_duel"].layout_id != layout:
         new_game(layout)
         demo = st.query_params.get("demo")
-        if demo in ("buy", "deploy", "battle", "report", "held"):
+        if demo == "place":                                                  # screenshot helper: three Snipers already placed (still a draft; nothing is sent to the engine)
+            ss["g_draft"] = [(1, 0), (1, 1), (1, 2)]
+        elif demo in ("battle", "report", "held"):
             apply_demo(ss["g_duel"], demo)
             ss["g_report"] = demo == "report"
     return ss["g_duel"]
@@ -310,58 +335,35 @@ def board_for(duel: D.Duel, **kw) -> str:
     return GV.board_svg(structs, None, border_units(env.army), **{"zone": zone, **kw})
 
 
-def shop(duel: D.Duel) -> None:
-    env = duel.env
-    mask = env.action_masks()
-    with card("shop"):
-        h = st.columns([6, 1])
-        h[0].markdown(sticker("Your army", rot=-1.2) + " " + sticker("Pick units", hot=True, rot=1.4), unsafe_allow_html=True)
-        with h[1].popover("?"):
-            for u in UNIT_TYPES:
-                st.markdown(f"**{u.capitalize()}** ({unit_cost(UNIT_TYPES.index(u))} gold): {ROLE[u]}")
-        cols = st.columns(len(UNIT_TYPES))
-        for i, u in enumerate(UNIT_TYPES):
-            ok, n = bool(mask[encode_buy(i)]), int(env.owned[i])                         # in the BUY phase owned = bought
-            tag = sticker(IC.img("coin", 18, "gold") + str(unit_cost(i)), hot=True, rot=-2 if i % 2 else 2, cls="price")
-            cols[i].markdown(f'<div class="piece {"" if ok else "off"}">{f"<span class=cnt>&times;{n}</span>" if n else ""}{IC.disc_img(u, 72)}<div class="nm">{u.capitalize()}</div>'
-                             f'<div class="short">{SHORT[u]}</div>{tag}</div>', unsafe_allow_html=True)
-            cols[i].button("+", key=f"g_buy_{u}", type="primary", on_click=act, args=("buy", u), disabled=not ok, width="stretch", help=f"Buy one {u} for {unit_cost(i)} gold")
-        c = st.columns([1.2, 1.2, 1.2])
-        c[0].button("Undo last buy", key="g_undo", on_click=act, args=("undo",), disabled=not duel.actions, width="stretch")
-        c[2].button("Start deploying", key="g_end", type="primary", on_click=act, args=("end_buy",), disabled=not mask[END_BUY], width="stretch")
-        st.markdown('<div class="note">Opponents hidden until your battle is over.</div>', unsafe_allow_html=True)
-
-
-def deploy_panel(duel: D.Duel) -> None:
-    env = duel.env
-    owned = {UNIT_TYPES[u]: int(n) for u, n in enumerate(env.owned) if n}
-    with card("deploy"):
-        st.markdown('<div class="tray">' + "".join(f'<span class="tok">{IC.img(u, 28, u)}&times;{n}</span>' for u, n in owned.items()) + "</div>", unsafe_allow_html=True)
-        free = free_tiles(duel)
-        edge = lambda b: "top" if BORDER[b][0] == 0 else "bottom" if BORDER[b][0] == GV.GRID - 1 else "left" if BORDER[b][1] == 0 else "right"
-        st.markdown('<div class="note" style="text-align:center">Click or tap a striped tile on the board to deploy the selected unit there.</div>', unsafe_allow_html=True)
-        c = st.columns([1.2, 1.8, 1.1, 1.5])
-        c[0].selectbox("Unit", list(owned), key="g_unit", format_func=str.capitalize)
-        c[1].selectbox("Tile (keyboard option)", free, key="g_tile", format_func=lambda b: f"({BORDER[b][0]},{BORDER[b][1]}) {edge(b)} edge")
-        c[2].button("Deploy", key="g_deploy", type="primary", on_click=_deploy, width="stretch")
-        c[3].button("Start battle now", key="g_wait", on_click=act, args=("wait",), width="stretch", help="Units not yet deployed are forfeited")
-        if st.session_state.get("g_msg"):
-            st.error(st.session_state["g_msg"])
+def plan_board(duel: D.Duel) -> None:
+    """The one-tap placement board (app/board_component.py, plan mode). Nothing reaches the engine until Fight."""
+    ss, env = st.session_state, duel.env
+    free = set(free_tiles(duel))
+    cards = [{"name": u.capitalize(), "cost": unit_cost(i), "icon": u, "img": IC.disc_img(u, 52)} for i, u in enumerate(UNIT_TYPES)]
+    data = {"mode": "plan", "gid": ss["g_gid"], "svg": board_for(duel), "cell": GV.CELL, "cards": cards, "gold": int(env.gold), "cap": int(CFG.unit_cap),
+            "tiles": [{"b": b, "row": BORDER[b][0], "col": BORDER[b][1], "ok": b in free} for b in range(N_BORDER)], "okColor": TH.TILE_OK,
+            "draft": [list(d) for d in ss.get("g_draft", [])], "msg": ss.get("g_msg", "")}
+    board_component()(key="g_arena", data=data, on_fight_change=_on_fight, on_illegal_change=_on_illegal)
 
 
 def battle_view(duel: D.Duel) -> None:
     ss = st.session_state
     if "g_battle" not in ss:
-        M = replay_module()
-        ss["g_battle"] = M._battle(duel.env)
-        ss["g_structs"] = M._struct_table(duel.env._st.P)
-    battle, res = ss["g_battle"], duel.env.result
-    out = {"breach": bool(res.core_destroyed), "ticks": int(res.ticks), "reasonText": GV.outcome_reason_text(res.reason)}
-    demo_tick = st.query_params.get("tick")
-    start = int(demo_tick) if demo_tick and demo_tick.isdigit() else 0
-    page = GV.player_html(ss["g_structs"], battle["frames"], [t for t, _ in battle["units"]], out, autoplay=not demo_tick, start=start)
+        t0 = time.perf_counter()
+        P = duel.env._st.P
+        ss["g_structs"] = replay_module()._struct_table(P)
+        ss["g_battle"] = AR.battle_page(P, duel.env.army, ss["g_structs"], duel.env.result, key=duel.layout_id, autoplay=not st.query_params.get("tick"),
+                                        start=int(st.query_params.get("tick", 0) or 0))
+        ss["g_fight_seconds"] = time.perf_counter() - t0
     with card("board"):
-        st.iframe(page, height=PLAYER_H)
+        st.iframe(ss["g_battle"], height=PLAYER_H)
+
+
+def watch_on_base(arm: str, tta: bool, layout: str) -> None:
+    """Switch to Watch the AI on this DEV-validation layout with this agent (session state of the Watch widgets)."""
+    ss = st.session_state
+    ss["mode_sel"], ss["w_split"], ss["w_arm"] = MODES[1], "DEV-validation", arm
+    ss[f"w_layout_{BU.BUNDLE_SPLIT}"], ss["w_view"] = layout, "TTA" if tta else "plain"
 
 
 def report_view(duel: D.Duel) -> None:
@@ -383,6 +385,12 @@ def report_view(duel: D.Duel) -> None:
                     f'<div class="sbar"><i style="width:{max(0.0, min(1.0, r["score"])) * 100:.1f}%"></i></div>'
                     f'<div class="nums"><b>{r["score"]:.3f}</b> score &middot; D <span class="num">{r["d"]:.3f}</span></div>'
                     f'<div class="army">{army_strip(r["bought"])}</div></div>', unsafe_allow_html=True)
+    with card("watchagents"):
+        st.markdown('<span class="verdict">See how an agent played this base</span>', unsafe_allow_html=True)
+        cols = st.columns(len(WATCHABLE))
+        for col, (cont, (arm, tta)) in zip(cols, WATCHABLE.items()):
+            col.button(f"Watch {CONTESTANT[cont][0]} on this base", key=f"g_watch_{arm}", on_click=watch_on_base, args=(arm, tta, duel.layout_id), width="stretch",
+                       disabled=duel.layout_id not in layout_ids(BU.BUNDLE_SPLIT) if BU.deploy_mode() else False)
     with st.expander("Full comparison table"):
         body = "".join(
             f'<tr class="{"human" if r["contestant"] == "human" else ""}"><td>{html.escape(r["label"])}</td><td class="num">{r["score"]:.3f}</td><td class="num">{r["d"]:.3f}</td>'
@@ -409,20 +417,15 @@ def play_mode(layout: str) -> None:
     env = duel.env
     flags = [badge("DEV-validation"), badge(duel.family)]
     if not duel.finished:
-        hud(env.gold, env.bought, 0 if duel.phase == "BUY" else 1, flags)
-        if duel.phase == "BUY":
-            with card("board"):
-                show_board(board_for(duel), "g_board_buy")
-            shop(duel)
-        else:
-            c = deploy_preview(duel)
-            with card("board"):
-                tiles = [{"b": b, "row": BORDER[b][0], "col": BORDER[b][1], "ok": b in set(free_tiles(duel))} for b in range(N_BORDER)]
-                show_board(board_for(duel, selected=c["selected"], preview=c["preview"]), "g_board", tiles=tiles, unit=c["unit"], on_click=_on_board_click)
-            deploy_panel(duel)
+        hud(env.gold, env.bought, 0, flags, stats=False)
+        with card("board"):
+            plan_board(duel)
+            if ss.get("g_msg"):
+                st.error(ss["g_msg"])
+            st.markdown('<div class="note" style="text-align:center">Opponents hidden until your battle is over.</div>', unsafe_allow_html=True)
         return
     report = bool(ss.get("g_report"))
-    hud(env.gold, env.bought, 3 if report else 2, flags)
+    hud(env.gold, env.bought, 2 if report else 1, flags)
     battle_view(duel)
     if not report:
         with card("cta"):
@@ -431,17 +434,6 @@ def play_mode(layout: str) -> None:
             c[1].markdown('<div class="note" style="text-align:center">Opponents hidden until you press this.</div>', unsafe_allow_html=True)
     else:
         report_view(duel)
-
-
-def deploy_preview(duel: D.Duel) -> dict:
-    """Board decorations for the deploy phase, from the selector's current state (selected / preview = the chosen tile and unit)."""
-    env, ss = duel.env, st.session_state
-    free = free_tiles(duel)
-    owned = [UNIT_TYPES[u] for u in range(len(UNIT_TYPES)) if env.owned[u] > 0]
-    tile, unit = ss.get("g_tile", free[0] if free else None), ss.get("g_unit", owned[0] if owned else None)
-    sel = tuple(BORDER[tile]) if tile in free else None
-    prev = (UNIT_TYPES.index(unit), *BORDER[tile]) if sel and unit in UNIT_TYPES and env.owned[UNIT_TYPES.index(unit)] > 0 else None
-    return {"selected": sel, "preview": prev, "unit": unit}
 
 
 # ----------------------------------------------------------------------------------------------------------------------------- Watch the AI
@@ -513,7 +505,7 @@ def watch_controls() -> tuple:
 def watch_mode(split: str, layout: str, arm: str, tta: bool) -> None:
     ss = st.session_state
     ep = episode(split, layout, arm, tta)
-    n_dec, frames = len(ep["steps"]), ep["battle"]["frames"]
+    n_dec = len(ep["steps"])
     key = f"w_pos|{split}|{layout}|{arm}|{tta}"
     try:
         start = max(0, min(n_dec, int(st.query_params.get("pos", 0))))
@@ -535,6 +527,9 @@ def watch_mode(split: str, layout: str, arm: str, tta: bool) -> None:
             b[0].button("Prev", key="w_prev", on_click=lambda: ss.__setitem__(key, max(0, ss[key] - 1)), disabled=pos <= 0, width="stretch")
             b[1].button("Next", key="w_next", on_click=lambda: ss.__setitem__(key, min(n_dec, ss[key] + 1)), disabled=pos >= n_dec, width="stretch")
             b[2].slider("Decision step (the last stop is the battle)", 0, n_dec, key=key, label_visibility="collapsed")
+            pause_dec = st.toggle("Pause at every decision", value=True, key="w_pause_dec", help="On: step through the agent's buys and deploys one at a time. Off: skip straight to the battle.")
+            if not pause_dec and not in_battle:
+                st.button("Skip to the battle", key="w_skip", on_click=lambda: ss.__setitem__(key, n_dec), type="primary")
             if not in_battle:
                 h = st.columns([1.2, 2.8])
                 heat_on = h[0].toggle("Heatmap overlay", value=True, key="w_heat")
@@ -547,8 +542,9 @@ def watch_mode(split: str, layout: str, arm: str, tta: bool) -> None:
             else:
                 o = ep["outcome"]
                 out = {"breach": bool(o["core"]), "ticks": int(o["ticks"]), "reasonText": GV.outcome_reason_text(o["reason"])}
-                page = GV.player_html(ep["structs"], frames, [t for t, _ in ep["battle"]["units"]], out, autoplay=st.query_params.get("tick") is None,
-                                      start=int(st.query_params.get("tick", 0)))
+                P = layout_prepared(split, layout)
+                page = AR.player_html(ep["structs"], AD.raw_battle(P, ep["battle"]["units"], key=layout), out, AD.ranges(P), mode="agent",
+                                      autoplay=st.query_params.get("tick") is None, start=int(st.query_params.get("tick", 0)))
                 st.iframe(page, height=PLAYER_H)
         with right:
             o = ep["outcome"]

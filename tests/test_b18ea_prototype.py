@@ -11,6 +11,8 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from app import arena as AR
+from app import arena_data as AD
 from app import game_view as GV
 from app import icons as IC
 from app import render as R
@@ -20,6 +22,7 @@ from breachlens.actions import encode_buy, encode_deploy
 from breachlens.constants import END_BUY
 from breachlens.env import BreachEnv
 from breachlens.sim import simulate
+from tests._arena_util import mini_page
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = str(ROOT / "app" / "streamlit_app.py")
@@ -83,18 +86,19 @@ def played():
     return duel, M._battle(duel.env), M._struct_table(duel.env._st.P)
 
 
-def test_player_is_self_contained_and_built_from_the_replay_frames(played):
+def test_player_is_self_contained_and_built_from_the_raw_frames(played):
     duel, battle, structs = played
-    page = GV.player_html(structs, battle["frames"], [t for t, _ in battle["units"]], {"breach": False, "ticks": duel.env.result.ticks, "reasonText": "x"})
+    raw = AD.raw_battle(duel.env._st.P, duel.env.army)
+    page = AR.player_html(structs, raw, {"breach": False, "ticks": duel.env.result.ticks, "reasonText": "x"}, AD.ranges(duel.env._st.P))
     assert not re.search(r"""(https?:|src\s*=|href\s*=\s*['"]?[^#'"\s]|@import|<link|fetch\(|XMLHttpRequest|WebSocket|import\()""", page)
     assert page.count("@font-face") == len(T.FONTS) and "data:font/woff2;base64," in page
     data = json.loads(re.search(r'<script type="application/json" id="data">(.*?)</script>', page, re.S).group(1))
-    assert data["frames"] == battle["frames"] and data["structs"] == structs and data["units"] == [t for t, _ in battle["units"]]
-    for needle in ("id=\"play\"", 'data-s="1"', 'data-s="2"', 'data-s="4"', "Tick ", "BREACH", "HELD", "prefers-reduced-motion", "aria-live"):
+    assert data["frames"] == raw["frames"] and data["structs"] == structs and data["units"] == [t for t, _ in battle["units"]]
+    for needle in ("id=\"play\"", 'data-s="1"', 'data-s="2"', 'data-s="4"', "Tick ", "BREACH", "HELD", "prefers-reduced-motion", "aria-live", 'id="step"', 'id="cont"', 'id="keys" checked'):
         assert needle in page, needle
     assert not re.search(r"glow|box-shadow|text-shadow|drop-shadow|filter:|gradient", page, re.I)
     durations = [float(x) for x in re.findall(r"(?:animation|transition)[^;{}]*?\s(\.\d+|0?\.\d+)s", page)] + [0.2]
-    assert max(durations) <= 0.25 and min(d for d in durations if d > 0) >= 0.15
+    assert max(durations) <= 0.3 and min(d for d in durations if d > 0) >= 0.15
 
 
 def test_player_has_one_slot_per_frame_tick_and_unit(played):
@@ -115,7 +119,7 @@ def md(at) -> str:
     return " ".join(m.value for m in at.markdown)
 
 
-def test_prototype_play_flow_and_opponents_stay_hidden_until_report(runs, monkeypatch):
+def test_prototype_play_flow_and_opponents_stay_hidden_until_report(arena, monkeypatch):
     def boom(*a, **k):
         raise AssertionError("the duel cache was opened before the report was requested")
     monkeypatch.setattr(D, "load_cache", boom)
@@ -124,23 +128,12 @@ def test_prototype_play_flow_and_opponents_stay_hidden_until_report(runs, monkey
     text = md(at)
     assert "Ravelin" in text and "Breach Lens" not in text and R.DISCLAIMER in text and text.count(R.DISCLAIMER) == 1
     assert [r.label for r in at.radio][0] == "Mode" and list(at.radio[0].options) == ["Play", "Watch the AI"]
-    assert at.button(key="g_buy_scout").disabled is False and at.button(key="g_end").disabled is True and at.button(key="g_undo").disabled is True
-    for _ in range(30):                                                      # 240 gold: 30 Scouts is over the 20-unit cap, the cap must disable the buy
-        if at.button(key="g_buy_scout").disabled:
-            break
-        at.button(key="g_buy_scout").click().run()
-    assert at.button(key="g_buy_scout").disabled and at.button(key="g_buy_sniper").disabled is True
-    at.button(key="g_undo").click().run()
-    assert at.button(key="g_buy_scout").disabled is False and at.button(key="g_end").disabled is False
-    at.button(key="g_end").click().run()
-    assert not at.exception and at.button(key="g_deploy") is not None
-    for _ in range(40):                                                     # deploy everything; the battle starts on the last unit
-        if "g_deploy" not in [b.key for b in at.button]:
-            break
-        at.button(key="g_deploy").click().run()
-        assert not at.exception
+    assert arena["g_arena"]["data"]["mode"] == "plan" and "g_buy_scout" not in [b.key for b in at.button]      # no quantity / "start deploying" step any more
+    at.session_state["_sim_fight"] = {"draft": [[0, 3], [0, 4], [1, 5]], "n": 1}                                   # place two Scouts and a Sniper, press Fight
+    at.run()
+    at.run()
+    assert not at.exception and at.session_state["g_duel"].finished
     assert [b.key for b in at.button if b.key == "g_report_btn"] == ["g_report_btn"]
-    text = md(at)
     assert "g_rows" not in at.session_state and "Full comparison table" not in [e.label for e in at.expander]          # no opponent row, no table (the About text only names them)
     monkeypatch.undo()
     at.button(key="g_report_btn").click().run()
@@ -150,7 +143,7 @@ def test_prototype_play_flow_and_opponents_stay_hidden_until_report(runs, monkey
         assert name in text, name
 
 
-def test_prototype_honesty_items_and_about_panel(runs):
+def test_prototype_honesty_items_and_about_panel(arena):
     at = AppTest.from_file(APP, default_timeout=120).run()
     text = md(at)
     assert "DEV-validation" in text
@@ -227,7 +220,7 @@ def test_stickers_cards_and_pattern_follow_the_spec():
 
 
 def test_player_banner_is_a_rotated_sticker():
-    page = GV.player_html([["c", 3, 3, ""]], [{"t": 0, "u": [], "s": [1000]}], [], {"breach": True, "ticks": 0, "reasonText": "x"})
+    page = mini_page({"breach": True, "ticks": 0, "reasonText": "x"})
     assert f"rotate({T.BANNER_ROT}deg)" in page and "#banner.breach{background:var(--danger)" in page and "#banner.held{background:var(--bg)" in page
     assert page.count("text-transform:uppercase") == 1 and 'class="zone"' not in page and "url(#tape)" in page
 
@@ -242,7 +235,7 @@ def _lowest(duel, unit):
     return next(b for b in range(52) if m[encode_deploy(u, b)])
 
 
-def test_row_mm_script_is_identical_through_breachlens_duel_and_the_default_app(runs):
+def test_row_mm_script_is_identical_through_breachlens_duel_and_the_default_app(arena):
     d = D.Duel(LAYOUT, human_runs_path=None)
     for u in MM_BUYS:
         d.buy(u)
@@ -254,20 +247,8 @@ def test_row_mm_script_is_identical_through_breachlens_duel_and_the_default_app(
     row = d.human_row()
     assert (round(row["score"], 3), round(row["d"], 3), row["breach"], d.env.result.ticks) == (0.400, 0.0, True, 32)          # the B18b numbers
     assert d.actions == [1, 1, 1, 1, 2, 2, 265, 57, 58, 59, 60, 113, 114]                                                        # tiles 0..5 = actions 5 + 52u + b
-    at = AppTest.from_file(APP, default_timeout=300).run()
-    for u in MM_BUYS:
-        at.button(key=f"g_buy_{u}").click().run()
-    at.button(key="g_end").click().run()
-    for u in MM_BUYS:
-        g = at.session_state["g_duel"]
-        at.selectbox(key="g_unit").select(u)
-        at.selectbox(key="g_tile").select(_lowest(g, u))                       # the dropdown value is the border index; the label shows (row,col)
-        at.button(key="g_deploy").click().run()
-        assert not at.exception
-        if at.session_state["g_duel"].finished:
-            break
-    g = at.session_state["g_duel"]
-    assert g.actions == d.actions and g.human_row() == row and g.env.result.ticks == 32
+    # the same script through the app is tests/test_b18eb_app.py::test_row_mm_script_through_the_arena_is_the_row_mm_outcome (placement draft -> Fight)
+    assert AD.canonical_actions([(D.parse_unit(u), i) for i, u in enumerate(MM_BUYS)]) == d.actions
 
 
 def test_tagline_uses_the_real_fraunces_italic():

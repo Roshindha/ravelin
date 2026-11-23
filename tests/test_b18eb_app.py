@@ -37,6 +37,7 @@ import pytest
 import streamlit as st
 from streamlit.testing.v1 import AppTest
 
+from app import arena as AR
 from app import board_component as BC
 from app import game_view as GV
 from app import icons as IC
@@ -47,6 +48,7 @@ from breachlens import pool as P
 from breachlens.actions import BORDER, encode_deploy
 from breachlens.env import BreachEnv
 from rl import explain as X
+from tests._arena_util import mini_page, permille_battle
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = str(ROOT / "app" / "streamlit_app.py")
@@ -59,32 +61,15 @@ TIMEOUT = 300
 
 # ----------------------------------------------------------------------------------------------------------------------------- fixtures / helpers
 @pytest.fixture
-def runs(tmp_path, monkeypatch):
-    p = tmp_path / "runs.jsonl"
-    monkeypatch.setenv("BREACHLENS_DUEL_RUNS", str(p))
-    return p
+def runs(arena, tmp_path):
+    """The human-run log of this test (the ``arena`` fixture of tests/conftest.py points BREACHLENS_DUEL_RUNS at it and stands in for the component)."""
+    return tmp_path / "runs.jsonl"
 
 
 @pytest.fixture
-def clicks(runs, monkeypatch):
-    """Replace the v2 component by a stand-in that records what the app mounts and, when ``st.session_state['_sim_click']`` holds a border index, delivers it exactly
-    like the browser does: the component's value lands in ``st.session_state[key]`` and the app's ``on_tile_change`` callback runs. The routing from there (callback ->
-    ``Duel.deploy`` -> action 5 + 52*u + b) is the app's real code; the real JS is exercised in real Chrome (docs/dev_log.md) and checked statically below."""
-    mounted = {}
-
-    def register(name, **kw):
-        def mount(*, key, data=None, on_tile_change=None, **_):
-            mounted[key] = {"data": data, "has_callback": on_tile_change is not None, "name": name, **kw}
-            sim = st.session_state.pop("_sim_click", None)
-            if sim is not None and on_tile_change is not None:
-                st.session_state[key] = types.SimpleNamespace(tile=sim)
-                on_tile_change()
-            return types.SimpleNamespace(tile=None)
-        return mount
-    monkeypatch.setattr(st.components.v2, "component", register)
-    st.cache_resource.clear()
-    yield mounted
-    st.cache_resource.clear()
+def clicks(arena):
+    """B24: the component stand-in of tests/conftest.py (``arena``); kept under this name for the tests below."""
+    return arena
 
 
 def new_app(query: dict | None = None) -> AppTest:
@@ -124,45 +109,32 @@ def lowest_tile(duel, unit):
     return next(b for b in range(52) if m[encode_deploy(u, b)])
 
 
+def mm_draft(buys=BUYS):
+    """The row (mm) script as a placement draft: each unit of ``buys`` placed in order on the lowest free tile (0, 1, 2, ...)."""
+    return [(D.parse_unit(u), i) for i, u in enumerate(buys)]
+
+
+def fight(at, draft):
+    """Press Fight with ``draft`` (the stand-in delivers the component value mid-run, so a second run draws the result)."""
+    at.session_state["_sim_fight"] = {"draft": [list(d) for d in draft], "n": 1}
+    at.run()
+    assert not at.exception
+    at.run()
+    assert not at.exception
+
+
+def bad_tap(at, draft, unit, tile):
+    """The arena refused a tap (client side) and asked the app for the engine's message."""
+    at.session_state["_sim_illegal"] = {"draft": [list(d) for d in draft], "unit": unit, "tile": tile, "n": 1}
+    at.run()
+    assert not at.exception
+    at.run()
+    assert not at.exception
+
+
 def app_script(at, buys=BUYS):
-    """The row (mm) script through the buttons and the tile dropdown."""
-    for u in buys:
-        click(at, f"g_buy_{u}")
-    click(at, "g_end")
-    for u in buys:                                           # deploy in the order bought, each on the lowest legal tile
-        g = game(at)
-        at.selectbox(key="g_unit").select(u)
-        at.selectbox(key="g_tile").select(lowest_tile(g, u))
-        click(at, "g_deploy")
-        if game(at).finished:
-            break
-    if not game(at).finished:
-        click(at, "g_wait")
-
-
-def click_tile(at, b):
-    """A click / tap on border tile b of the board component (two runs: the callback runs mid-run in the stand-in, the second run redraws everything)."""
-    at.session_state["_sim_click"] = b
-    at.run()
-    assert not at.exception
-    at.run()
-    assert not at.exception
-
-
-def click_script(at, buys=BUYS):
-    """The row (mm) script with the board: buy by buttons, END BUY, then select each unit and click its lowest legal tile."""
-    for u in buys:
-        click(at, f"g_buy_{u}")
-    click(at, "g_end")
-    for u in buys:
-        g = game(at)
-        b = lowest_tile(g, u)
-        at.selectbox(key="g_unit").select(u).run()
-        click_tile(at, b)
-        if game(at).finished:
-            break
-    if not game(at).finished:
-        click(at, "g_wait")
+    """The row (mm) script through the arena: place the six units, press Fight."""
+    fight(at, mm_draft(buys))
 
 
 def direct_script(buys=BUYS, path=None):
@@ -373,19 +345,13 @@ def test_nothing_about_opponents_before_resolution_and_cache_unread(runs, monkey
         assert "Full comparison table" not in [e.label for e in at.expander] and "g_rows" not in at.session_state
 
     at = new_app()
-    for u in BUYS:
-        click(at, f"g_buy_{u}")
-        hidden(at)
-    click(at, "g_end")
     hidden(at)
     assert not game(at).finished
     assert not any(o.endswith("duel_cache.json") for o in opened), "cache was opened before the battle resolved"
-    g = game(at)
-    at.selectbox(key="g_unit").select("sniper")
-    at.selectbox(key="g_tile").select(lowest_tile(g, "sniper"))
-    click(at, "g_deploy")
+    bad_tap(at, mm_draft()[:1], 1, 0)                                                   # an engine round trip while placing reads no opponent either
+    hidden(at)
     assert not any(o.endswith("duel_cache.json") for o in opened)
-    click(at, "g_wait")
+    fight(at, mm_draft())
     assert game(at).finished
     hidden(at)                                                       # battle over, report not requested yet: still hidden, cache still unread
     assert not any(o.endswith("duel_cache.json") for o in opened)
@@ -412,73 +378,29 @@ def test_table_equals_cache_with_oracle_label_and_best_single(runs):
     assert "search baseline, not the optimum" in html and "leaderboard" not in html.lower()
 
 
-def test_illegal_actions_show_message_and_change_nothing(runs):
+def test_engine_refusals_show_the_engine_message_and_change_nothing(runs):
     at = new_app()
-    assert at.button(key="g_end").disabled and at.button(key="g_undo").disabled          # nothing bought: the UI offers neither
     with pytest.raises(D.DuelError, match="buy at least one unit"):
-        game(at).end_buy()                                                              # and the engine refuses if asked anyway
+        game(at).end_buy()                                                              # the engine refuses if asked anyway
     assert game(at).actions == [] and game(at).phase == "BUY"
-    for _ in range(40):                                                                 # buy until the engine / UI stops us (gold or unit cap)
-        if at.button(key="g_buy_bulwark").disabled:
-            break
-        click(at, "g_buy_bulwark")
-    assert at.button(key="g_buy_bulwark").disabled
+    # a tap the arena cannot place: the message is the engine's, the game is untouched
+    full = [(D.parse_unit("bulwark"), i) for i in range(8)]                              # 8 x 30 = 240 gold
     snap = (list(game(at).actions), game(at).env.gold, game(at).phase)
-    with pytest.raises(D.DuelError):
-        game(at).buy("bulwark")
-    assert (list(game(at).actions), game(at).env.gold, game(at).phase) == snap
-    click(at, "g_end")
-    assert not at.error
-    t = lowest_tile(game(at), "bulwark")
-    at.selectbox(key="g_unit").select("bulwark")
-    at.selectbox(key="g_tile").select(t)
-    click(at, "g_deploy")
-    assert not at.error and not game(at).finished
-    snap = (list(game(at).actions), list(game(at).env.owned))
-    D_before = game(at).env.gold
-    with pytest.raises(D.DuelError, match="no mender left"):
-        game(at).deploy("mender", lowest_tile(game(at), "bulwark"))                     # a unit that is not owned
-    assert (list(game(at).actions), list(game(at).env.owned)) == snap and game(at).env.gold == D_before
-
-
-def test_illegal_click_shows_the_engine_message_and_changes_nothing(clicks):
-    at = new_app()
-    for u in BUYS:
-        click(at, f"g_buy_{u}")
-    click(at, "g_end")
-    click_tile(at, 0)
-    assert not at.error and game(at).actions[-1] == 5 + 52 * D.parse_unit("sniper") + 0
-    snap = (list(game(at).actions), list(game(at).env.owned), game(at).phase)
-    click_tile(at, 0)                                                                   # occupied
-    assert at.error and "occupied" in at.error[0].value
-    assert (list(game(at).actions), list(game(at).env.owned), game(at).phase) == snap
-    click_tile(at, 99)                                                                  # not a border tile at all (a tampered component value)
+    bad_tap(at, full, D.parse_unit("scout"), 8)
+    assert at.error and "cannot afford" in at.error[0].value and "gold" in at.error[0].value
+    bad_tap(at, mm_draft()[:2], D.parse_unit("sniper"), 1)                               # tile 1 already holds a unit
+    assert at.error and "already occupied" in at.error[0].value
+    bad_tap(at, [(1, 0)], 1, 99)                                                         # not a border tile (a tampered component value)
     assert at.error and "out of range" in at.error[0].value
-    assert (list(game(at).actions), list(game(at).env.owned), game(at).phase) == snap
-    click_tile(at, 1)                                                                   # and a legal tile still works afterwards
-    assert not at.error and len(game(at).actions) == len(snap[0]) + 1
-
-
-def test_undo_in_buy_and_refused_after_end_buy(runs):
-    at = new_app()
-    click(at, "g_buy_sniper")
-    click(at, "g_buy_bulwark")
-    gold2, acts2 = game(at).env.gold, list(game(at).actions)
-    click(at, "g_undo")
-    assert game(at).actions == acts2[:-1] and game(at).env.gold > gold2 and not at.error
-    click(at, "g_undo")
-    assert game(at).actions == [] and game(at).env.gold == 240
-    assert at.button(key="g_undo").disabled                                              # nothing to undo
-    with pytest.raises(D.DuelError, match="nothing to undo"):
-        game(at).undo()
-    click(at, "g_buy_sniper")
-    click(at, "g_end")
-    assert "g_undo" not in [b.key for b in at.button]                                    # the button is gone in DEPLOY
-    g = game(at)
-    snap = (list(g.actions), g.env.gold)
-    with pytest.raises(D.DuelError):
-        g.undo()                                                                         # and the engine refuses
-    assert (list(g.actions), g.env.gold) == snap and g.phase == "DEPLOY"
+    assert (list(game(at).actions), game(at).env.gold, game(at).phase) == snap and not game(at).finished
+    # Fight with a draft the engine refuses (more units than the cap) leaves the game untouched and shows the engine's message
+    over = [(0, i % 40) for i in range(21)]                                              # 21 scouts: cap is 20
+    fight(at, over)
+    assert at.error and not game(at).finished and game(at).actions == []
+    fight(at, [])                                                                        # an empty draft sends nothing
+    assert not game(at).finished and game(at).actions == []
+    fight(at, mm_draft())                                                                # and a legal draft afterwards works
+    assert game(at).finished and not at.error
 
 
 def test_only_dev_validation_ids_selectable(runs):
@@ -519,6 +441,7 @@ def test_human_run_appended_to_ignored_file_and_nothing_tracked_changes(runs):
 
 def test_new_game_resets_cleanly(runs):
     at = new_app()
+    gid = at.session_state["g_gid"]
     app_script(at)
     click(at, "g_report_btn")
     assert "g_rows" in at.session_state
@@ -526,6 +449,7 @@ def test_new_game_resets_cleanly(runs):
     g = game(at)
     assert g.phase == "BUY" and g.actions == [] and g.env.gold == 240 and not g.finished
     assert not any(k in at.session_state for k in ("g_rows", "g_battle", "g_structs", "g_report"))
+    assert at.session_state["g_gid"] != gid and at.session_state["g_draft"] == []      # a new game id resets the draft held in the browser
     assert not any(mk in m.value for m in at.markdown for mk in OPP_MARKERS) and not at.error
     app_script(at)                                                                      # and it can be played again
     assert game(at).finished
@@ -533,12 +457,12 @@ def test_new_game_resets_cleanly(runs):
 
 def test_two_sessions_do_not_share_state(runs):
     a, b = new_app(), new_app()
-    click(a, "g_buy_sniper")
-    assert len(game(a).actions) == 1 and game(b).actions == [] and game(a) is not game(b)
+    assert game(a) is not game(b) and a.session_state["g_gid"] != b.session_state["g_gid"]
     app_script(b)
     assert game(b).finished and not game(a).finished and "g_rows" not in a.session_state
-    click(a, "g_buy_scout")
-    assert len(game(a).actions) == 2
+    assert game(a).actions == []
+    app_script(a)
+    assert game(a).finished and game(a).actions == game(b).actions
 
 
 def test_disclaimer_visible_once_and_no_sidebar(runs):
@@ -551,77 +475,49 @@ def test_disclaimer_visible_once_and_no_sidebar(runs):
     assert md(watch_app()).count(R.DISCLAIMER) == 1
 
 
-# ============================================================================================================================ click-to-deploy (new)
-def test_a_click_gives_the_same_action_and_outcome_as_the_dropdown(clicks):
+# ============================================================================================================================ one-tap placement (B24)
+def test_row_mm_script_through_the_arena_is_the_row_mm_outcome(clicks, runs):
     at = new_app()
-    for u in ("sniper", "bulwark"):
-        click(at, f"g_buy_{u}")
-    click(at, "g_end")
-    b = 7
-    click_tile(at, b)                                                                    # the unit selector starts on the first owned unit (sniper)
-    u = D.parse_unit("sniper")
-    assert game(at).actions[-1] == 5 + 52 * u + b
-    st2 = new_app()
-    for u_ in ("sniper", "bulwark"):
-        click(st2, f"g_buy_{u_}")
-    click(st2, "g_end")
-    st2.selectbox(key="g_unit").select("sniper")
-    st2.selectbox(key="g_tile").select(b)
-    click(st2, "g_deploy")
-    assert game(st2).actions == game(at).actions and list(game(st2).env.owned) == list(game(at).env.owned)
-    # to the end: the same last deployment through both paths gives the same finished duel
-    for a_, via in ((at, "click"), (st2, "dropdown")):
-        a_.selectbox(key="g_unit").select("bulwark").run()
-        if via == "click":
-            click_tile(a_, 9)
-        else:
-            a_.selectbox(key="g_tile").select(9)
-            click(a_, "g_deploy")
-    assert game(at).finished and game(st2).finished
-    assert game(at).actions == game(st2).actions and game(at).human_row() == game(st2).human_row() and game(at).env.result.ticks == game(st2).env.result.ticks
-
-
-def test_row_mm_script_entered_by_clicks(clicks, runs):
-    at = new_app()
-    click_script(at)
+    m = clicks["g_arena"]["data"]                                                        # the plan board the app mounts
+    assert m["mode"] == "plan" and m["gold"] == 240 and m["cap"] == 20 and len(m["cards"]) == 5 and m["draft"] == [] and m["cell"] == GV.CELL
+    assert [t["b"] for t in m["tiles"]] == list(range(52)) and all(t["ok"] for t in m["tiles"])
+    assert (m["tiles"][3]["row"], m["tiles"][3]["col"]) == tuple(BORDER[3]) and clicks["g_arena"]["callbacks"] == {"fight": True, "illegal": True}
+    assert [c["name"] for c in m["cards"]] == ["Scout", "Sniper", "Bulwark", "Blaster", "Mender"] and [c["cost"] for c in m["cards"]] == [8, 28, 30, 36, 28]
+    fight(at, mm_draft())
     g = game(at)
     assert g.actions == MM_ACTIONS
     row = g.human_row()
     assert (round(row["score"], 3), round(row["d"], 3), row["breach"], g.env.result.ticks) == (0.400, 0.0, True, 32)
     assert row == direct_script().human_row()
-    # the board in the DEPLOY phase was the interactive one: every border tile listed, free ones ok, a ghost unit named
-    at2 = new_app()
-    for u in BUYS:
-        click(at2, f"g_buy_{u}")
-    click(at2, "g_end")
-    m = clicks["g_board"]
-    assert m["has_callback"] and len(m["data"]["tiles"]) == 52 and m["data"]["cell"] == GV.CELL
-    assert [t["b"] for t in m["data"]["tiles"]] == list(range(52)) and all(t["ok"] for t in m["data"]["tiles"])
-    assert (m["data"]["tiles"][3]["row"], m["data"]["tiles"][3]["col"]) == tuple(BORDER[3]) and m["data"]["unit"] == "sniper"
-    assert not clicks["g_board_buy"]["has_callback"] and clicks["g_board_buy"]["data"]["tiles"] == []     # BUY draws a static board
+
+
+def test_the_demo_place_helper_preloads_a_draft_without_touching_the_engine(clicks, runs):
+    at = new_app({"demo": "place"})
+    assert clicks["g_arena"]["data"]["draft"] == [[1, 0], [1, 1], [1, 2]] and game(at).actions == [] and not game(at).finished
 
 
 def test_component_source_is_plain_html_js_with_no_network_and_reports_the_border_index():
     assert "bidi" not in BC.JS and "http" not in BC.HTML + BC.CSS + BC.JS
     assert "setTriggerValue('tile', t.b)" in BC.JS and "'data-b': t.b" in BC.JS and "addEventListener('click'" in BC.JS and "'keydown'" in BC.JS
     assert "pointerenter" in BC.JS and ":hover" in BC.CSS and "touch-action:manipulation" in BC.CSS and "width:100%" in BC.CSS and "preventDefault" in BC.JS
+    assert "setTriggerValue('fight'" in BC.JS and "setTriggerValue('illegal'" in BC.JS and "e.shiftKey" in BC.JS
     reg = {}
     BC.make_component(lambda name, **kw: reg.update(name=name, **kw))
     assert reg["name"] == "ravelin_board" and set(reg) == {"name", "html", "css", "js"}
     src = Path(APP).read_text()
     assert "st.components.v2" in (ROOT / "app" / "board_component.py").read_text() and "components.v1" not in src and "components.html" not in src
-    assert '"on_tile_change": on_click' in src and "act(\"deploy\"" in src
+    assert "on_fight_change=_on_fight" in src and "on_illegal_change=_on_illegal" in src and "AD.play_draft" in src
 
 
 # ============================================================================================================================ st.iframe for the battle player
 def test_battle_player_is_a_self_contained_st_iframe(runs):
     at = new_app({"demo": "battle"})
     pages = iframes(at)
-    assert len(pages) == 1 and "components.v1" not in Path(APP).read_text() and "st.iframe(page" in Path(APP).read_text()
+    assert len(pages) == 1 and "components.v1" not in Path(APP).read_text() and "st.iframe(ss[\"g_battle\"]" in Path(APP).read_text()
     page = pages[0]
     assert page.startswith("<!doctype html>") and 'id="play"' in page
     assert not re.search(r"""(https?:|src\s*=|href\s*=\s*['"]?[^#'"\s]|@import|<link|fetch\(|XMLHttpRequest|WebSocket|import\()""", page)
-    assert "setInterval" in page and "Streamlit" not in page and "setTriggerValue" not in page      # ticks advance inside the page: no message to the app, no rerun per tick
+    assert "setTimeout" in page and "Streamlit" not in page and "setTriggerValue" not in page      # ticks advance inside the page: no message to the app, no rerun per tick
 
 
 # ============================================================================================================================ polish
@@ -638,7 +534,7 @@ def test_breach_banner_names_the_tick_the_core_fell_not_the_last_tick(name):
     first_dead = next(f["t"] for f in frames if f["s"][ci] <= 0)
     assert o["core"] and first_dead < o["ticks"] and GV.core_tick(structs, frames) == first_dead         # the core falls before the battle ends
     assert all(f["s"][ci] > 0 for f in frames if f["t"] < first_dead) and all(f["s"][ci] <= 0 for f in frames if f["t"] >= first_dead)
-    page = GV.player_html(structs, frames, [t for t, _ in d["battle"]["units"]], {"breach": True, "ticks": o["ticks"], "reasonText": "x"})
+    page = AR.player_html(structs, permille_battle(d), {"breach": True, "ticks": o["ticks"], "reasonText": "x"}, {"d": [], "u": [0] * 5})
     data = json.loads(re.search(r'<script type="application/json" id="data">(.*?)</script>', page, re.S).group(1))
     assert data["outcome"]["coreTick"] == first_dead and data["outcome"]["ticks"] == o["ticks"] != first_dead
     assert "'core destroyed at tick ' + n(D.outcome.coreTick)" in page and "outcome.ticks" not in page.split("bs.innerHTML")[1].split(";")[0]
@@ -667,7 +563,7 @@ def test_board_edge_numbers_are_ink_on_snow_inside_the_card():
     vb = [float(v) for v in root.get("viewBox").split()]
     assert vb[0] < 0 and vb[1] < 0 and vb[2] == GV.BOARD_PX + GV.GUT                     # the gutter is part of the same card image, outside the board rectangle
     assert GV.T.contrast(GV.T.TEXT, GV.T.BG) >= 4.5
-    page = GV.player_html([["c", 3, 3, ""]], [{"t": 0, "u": [], "s": [1000]}], [], {"breach": False, "ticks": 0, "reasonText": "x"})
+    page = mini_page()
     assert page.count('<g class="axis"') == 1 and 'viewBox="%s"' % GV.VIEW in page
 
 
@@ -705,15 +601,15 @@ T_ARROW = "17.0,3.0 28.0,23.0 17.0,18.0 6.0,23.0"                               
 
 
 def test_mono_only_for_numbers_prose_is_atkinson_next():
-    css = re.search(r'PROTO_CSS = """(.*?)"""', Path(APP).read_text(), re.S).group(1) + GV.PLAYER_CSS + BC.CSS
-    allowed = ("stat b", "price", "tok", "cnt", "nums b", "army span", ".n", ".num", "axis", "tip", "table.top td.num", "tick")
+    css = re.search(r'PROTO_CSS = """(.*?)"""', Path(APP).read_text(), re.S).group(1) + AR.CSS + BC.CSS
+    allowed = ("stat b", "price", "tok", "cnt", "nums b", "army span", ".n", ".num", "axis", "tip", "table.top td.num", "tick", ".stat", ".dn", ".cost", ".key", ".gnum", ".val")
     for sel, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
         if "var(--f-num)" in body:
             assert any(a in sel for a in allowed), sel.strip()
     from app import theme as TH
     mono_rules = [r for r in TH.app_css().split("}") if "var(--f-num)" in r and "{" in r]
     assert all("stSelectbox" not in r and "stMarkdown" not in r for r in mono_rules)       # dropdown text and prose are Atkinson Next
-    page = GV.player_html([["c", 3, 3, ""]], [{"t": 0, "u": [], "s": [1000]}], [], {"breach": False, "ticks": 0, "reasonText": "x"})
+    page = mini_page()
     assert ".status{" in page and "font-family" not in re.search(r"\.status\{([^}]*)\}", page).group(1)           # status line = prose
     assert "class=\"n\"" in page.replace("\\\"", '"') or "class=\\\"n\\\"" in page or '<span class="n">' in page
 
@@ -729,7 +625,7 @@ def test_mobile_layout_rules_exist_and_buttons_are_44px():
     css = re.search(r'PROTO_CSS = """(.*?)"""', src, re.S).group(1)
     assert "@media (max-width:640px)" in css and "calc(50% - 8px)" in css and "min-height:44px" in css
     assert ".stButton button,[data-testid='stPopover'] button{min-height:44px}" in css and "[data-testid='stSelectbox'] button" in css
-    assert "@media (max-width:520px){button{min-height:44px}" in GV.PLAYER_CSS and "#board{width:100%;height:auto" in GV.PLAYER_CSS
+    assert "min-height:44px" in AR.CSS.split("button{font:inherit")[1].split("}")[0] and "#board{width:100%;height:auto" in AR.CSS
     assert "width:100%" in BC.CSS and "height:auto" in BC.CSS                                # the interactive board scales to its container
-    assert 'content="width=device-width,initial-scale=1"' in GV.player_html([["c", 3, 3, ""]], [{"t": 0, "u": [], "s": [1000]}], [], {"breach": False, "ticks": 0, "reasonText": "x"})
+    assert 'content="width=device-width,initial-scale=1"' in mini_page()
     assert 'PLAYER_H = "content"' in src
