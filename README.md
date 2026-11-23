@@ -8,10 +8,6 @@ Play it: https://ravelin.streamlit.app (placeholder until the app is deployed)
 
 ![Battle: hp bars, coral rings and damage numbers](docs/screenshots/ravelin_2_battle_hp_bars_rings_and_damage_numbers.png)
 
-![Breach sticker at the core tick](docs/screenshots/ravelin_5_end_sticker_BREACH_at_the_core_tick.png)
-
-![Comparison cards and Watch buttons](docs/screenshots/ravelin_6_report_cards_and_watch_buttons.png)
-
 ## What it is
 
 You are the attacker. You spend 240 gold on a small army of five unit types, place the units on the border of the board, and a deterministic simulator runs the battle against an automated base. Your result is a score: 0.6 times the share of building value destroyed, plus 0.4 if the core falls (a "breach"). The same game is played by learned agents, scripted baselines and a search baseline, so you can compare your own run with theirs on the same layout.

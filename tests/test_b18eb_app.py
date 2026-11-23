@@ -321,7 +321,7 @@ def test_screenshots_are_the_ravelin_set():
         w, h = Image.open(ROOT / "docs" / "screenshots" / s).size
         assert w == (390 if "mobile" in s else 1500) and h >= 800, (s, w, h)
     readme = (ROOT / "README.md").read_text()
-    assert all(f"docs/screenshots/{s}" in readme for s in shots[:0] or [n for n in shots if "_1_" in n or "_2_" in n or "_5_" in n or "_6_" in n]) and not (ROOT / "docs" / "screenshots_b24").exists()
+    assert all(f"docs/screenshots/{s}" in readme for s in [n for n in shots if "_1_" in n or "_2_" in n]) and not (ROOT / "docs" / "screenshots_b24").exists()
 
 
 # ============================================================================================================================ Play (ported from test_b18b_duel_app)

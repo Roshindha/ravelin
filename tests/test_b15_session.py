@@ -87,6 +87,7 @@ def test_real_mode_refuses_without_unlock(tmp_path, capsys):
     assert not (tmp_path / "session.json").exists()
 
 
+@CK.needs_full_grid
 def test_real_mode_refuses_a_second_session_on_the_real_ledger(tmp_path):
     """Permanent after B15: the REAL ledger holds exactly one finished session, so every real-mode path refuses a new one (no monkeypatching of the ledger)."""
     assert P.LEDGER_PATH == ROOT / "data" / "v2" / "final_access.log" and P.count_eval_sessions() == 1

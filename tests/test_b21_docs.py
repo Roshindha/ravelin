@@ -33,7 +33,7 @@ def test_readme_content_rules():
         assert needle in README, needle
     assert not re.search(r"[\U0001F000-\U0001FAFF☀-➿⬀-⯿️]", README), "emoji"
     assert "The Python package keeps its original internal name (breachlens) because frozen provenance hashes reference it." in README
-    assert "ravelin_1a_" in README and "ravelin_1b_" in README
+    assert "ravelin_1_placing" in README and "ravelin_2_battle" in README
     assert not (ROOT / "LICENSE").exists() and "License:" not in README and "MIT License" not in README     # owner decision (B19): no licence file, no licence section
 
 
